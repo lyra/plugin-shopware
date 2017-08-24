@@ -1,0 +1,12 @@
+1.1.0, 2016-11-24:
+- Bug fix: correction of payment additional descrption displayed in order mail.
+- Compatibility with ShopWare 5.2.x versions (creation of order by IPN URL call and adding backend order payment details).
+- Set order to "In process" and payment to "Fully paid" status when payment is successful.
+- Module code refactoring.
+- Compatibility with ShopWare 4.0 version.
+- Improve of order processing in multistore mode.
+- Remove control over certificate format modified on the platform.
+- Correct and improve module code to pass ShopWare Store code review.
+
+1.0.0, 2016-03-03:
+- New PayZen payment module for ShopWare 4.x-5.x.
