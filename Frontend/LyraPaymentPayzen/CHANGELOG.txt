@@ -1,3 +1,6 @@
+1.1.1, 2017-10-09:
+- Plugin compatibility with PHP 5.3.
+
 1.1.0, 2016-11-24:
 - Bug fix: correction of payment additional descrption displayed in order mail.
 - Compatibility with ShopWare 5.2.x versions (creation of order by IPN URL call and adding backend order payment details).
