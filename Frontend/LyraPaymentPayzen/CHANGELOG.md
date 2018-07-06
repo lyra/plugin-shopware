@@ -1,3 +1,9 @@
+1.2.0, 2018-06-27:
+- Compatibility with ShopWare 5.x lastest versions.
+- Enable signature algorithm selection (SHA-1 or SHA-256).
+- Display generic error message for unexpected errors.
+- Update text translations.
+
 1.1.1, 2017-10-09:
 - Plugin compatibility with PHP 5.3.
 
@@ -8,7 +14,7 @@
 - Module code refactoring.
 - Compatibility with ShopWare 4.0 version.
 - Improve of order processing in multistore mode.
-- Remove control over certificate format modified on the platform.
+- Remove control over certificate format modified on the gateway.
 - Correct and improve module code to pass ShopWare Store code review.
 
 1.0.0, 2016-03-03:

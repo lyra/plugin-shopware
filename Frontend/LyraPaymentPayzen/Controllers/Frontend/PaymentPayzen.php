@@ -1,6 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.1 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
  * @category  payment
  * @package   payzen
  */
 
 require_once dirname(dirname(dirname(__FILE__))) . '/Components/PayzenLogger.php';
+require_once dirname(dirname(dirname(__FILE__))) . '/Components/PayzenTools.php';
 
-if (interface_exists('Shopware\Components\CSRFWhitelistAware'))
-{
+if (interface_exists('Shopware\Components\CSRFWhitelistAware')) {
     abstract class AbstractPaymentPayzen extends Shopware_Controllers_Frontend_Payment
         implements Shopware\Components\CSRFWhitelistAware
     {
@@ -95,16 +95,16 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
 
         // activate 3ds ?
         $threedsMpi = null;
-        if ($config->get('payzen_3ds_min_amount') != '' && $this->getAmount() < $config->get('payzen_3ds_min_amount')) {
+        if ($config->get('payzen_3ds_min_amount') && ($this->getAmount() < $config->get('payzen_3ds_min_amount'))) {
             $threedsMpi = '2';
         }
 
-        $predictedOrderId = Shopware()->Db()->fetchOne("SELECT number FROM s_order_number WHERE name='invoice'") + 1 ;
+        $predictedOrderId = Shopware()->Db()->fetchOne("SELECT number FROM s_order_number WHERE name = 'invoice'") + 1 ;
         $params = array(
             'amount' => $currency->convertAmountToInteger($this->getAmount()),
             'currency' => $currency->getNum(),
             'language' => $payzenLang,
-            'contrib' => 'ShopWare4.x-5.x_1.1.1/' . Shopware::VERSION . '/' . PHP_VERSION,
+            'contrib' => 'ShopWare4.x-5.x_1.2.0/' . Shopware::VERSION . '/' . PHP_VERSION,
             'order_id' => $predictedOrderId,
             'order_info' => 'session_id=' . \Enlight_Components_Session::getId() . '&shop_id=' . $user['additional']['user']['subshopID'],
             'order_info2' => 'unique_id=' . $this->createPaymentUniqueId(), // unique ID to be assigned to order if payment successful
@@ -149,7 +149,8 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             'site_id', 'key_test', 'key_prod', 'ctx_mode', 'platform_url',
             'available_languages', 'capture_delay', 'validation_mode', 'payment_cards',
             'redirect_enabled', 'return_mode', 'redirect_success_timeout',
-            'redirect_success_message', 'redirect_error_timeout', 'redirect_error_message'
+            'redirect_success_message', 'redirect_error_timeout', 'redirect_error_message',
+            'sign_algo'
         );
 
         foreach ($keys as $key) {
@@ -162,7 +163,8 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             $request->set($key, $value);
         }
 
-        $this->logger->debug('Client ' . $user['additional']['user']['email'] . ' sent to payment platform with data : ' . print_r($request->getRequestFieldsArray(true), true));
+        $this->logger->info('Client ' . $user['additional']['user']['email'] . ' sent to payment gateway.');
+        $this->logger->debug('Form data : ' . print_r($request->getRequestFieldsArray(true), true));
 
         $this->View()->PayzenParams = $request->getRequestHtmlFields();
         $this->View()->PayzenAction = $request->get('platform_url');
@@ -214,37 +216,44 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             Shopware()->Modules()->setSystem(Shopware()->System());
         }
 
-        $this->logger->info('Received parameters ' . print_r($this->Request()->getParams(), true));
-
+        $params = $this->Request()->getParams();
         $config = $this->Plugin()->Config();
 
         $payzenResponse = new PayzenResponse(
-            $this->Request()->getParams(),
+            $params,
             $config->get('payzen_ctx_mode'),
             $config->get('payzen_key_test'),
-            $config->get('payzen_key_prod')
+            $config->get('payzen_key_prod'),
+            $config->get('payzen_sign_algo')
         );
 
         $fromServer = ($payzenResponse->get('hash') != null);
 
         // check the authenticity of the request
         if (! $payzenResponse->isAuthentified()) {
-            $this->logger->error($this->Request()->getClientIp(false) . ' tries to access module payment_payzen/process page without a valid signature. It may be a hacking attempt.');
+            $ip = $this->Request()->getClientIp(false);
+
+            $this->logger->error("{$ip} tries to access payment_payzen/process page without valid signature with parameters: " . print_r($params, true));
+            $this->logger->error('Signature algorithm selected in module settings must be the same as one selected in PayZen Back Office.');
 
             if ($fromServer) {
                 die($payzenResponse->getOutputForPlatform('auth_fail'));
             } else {
+                Shopware()->Modules()->Basket()->clearBasket();
+                Shopware()->Modules()->Basket()->sRefreshBasket();
+
+                Shopware()->Session()->payzenPaymentError = true;
                 $this->redirect(array('controller' => 'index'));
                 return;
             }
         }
 
-        if (! $fromServer && $config->get('payzen_ctx_mode') == 'TEST') {
+        if (! $fromServer && ($config->get('payzen_ctx_mode') === 'TEST') && PayzenTools::$pluginFeatures['prodfaq']) {
             Shopware()->Session()->payzenGoingIntoProductionInfo = true;
         }
 
         // search for temporary order
-        $sql = 'SELECT id FROM s_order WHERE transactionID=? AND temporaryID=? AND userID=? AND status=-1';
+        $sql = 'SELECT `id` FROM `s_order` WHERE `transactionID` = ? AND `temporaryID` = ? AND `userID` = ? AND `status` = -1';
         $tmpOrderId = Shopware()->Db()->fetchOne($sql, array(
             '', // empty transactionID
             \Enlight_Components_Session::getId(),
@@ -271,7 +280,7 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
                 );
 
                 // get the new order ID by order number
-                $orderId = Shopware()->Db()->fetchOne('SELECT id FROM s_order WHERE ordernumber=?', array($orderNumber));
+                $orderId = Shopware()->Db()->fetchOne('SELECT `id` FROM `s_order` WHERE `ordernumber` = ?', array($orderNumber));
 
                 // update payment data
                 $this->updateOrderInfo($orderId, $payzenResponse);
@@ -303,10 +312,10 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             // order already processed or no order at all
 
             // search for final order
-            $sql = 'SELECT id, cleared FROM s_order WHERE transactionID=? AND temporaryID=? AND userID=?';
+            $sql = 'SELECT `id`, `cleared` FROM `s_order` WHERE `transactionID` = ? AND `temporaryID` = ? AND `userID` = ?';
             $orderInfo = Shopware()->Db()->fetchRow($sql, array(
                 $payzenResponse->get('trans_id'),
-                $paymentUniqueId, // payment unique ID sent to the platform
+                $paymentUniqueId, // payment unique ID sent to the gateway
                 $payzenResponse->get('cust_id')
             ));
 
@@ -365,6 +374,10 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
                 if ($fromServer) {
                     die($payzenResponse->getOutputForPlatform('order_not_found'));
                 } else {
+                    Shopware()->Modules()->Basket()->clearBasket();
+                    Shopware()->Modules()->Basket()->sRefreshBasket();
+
+                    Shopware()->Session()->payzenPaymentError = true;
                     $this->redirect(array('controller' => 'index'));
                 }
             }
@@ -446,13 +459,13 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
     private function updateOrderInfo($orderId, PayzenResponse $payzenResponse)
     {
         // update internalcomment
-        $sql = 'UPDATE s_order SET internalcomment = ?, status = 1';
+        $sql = 'UPDATE `s_order` SET `internalcomment` = ?, `status` = 1';
         if ($payzenResponse->isAcceptedPayment() && ! $payzenResponse->isPendingPayment()) {
             // update cleareddate for a complete order payment
-            $sql .= ', cleareddate=NOW()';
+            $sql .= ', `cleareddate` = NOW()';
         }
 
-        $sql .= ' WHERE id=?';
+        $sql .= ' WHERE `id` = ?';
         Shopware()->Db()->query($sql, array($payzenResponse->getMessage(), $orderId));
 
         // save payment details
@@ -469,6 +482,6 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             'attribute5' => $payzenResponse->get('card_number'),
             'attribute6' => $expiry
         );
-        Shopware()->Db()->update('s_order_attributes', $paymentInfo, 'orderID=' . $orderId);
+        Shopware()->Db()->update('s_order_attributes', $paymentInfo, '`orderID` = ' . $orderId);
     }
 }

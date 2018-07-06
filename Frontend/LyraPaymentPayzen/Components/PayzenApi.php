@@ -1,6 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.1 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
  * @category  payment
  * @package   payzen
@@ -32,6 +32,11 @@ if (! class_exists('PayzenApi', false)) {
      */
     class PayzenApi
     {
+
+        const ALGO_SHA1 = 'SHA-1';
+        const ALGO_SHA256 = 'SHA-256';
+
+        public static $SUPPORTED_ALGOS = array(self::ALGO_SHA1, self::ALGO_SHA256);
 
         /**
          * The list of encodings supported by the API.
@@ -223,7 +228,7 @@ if (! class_exists('PayzenApi', false)) {
                 'BRICE_CDX_SB' => 'Carte cadeau Brice - Sandbox', 'CDGP' => 'Carte Privilège', 'COF3XCB' => '3 fois CB Cofinoga',
                 'COF3XCB_SB' => '3 fois CB Cofinoga - Sandbox', 'COFINOGA' => 'Carte Be Smart', 'CORA_BLANCHE' => 'Carte Cora Blanche',
                 'CORA_PREM' => 'Carte Cora Premium', 'CORA_VISA' => 'Carte Cora Visa', 'DINERS' => 'Carte Diners Club',
-                'E_CV' => 'E-chèque vacance', 'EDENRED_TR' => 'Ticket Restaurant', 'EDENRED_EC' => 'Ticket EcoCheque',
+                'E_CV' => 'E-chèque vacance', 'EDENRED_TR' => 'Ticket Restaurant', 'EDENRED_EC' => 'Ticket EcoCheque', 'EDENRED_TC' => 'Ticket Compliments',
                 'EPS' => 'eps-Überweisung', 'FULLCB3X' => 'Paiement en 3X avec BNPP PF', 'FULLCB4X' => 'Paiement en 4X avec BNPP PF',
                 'GIROPAY' => 'Giropay', 'KLARNA' => 'Klarna', 'IDEAL' => 'iDEAL', 'ILLICADO' => 'Carte cadeau Illicado',
                 'ILLICADO_SB' => 'Carte cadeau Illicado - Sandbox', 'JCB' => 'Carte JCB', 'JOUECLUB_CDX' => 'Carte cadeau Jouéclub',
@@ -235,7 +240,7 @@ if (! class_exists('PayzenApi', false)) {
                 'POSTFINANCE_EFIN' => 'PostFinance mode E-finance', 'RUPAY' => 'RuPay',
                 'SCT' => 'Virement SEPA', 'SDD' => 'Prélèvement SEPA', 'SOFORT_BANKING' => 'Sofort',
                 'TRUFFAUT_CDX' => 'Carte cadeau Truffaut', 'VILLAVERDE' => 'Carte cadeau Villaverde',
-                'VILLAVERDE_SB' => 'Carte cadeau Villaverde - SandBox'
+                'VILLAVERDE_SB' => 'Carte cadeau Villaverde - SandBox', 'ECCARD' => 'EC Card'
             );
         }
 
@@ -244,10 +249,11 @@ if (! class_exists('PayzenApi', false)) {
          *
          * @param array[string][string] $parameters payment platform request/response parameters
          * @param string $key shop certificate
+         * @param string $algo signature algorithm
          * @param boolean $hashed set to false to get the unhashed signature
          * @return string
          */
-        public static function sign($parameters, $key, $hashed = true)
+        public static function sign($parameters, $key, $algo, $hashed = true)
         {
             ksort($parameters);
 
@@ -259,7 +265,19 @@ if (! class_exists('PayzenApi', false)) {
             }
 
             $sign .= $key;
-            return $hashed ? sha1($sign) : $sign;
+
+            if (! $hashed) {
+                return $sign;
+            }
+
+            switch ($algo) {
+                case self::ALGO_SHA1:
+                    return sha1($sign);
+                case self::ALGO_SHA256:
+                    return base64_encode(hash_hmac('sha256', $sign, $key, true));
+                default:
+                    throw new \InvalidArgumentException("Unsupported algorithm passed : {$algo}.");
+            }
         }
 
         /**
