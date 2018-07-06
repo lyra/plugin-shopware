@@ -1,5 +1,5 @@
 {*
- * PayZen V2-Payment Module version 1.1.1 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
  * @category  payment
  * @package   payzen
@@ -26,7 +26,7 @@
 
 {block name="frontend_checkout_confirm_error_messages" prepend}
     {if $payzenPaymentResult == 'ERROR'}
-        {assign var="payzenErrorMsg" value="{s name="payzen/payment_error"}Your order has not been confirmed. The payment has not been accepted.{/s}"}
+        {assign var="payzenErrorMsg" value="{s name="payzen/payment_error"}Your payment was not accepted. Please, try to re-order.{/s}"}
 
         {if "frontend/_includes/messages.tpl"|template_exists}
             {include file="frontend/_includes/messages.tpl" type="error" content="$payzenErrorMsg"}
@@ -36,7 +36,7 @@
             </div>
         {/if}
     {elseif $payzenPaymentResult == 'CANCEL'}
-        {assign var="payzenCancelMsg" value="{s name="payzen/payment_cancel"}Checkout have been canceled.{/s}"}
+        {assign var="payzenCancelMsg" value="{s name="payzen/payment_cancel"}The payment have been canceled.{/s}"}
 
         {if "frontend/_includes/messages.tpl"|template_exists}
             {include file="frontend/_includes/messages.tpl" type="warning" content="$payzenCancelMsg"}

@@ -1,6 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.1 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
  * @category  payment
  * @package   payzen
@@ -51,6 +51,14 @@ if (! class_exists('PayzenResponse', false)) {
          * @var string
          */
         private $certificate;
+
+        /**
+         * Algorithm used to check the signature.
+         *
+         * @see PayzenApi::sign
+         * @var string
+         */
+        private $algo = PayzenApi::ALGO_SHA1;
 
         /**
          * Value of vads_result.
@@ -95,12 +103,16 @@ if (! class_exists('PayzenResponse', false)) {
          * @param string $ctx_mode
          * @param string $key_test
          * @param string $key_prod
-         * @param string $encoding
+         * @param string $algo
          */
-        public function __construct($params, $ctx_mode, $key_test, $key_prod)
+        public function __construct($params, $ctx_mode, $key_test, $key_prod, $algo = PayzenApi::ALGO_SHA1)
         {
             $this->rawResponse = PayzenApi::uncharm($params);
-            $this->certificate = $ctx_mode == 'PRODUCTION' ? $key_prod : $key_test;
+            $this->certificate = trim(($ctx_mode == 'PRODUCTION') ? $key_prod : $key_test);
+
+            if (in_array($algo, PayzenApi::$SUPPORTED_ALGOS)) {
+                $this->algo = $algo;
+            }
 
             // payment results
             $this->result = self::findInArray('vads_result', $this->rawResponse, null);
@@ -127,7 +139,7 @@ if (! class_exists('PayzenResponse', false)) {
          */
         public function getComputedSignature($hashed = true)
         {
-            return PayzenApi::sign($this->rawResponse, $this->certificate, $hashed);
+            return PayzenApi::sign($this->rawResponse, $this->certificate, $this->algo, $hashed);
         }
 
         /**
@@ -418,16 +430,17 @@ if (! class_exists('PayzenResponse', false)) {
         {
             // predefined response messages according to case
             $cases = array(
-                'payment_ok' => array(true, 'Paiement valide traité'),
-                'payment_ko' => array(true, 'Paiement invalide traité'),
-                'payment_ok_already_done' => array(true, 'Paiement valide traité, déjà enregistré'),
-                'payment_ko_already_done' => array(true, 'Paiement invalide traité, déjà enregistré'),
-                'order_not_found' => array(false, 'Impossible de retrouver la commande'),
-                'payment_ko_on_order_ok' => array(false, 'Code paiement invalide reçu pour une commande déjà validée'),
-                'auth_fail' => array(false, 'Echec d\'authentification'),
-                'empty_cart' => array(false, 'Le panier a été vidé avant la redirection'),
-                'unknown_status' => array(false, 'Statut de commande inconnu'),
-                'amount_error' => array(false, 'Le montant payé est différent du montant intial'),
+                'payment_ok' => array(true, 'Accepted payment, order has been updated.'),
+                'payment_ko' => array(true, 'Payment failure, order has been cancelled.'),
+                'payment_ko_bis' => array(true, 'Payment failure.'),
+                'payment_ok_already_done' => array(true, 'Accepted payment, already registered.'),
+                'payment_ko_already_done' => array(true, 'Payment failure, already registered.'),
+                'order_not_found' => array(false, 'Order not found.'),
+                'payment_ko_on_order_ok' => array(false, 'Order status does not match the payment result.'),
+                'auth_fail' => array(false, 'An error occurred while computing the signature.'),
+                'empty_cart' => array(false, 'Empty cart detected before order processing.'),
+                'unknown_status' => array(false, 'Unknown order status.'),
+                'amount_error' => array(false, 'Total paid is different from order amount.'),
                 'ok' => array(true, ''),
                 'ko' => array(false, '')
             );
@@ -438,6 +451,7 @@ if (! class_exists('PayzenResponse', false)) {
             if (! empty($extra_message)) {
                 $message .= ' ' . $extra_message;
             }
+
             $message = str_replace("\n", ' ', $message);
 
             // set original CMS encoding to convert if necessary response to send to platform
@@ -448,7 +462,6 @@ if (! class_exists('PayzenResponse', false)) {
             }
 
             $content = $success ? 'OK-' : 'KO-';
-            $content .= $this->get('trans_id');
             $content .= "$message\n";
 
             $response = '';

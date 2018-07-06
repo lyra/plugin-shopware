@@ -1,6 +1,6 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.1.1 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2017 Lyra Network and contributors
+ * @copyright 2014-2018 Lyra Network and contributors
  * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
  * @category  payment
  * @package   payzen
@@ -33,10 +33,9 @@ if (is_dir(Shopware()->OldPath() . 'var')) {
     define('PAYZEN_LOG_DIRECTORY', Shopware()->OldPath() . 'logs' . DIRECTORY_SEPARATOR);
 }
 
-if ((class_exists('Shopware\Components\Logger')) && (class_exists('Monolog\Handler\StreamHandler'))) {
+if (class_exists('Shopware\Components\Logger') && class_exists('Monolog\Handler\StreamHandler')) {
     class PayzenLogger extends \Shopware\Components\Logger
     {
-
         const LOG_FILE_NAME = 'payzen.log';
         const LOG_LEVEL = \Shopware\Components\Logger::INFO;
 
