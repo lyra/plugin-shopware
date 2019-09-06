@@ -1,25 +1,11 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for ShopWare. See COPYING.md for license details.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2018 Lyra Network and contributors
- * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
- * @category  payment
- * @package   payzen
+ * @author    Lyra Network (https://www.lyra.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/agpl.html GNU Affero General Public License (AGPL v3)
  */
 
 require_once 'PayzenApi.php';
@@ -33,7 +19,7 @@ if (! class_exists('PayzenRequest', false)) {
     {
 
         /**
-         * The fields to send to the PayZen platform.
+         * The fields to send to the payment gateway.
          *
          * @var array[string][PayzenField]
          * @access private
@@ -113,12 +99,12 @@ if (! class_exists('PayzenRequest', false)) {
 
         public function __construct($encoding = 'UTF-8')
         {
-            // initialize encoding
+            // Initialize encoding.
             $this->encoding = in_array(strtoupper($encoding), PayzenApi::$SUPPORTED_ENCODINGS) ?
                 strtoupper($encoding) : 'UTF-8';
 
-            // parameters' regular expressions
-            $ans = '[^<>]'; // Any character (except the dreadful "<" and ">")
+            // Parameters' regular expressions.
+            $ans = '[^<>]'; // Any character (except the dreadful "<" and ">").
             $an63 = '#^[A-Za-z0-9]{0,63}$#u';
             $ans255 = '#^' . $ans . '{0,255}$#u';
             $ans127 = '#^' . $ans . '{0,127}$#u';
@@ -126,12 +112,13 @@ if (! class_exists('PayzenRequest', false)) {
             $regex_payment_cfg = '#^(SINGLE|MULTI:first=\d+;count=' . $supzero . ';period=' . $supzero . ')$#u';
             // AAAAMMJJhhmmss
             $regex_trans_date = '#^\d{4}(1[0-2]|0[1-9])(3[01]|[1-2]\d|0[1-9])(2[0-3]|[0-1]\d)([0-5]\d){2}$#u';
-            $regex_mail = '#^[^@]+@[^@]+\.\w{2,4}$#u'; // TODO plus restrictif
-            $regex_params = '#^([^&=]+=[^&=]*)?(&[^&=]+=[^&=]*)*$#u'; // name1=value1&name2=value2...
+            $regex_sub_effect_date = '#^\d{4}(1[0-2]|0[1-9])(3[01]|[1-2]\d|0[1-9])$#u';
+            $regex_mail = '#^[^@]+@[^@]+\.\w{2,4}$#u';
+            $regex_params = '#^([^&=]+=[^&=]*)?(&[^&=]+=[^&=]*)*$#u'; // name1=value1&name2=value2....
             $regex_ship_type = '#^RECLAIM_IN_SHOP|RELAY_POINT|RECLAIM_IN_STATION|PACKAGE_DELIVERY_COMPANY|ETICKET$#u';
             $regex_payment_option = '#^[a-zA-Z0-9]{0,32}$|^COUNT=([1-9][0-9]{0,2})?;RATE=[0-9]{0,4}(\\.[0-9]{1,4})?;DESC=.{0,64};?$#';
 
-            // defining all parameters and setting formats and default values
+            // Defining all parameters and setting formats and default values.
             $this->addField('signature', 'Signature', '#^[0-9a-f]{40}$#u', true);
 
             $this->addField('vads_action_mode', 'Action mode', '#^INTERACTIVE|SILENT$#u', true, 11);
@@ -203,7 +190,9 @@ if (! class_exists('PayzenRequest', false)) {
             $this->addField('vads_shop_url', 'Shop URL', '#^https?://(\w+(:\w*)?@)?(\S+)(:[0-9]+)?[\w\#!:.?+=&%@`~;,|!\-/]*$#u');
             $this->addField('vads_site_id', 'Shop ID', '#^\d{8}$#u', true, 8);
             $this->addField('vads_tax_amount', 'The amount of tax', '#^' . $supzero . '$#u', false, 12);
+            $this->addField('vads_tax_rate', 'The rate of tax', '#^\d{1,2}\.\d{1,4}$#u', false, 6);
             $this->addField('vads_theme_config', 'Theme configuration', '#^[^;=]+=[^;=]*(;[^;=]+=[^;=]*)*;?$#u');
+            $this->addField('vads_totalamount_vat', 'The total amount of VAT', '#^' . $supzero . '$#u', false, 12);
             $this->addField('vads_threeds_mpi', 'Enable / disable 3D Secure', '#^[0-2]$#u', false);
             $this->addField('vads_trans_date', 'Transaction date', $regex_trans_date, true, 14);
             $this->addField('vads_trans_id', 'Transaction ID', '#^[0-8]\d{5}$#u', true, 6);
@@ -215,9 +204,17 @@ if (! class_exists('PayzenRequest', false)) {
             $this->addField('vads_url_success', 'Success URL', $ans127, false, 127);
             $this->addField('vads_user_info', 'User info', $ans255);
             $this->addField('vads_validation_mode', 'Validation mode', '#^[01]?$#u', false, 1);
-            $this->addField('vads_version', 'Platform version', '#^V2$#u', true, 2);
+            $this->addField('vads_version', 'Gatway version', '#^V2$#u', true, 2);
 
-            // set some default values
+            // Subscription payment fields.
+            $this->addField('vads_sub_amount', 'Subscription amount', '#^' . $supzero . '$#u');
+            $this->addField('vads_sub_currency', 'Subscription currency', '#^\d{3}$#u', false, 3);
+            $this->addField('vads_sub_desc', 'Subscription description', $ans255);
+            $this->addField('vads_sub_effect_date', 'Subscription effect date', $regex_sub_effect_date);
+            $this->addField('vads_sub_init_amount', 'Subscription initial amount', '#^' . $supzero . '$#u');
+            $this->addField('vads_sub_init_amount_number', 'subscription initial amount number', '#^\d+$#u');
+
+            // Set some default values.
             $this->set('vads_version', 'V2');
             $this->set('vads_page_action', 'PAYMENT');
             $this->set('vads_action_mode', 'INTERACTIVE');
@@ -279,7 +276,7 @@ if (! class_exists('PayzenRequest', false)) {
                 return null;
             }
 
-            // shortcut notation compatibility
+            // Shortcut notation compatibility.
             $name = (substr($name, 0, 5) != 'vads_') ? 'vads_' . $name : $name;
 
             if ($name == 'vads_key_test') {
@@ -312,23 +309,23 @@ if (! class_exists('PayzenRequest', false)) {
                 return false;
             }
 
-            // shortcut notation compatibility
+            // Shortcut notation compatibility.
             $name = (substr($name, 0, 5) != 'vads_') ? 'vads_' . $name : $name;
 
             if (is_string($value)) {
-                // trim value before set
+                // Trim value before set.
                 $value = trim($value);
 
-                // convert the parameters' values if they are not encoded in UTF-8
+                // Convert the parameters' values if they are not encoded in UTF-8.
                 if ($this->encoding !== 'UTF-8') {
                     $value = iconv($this->encoding, 'UTF-8', $value);
                 }
 
-                // delete < and > characters from $value and replace multiple spaces by one
+                // Delete < and > characters from $value and replace multiple spaces by one.
                 $value = preg_replace(array('#[<>]+#u', '#\s+#u'), array('', ' '), $value);
             }
 
-            // search appropriate setter
+            // Search appropriate setter.
             if ($name == 'vads_key_test') {
                 return $this->setCertificate($value, 'TEST');
             } elseif ($name == 'vads_key_prod') {
@@ -360,14 +357,14 @@ if (! class_exists('PayzenRequest', false)) {
             $result = true;
 
             if (is_numeric($count) && $count > 1 && is_numeric($period) && $period > 0) {
-                // default values for first and total
+                // Default values for first and total.
                 $total_in_cents = ($total_in_cents === null) ? $this->get('amount') : $total_in_cents;
                 $first_in_cents = ($first_in_cents === null) ? round($total_in_cents / $count) : $first_in_cents;
 
-                // check parameters
+                // Check parameters.
                 if (is_numeric($total_in_cents) && $total_in_cents > $first_in_cents
                     && $total_in_cents > 0 && is_numeric($first_in_cents) && $first_in_cents > 0) {
-                    // set value to payment_config
+                    // Set value to payment_config.
                     $payment_config = 'MULTI:first=' . $first_in_cents . ';count=' . $count . ';period=' . $period;
                     $result &= $this->set('amount', $total_in_cents);
                     $result &= $this->set('payment_config', $payment_config);
@@ -457,7 +454,7 @@ if (! class_exists('PayzenRequest', false)) {
             $index = $this->get('nb_products') ? $this->get('nb_products') : 0;
             $ok = true;
 
-            // add product info as request parameters
+            // Add product info as request parameters.
             $ok &= $this->addField('vads_product_label' . $index, 'Product label', '#^[^<>"+-]{0,255}$#u', false, 255, $label);
             $ok &= $this->addField('vads_product_amount' . $index, 'Product amount', '#^[1-9]\d*$#u', false, 12, $amount);
             $ok &= $this->addField('vads_product_qty' . $index, 'Product quantity', '#^[1-9]\d*$#u', false, 255, $qty);
@@ -465,7 +462,7 @@ if (! class_exists('PayzenRequest', false)) {
             $ok &= $this->addField('vads_product_type' . $index, 'Product type', '#^' . implode('|', self::$ACCORD_CATEGORIES) . '$#u', false, 30, $type);
             $ok &= $this->addField('vads_product_vat' . $index, 'Product tax rate', '#^((\d{1,12})|(\d{1,2}\.\d{1,4}))$#u', false, 12, $vat);
 
-            // increment the number of products
+            // Increment the number of products.
             $ok &= $this->set('nb_products', $index + 1);
 
             return $ok;
@@ -552,7 +549,7 @@ if (! class_exists('PayzenRequest', false)) {
         }
 
         /**
-         * Return the list of fields to send to the payment platform.
+         * Return the list of fields to send to the payment gateway.
          *
          * @return array[string][PayzenField] a list of PayzenField
          */
@@ -560,7 +557,7 @@ if (! class_exists('PayzenRequest', false)) {
         {
             $fields = $this->requestParameters;
 
-            // filter redirect_* parameters if redirect is disabled
+            // Filter redirect_* parameters if redirect is disabled.
             if (! $this->redirectEnabled) {
                 $redirect_fields = array(
                     'vads_redirect_success_timeout',
@@ -580,10 +577,10 @@ if (! class_exists('PayzenRequest', false)) {
                 }
             }
 
-            // compute signature
+            // Compute signature.
             $fields['signature']->setValue($this->generateSignature($fields));
 
-            // return the list of fields
+            // Return the list of fields.
             return $fields;
         }
 
@@ -604,12 +601,12 @@ if (! class_exists('PayzenRequest', false)) {
 
                 $url .= $field->getName() . '=' . rawurlencode($field->getValue()) . '&';
             }
-            $url = substr($url, 0, - 1); // remove last &
+            $url = substr($url, 0, - 1); // Remove last &.
             return $url;
         }
 
         /**
-         * Return the HTML form to send to the payment platform.
+         * Return the HTML form to send to the payment gateway.
          *
          * @param string $form_add
          * @param string $input_type
@@ -657,7 +654,7 @@ if (! class_exists('PayzenRequest', false)) {
                     continue;
                 }
 
-                // convert special chars to HTML entities to avoid data truncation
+                // Convert special chars to HTML entities to avoid data truncation.
                 if ($escape) {
                     $value = htmlspecialchars($field->getValue(), ENT_QUOTES, 'UTF-8');
                 }
@@ -690,7 +687,7 @@ if (! class_exists('PayzenRequest', false)) {
                     $value = str_repeat('*', strlen($value));
                 }
 
-                // convert special chars to HTML entities to avoid data truncation
+                // Convert special chars to HTML entities to avoid data truncation.
                 if ($escape) {
                     $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
                 }
