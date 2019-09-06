@@ -1,26 +1,14 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for ShopWare. See COPYING.md for license details.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2018 Lyra Network and contributors
- * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
- * @category  payment
- * @package   payzen
+ * @author    Lyra Network (https://www.lyra.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/agpl.html GNU Affero General Public License (AGPL v3)
  */
+
+use Shopware\Models\Order\Repository;
 
 require_once 'Components/PayzenApi.php';
 require_once 'Components/PayzenTools.php';
@@ -29,11 +17,11 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
 {
 
     /**
-     * Installs the plugin :
-     *  - create and save the payment row
-     *  - create the payment table
-     *  - create admin form translations
-     *  - create and subscribe the events and hooks
+     * Installs the plugin:
+     *  - create and save the payment row,
+     *  - create the payment table,
+     *  - create admin form translations,
+     *  - create and subscribe the events and hooks.
      *
      * @return array[string][mixed]
      */
@@ -47,7 +35,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $this->fixOrderMail();
         $this->fixBackendOrderDetails();
 
-        // enable our plugin just after installation
+        // Enable our plugin just after installation.
         $repo = Shopware()->Models()->getRepository('Shopware\Models\Plugin\Plugin');
         $plugin = $repo->findOneBy(array('name' => 'LyraPaymentPayzen'));
         $plugin->setActive(true);
@@ -61,30 +49,30 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $sql = "SELECT `content` FROM `s_core_config_mails` WHERE `name` = 'sORDER'";
         $content = Shopware()->Db()->fetchOne($sql);
 
-        // remove img tags from additional description if any
+        // Remove img tags from additional description if any.
         $ad = "\$additional.payment.additionaldescription|regex_replace:'#^<img[^>]+/>#':''";
         $content = preg_replace("@\\\$additional\.payment\.additionaldescription(\|regex_replace\:\'#\^<img\[\^>\]\+/>#\'\:\'\')*@", $ad, $content);
 
-        // Make sure that the additionadescription field is evaluated by smarty
+        // Make sure that the "additionadescription" field is evaluated by Smarty.
         $sql = "UPDATE `s_core_config_mails` SET `content` = ? WHERE `name` = 'sORDER'";
         Shopware()->Db()->query($sql, array($content));
     }
 
     private function fixBackendOrderDetails()
     {
-        if (version_compare(Shopware::VERSION, '5.2.0', '<')) {
+        if (version_compare(Shopware()->Config()->version, '5.2.0', '<')) {
             return;
         }
 
-        $sql = "SELECT COUNT(*) FROM `s_attribute_configuration` WHERE `table_name` = 's_order_attributes' AND `column_name` IN ('attribute1','attribute2','attribute3','attribute4','attribute5','attribute6')";
+        $sql = "SELECT COUNT(*) FROM `s_attribute_configuration` WHERE `table_name` = 's_order_attributes' AND `column_name` IN ('attribute1', 'attribute2', 'attribute3', 'attribute4', 'attribute5', 'attribute6')";
         $count = Shopware()->Db()->fetchOne($sql);
 
         if (! $count) {
-            $sql = "INSERT INTO `s_attribute_configuration` (`table_name`, `column_name`, `column_type`, `position`,`translatable`, `display_in_backend`, `custom`,`label`)
+            $sql = "INSERT INTO `s_attribute_configuration` (`table_name`, `column_name`, `column_type`, `position`, `translatable`, `display_in_backend`, `custom`, `label`)
                          VALUES ('s_order_attributes', 'attribute1', 'string', 1, 0, 1, 0, 'Message'),
                                 ('s_order_attributes', 'attribute2', 'string', 2, 0, 1, 0, 'Transaction type'),
                                 ('s_order_attributes', 'attribute3', 'string', 3, 0, 1, 0, 'Transaction ID'),
-                                ('s_order_attributes', 'attribute4', 'string', 4, 0, 1, 0, 'Payment mean'),
+                                ('s_order_attributes', 'attribute4', 'string', 4, 0, 1, 0, 'Means of payment'),
                                 ('s_order_attributes', 'attribute5', 'string', 5, 0, 1, 0, 'Card number'),
                                 ('s_order_attributes', 'attribute6', 'string', 6, 0, 1, 0, 'Expiration date')";
             Shopware()->Db()->query($sql);
@@ -104,13 +92,13 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             $count = Shopware()->Db()->fetchOne($sql, array($payment->getId()));
 
             if (! $count) {
-                // no orders associated with our payment mean, let's delete it
+                // No orders associated with our payment method, let's delete it.
                 $sql = "DELETE FROM `s_core_paymentmeans` WHERE `name` = 'payzen'";
                 Shopware()->Db()->query($sql);
             }
         }
 
-        // delete payment snippets
+        // Delete payment snippets.
         $sql = "DELETE FROM `s_core_snippets` WHERE `name` LIKE 'payzen/%'";
         Shopware()->Db()->query($sql);
 
@@ -136,8 +124,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
     }
 
     /**
-     * Activate the plugin.
-     * Set the active flag in the payment row.
+     * Activate the plugin. Set the active flag in the payment row.
      *
      * @return bool
      */
@@ -177,25 +164,44 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
     {
         $logo = base64_encode(file_get_contents(dirname(__FILE__) . '/logo.png'));
 
-        // documentation path
-        $rootDir = str_replace('\\', '/', Shopware()->OldPath());
-        $path = str_replace('\\', '/', dirname(__FILE__)) . '/installation_doc/Integration_PayZen_ShopWare_4.x-5.x_v1.2.0.pdf';
+        $rootDir = str_replace('\\', '/', Shopware()->DocPath());
 
-        $relativePath = str_replace($rootDir, '', $path);
+        // Documentation path.
+        $absolutePath = str_replace('\\', '/', dirname(__FILE__)) . '/installation_doc/';
+        $relativePath = str_replace($rootDir, '', $absolutePath);
+
+        // Get documentation links.
+        $docs = '';
+        $filenames = glob(str_replace('\\', '/', dirname(__FILE__)) . '/installation_doc/' . PayzenTools::getDocPattern());
+
+        $languages = array(
+            'fr' => 'Français',
+            'en' => 'English',
+            'es' => 'Español',
+            'de' => 'Deutsch'
+            // Complete when other languages are managed.
+        );
+
+        foreach ($filenames as $filename) {
+            $baseFilename = basename($filename, '.pdf');
+            $lang = substr($baseFilename, -2); // Extract language code.
+
+            $docs .= '<a style="margin-left: 10px; text-decoration: none; text-transform: uppercase;" href="' .
+                Shopware()->Front()->Request()->getBasePath() . '/' . $relativePath . $baseFilename . '.pdf" target="_blank">' .
+                $languages[$lang] . '</a>';
+        }
 
         return array(
             'version' => $this->getVersion(),
             'label' => $this->getLabel(),
             'description' => '<img src="data:image/png;base64,' . $logo . '" /> ' .
-                             '<p>This plugin enables you to setup the PayZen payment system on your ShopWare website.</p>' .
-                             '<a style="color: red;" href="'. Shopware()->Front()->Request()->getBasePath() . '/' . $relativePath.'" target="_blank">
-                                Click here to view the module configuration documentation
-                             </a>',
+                '<p>This plugin enables you to setup the PayZen payment system on your ShopWare website.</p>' .
+                'Click to view the module configuration documentation: ' . $docs,
             'author' => 'Lyra Network',
-            'copyright' => 'Copyright © 2015-2018, Lyra Network',
+            'copyright' => 'Copyright © 2015-2019, Lyra Network',
             'license' => 'AGPLv3',
-            'support' => 'support@payzen.eu',
-            'link' => 'http://www.lyra-network.com/'
+            'support' => PayzenTools::getDefault('SUPPORT_EMAIL'),
+            'link' => 'https://www.lyra.com/'
         );
     }
 
@@ -206,7 +212,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
      */
     public function getVersion()
     {
-        return '1.2.0';
+        return PayzenTools::getDefault('PLUGIN_VERSION');
     }
 
     /**
@@ -254,14 +260,14 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         if (! is_file($mediaPath . $logo)) {
             copy($pluginImgPath . $logo, $mediaPath . $logo);
             $sql = "INSERT INTO `s_media` (`albumID`, `name`, `description`, `path`, `type`, `extension`, `file_size`, `created`)
-                    VALUES (-3, 'payzen_cards', '', 'media/image/payzen_cards.png', 'IMAGE', 'png', " . filesize($mediaPath . $logo) . ", CURDATE())";
+                    VALUES (-3, 'payzen_cards', '', 'media/image/$logo', 'IMAGE', 'png', " . filesize($mediaPath . $logo) . ", CURDATE())";
             Shopware()->Db()->query($sql);
         }
 
         $this->createPayment(array(
             'name' => 'payzen',
             'description' => 'PayZen',
-            'additionalDescription' => '<img alt="PayZen" src="{link file="media/image/payzen_cards.png" fullPath}" />' .'<p>Pay by credit card<p/>',
+            'additionalDescription' => '<img alt="PayZen" src="{link file="media/image/' . $logo . '" fullPath}" />' .'<p>Pay by credit card<p/>',
             'action' => 'payment_payzen',
             'active' => 1,
             'position' => 1
@@ -275,10 +281,10 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
     {
         $form = $this->Form();
 
-        if (version_compare(Shopware::VERSION, '4.3.0', '>=')) {
+        if (version_compare(Shopware()->Config()->version, '4.3.0', '>=')) {
             $ctxModes = array(
-                array('PRODUCTION', array('de_DE' => 'PRODUKTION', 'en_GB' => 'PRODUCTION', 'fr_FR' => 'PRODUCTION')),
-                array('TEST', array('de_DE' => 'TEST', 'en_GB' => 'TEST', 'fr_FR' => 'TEST'))
+                array('PRODUCTION', array('de_DE' => 'PRODUKTION', 'en_GB' => 'PRODUCTION', 'fr_FR' => 'PRODUCTION', 'es_ES' => 'PRODUCTION')),
+                array('TEST', array('de_DE' => 'TEST', 'en_GB' => 'TEST', 'fr_FR' => 'TEST', 'es_ES' => 'TEST'))
             );
 
             $snippets = array(
@@ -296,51 +302,65 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                     'de' => 'Allemand', 'en' => 'Anglais', 'es' => 'Espagnol', 'fr' => 'Français', 'it' => 'Italien',
                     'jp' => 'Japonais', 'nl' => 'Néerlandais', 'pl' => 'Polonais', 'pt' => 'Portugais', 'ru' => 'Russe',
                     'sv' => 'Suédois', 'tr' => 'Turc', 'zn' => 'Chinois'
+                ),
+                'es_ES' => array(
+                    'de' => 'Alemán', 'en' => 'Inglés', 'es' => 'Español', 'fr' => 'Francés', 'it' => 'Italiano',
+                    'jp' => 'Japonés', 'nl' => 'Holandés', 'pl' => 'Polaco', 'pt' => 'Portugués', 'ru' => 'Ruso',
+                    'sv' => 'Sueco', 'tr' => 'Turco', 'zn' => 'Chino'
                 )
             );
+
+            $languages = array();
             foreach (PayzenApi::getSupportedLanguages() as $key => $language) {
                 $languages[] = array($key, array(
                     'de_DE' => key_exists($key, $snippets['de_DE']) ? $snippets['de_DE'][$key] : $language,
                     'en_GB' => key_exists($key, $snippets['en_GB']) ? $snippets['en_GB'][$key] : $language,
-                    'fr_FR' => key_exists($key, $snippets['fr_FR']) ? $snippets['fr_FR'][$key] : $language
+                    'fr_FR' => key_exists($key, $snippets['fr_FR']) ? $snippets['fr_FR'][$key] : $language,
+                    'es_ES' => key_exists($key, $snippets['es_ES']) ? $snippets['es_ES'][$key] : $language
                 ));
             }
 
             $validationModes = array(
-                array('', array('de_DE' => 'Einstellungen des Back Office', 'en_GB' => 'Back Office configuration', 'fr_FR' => 'Configuration Back Office')),
-                array('0', array('de_DE' => 'Automatisch', 'en_GB' =>'Automatic', 'fr_FR' => 'Automatique')),
-                array('1', array('de_DE' => 'Manuell', 'en_GB' =>'Manual', 'fr_FR' => 'Manuelle'))
+                array('', array('de_DE' => 'Einstellungen des PayZen Back Office', 'en_GB' => 'PayZen Back Office configuration', 'fr_FR' => 'Configuration Back Office PayZen', 'es_ES' => 'Configuración de Back Office PayZen')),
+                array('0', array('de_DE' => 'Automatisch', 'en_GB' =>'Automatic', 'fr_FR' => 'Automatique', 'es_ES' => 'Automático')),
+                array('1', array('de_DE' => 'Manuell', 'en_GB' =>'Manual', 'fr_FR' => 'Manuelle', 'es_ES' =>'Manual'))
             );
 
+            $cards = array();
             foreach (PayzenApi::getSupportedCardTypes() as $key => $card) {
                 $cards[] = array($key, $card);
             }
 
             $enableOptions = array(
-                array('False', array('de_DE' => 'Deaktiviert', 'en_GB' => 'Disabled', 'fr_FR' => 'Désactivé')),
-                array('True', array('de_DE' => 'Aktiviert', 'en_GB' => 'Enabled', 'fr_FR' => 'Activé'))
+                array('False', array('de_DE' => 'Deaktiviert', 'en_GB' => 'Disabled', 'fr_FR' => 'Désactivé', 'es_ES' => 'Deshabilitado')),
+                array('True', array('de_DE' => 'Aktiviert', 'en_GB' => 'Enabled', 'fr_FR' => 'Activé', 'es_ES' => 'Habilitado'))
             );
 
             $returnModes = array(array('GET', 'GET'), array('POST', 'POST'));
 
-            $signAlgos = array(array('SHA-1', 'SHA-1'), array('SHA-256', 'SHA-256'));
+            $paymentStatuses = $this->getPaymentStatuses();
+
+            $signAlgos = array(array('SHA-1', 'SHA-1'), array('SHA-256', 'HMAC-SHA-256'));
         } else {
             $ctxModes = array('PRODUCTION', 'TEST');
 
+            $languages = array();
             foreach (PayzenApi::getSupportedLanguages() as $key => $language) {
                 $languages[] = array('value' => $key, 'label' => $language);
             }
+
             $languages = array('fields' => array('value', 'label'), 'data' => $languages);
 
             $validationModes = array(
                 'fields' => array('value', 'label'),
                 'data' => array(
-                    array('value' => '', 'label' => 'Back Office configuration'),
+                    array('value' => '', 'label' => 'PayZen Back Office configuration'),
                     array('value' => '0', 'label' => 'Automatic'),
                     array('value' => '1', 'label' => 'Manual')
                 )
             );
 
+            $cards = array();
             foreach (PayzenApi::getSupportedCardTypes() as $key => $card) {
                 $cards[] = array('value' => $key, 'label' => $card);
             }
@@ -357,13 +377,29 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
 
             $returnModes = array('GET', 'POST');
 
-            $signAlgos = array('SHA-1', 'SHA-256');
+            $paymentStatuses = $this->getPaymentStatuses(true);
+
+            $signAlgos = array(
+                'fields' => array('value', 'label'),
+                'data' => array(
+                    array('value' => 'SHA-1', 'label' => 'SHA-1'),
+                    array('value' => 'SHA-1', 'label' => 'HMAC-SHA-256')
+                )
+            );
         }
 
-        // module information
+        $defaultLanguage = PayzenTools::getDefault('LANGUAGE');
+        $defaultRedirectionMsg = array(
+            'en' => 'Redirection to shop in a few seconds...',
+            'fr' => 'Redirection vers la boutique dans quelques instants...',
+            'de' => 'Weiterleitung zum Shop in Kürze...',
+            'es' => 'Redirección a la tienda en unos momentos...'
+        );
+
+        // Module information.
         $form->setElement('text', 'payzen_developed_by', array(
             'label' => 'Developed by',
-            'value' => 'http://www.lyra-network.com',
+            'value' => 'https://www.lyra.com',
             'readOnly' => true,
             'fieldCls' => '',
             'focusCls' => '',
@@ -372,8 +408,8 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
         $form->setElement('text', 'payzen_contact_email', array(
-            'label' => 'Contact mail',
-            'value' => 'support@payzen.eu',
+            'label' => 'Contact us',
+            'value' => PayzenTools::getDefault('SUPPORT_EMAIL'),
             'readOnly' => true,
             'fieldCls' => '',
             'focusCls' => '',
@@ -383,7 +419,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         ));
         $form->setElement('text', 'payzen_module_version', array(
             'label' => 'Module version',
-            'value' => '1.2.0',
+            'value' => PayzenTools::getDefault('PLUGIN_VERSION'),
             'readOnly' => true,
             'fieldCls' => '',
             'focusCls' => '',
@@ -392,8 +428,8 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
         $form->setElement('text', 'payzen_gateway_version', array(
-            'label' => 'Platform version',
-            'value' => 'V2',
+            'label' => 'Gateway version',
+            'value' => PayzenTools::getDefault('GATEWAY_VERSION'),
             'readOnly' => true,
             'fieldCls' => '',
             'focusCls' => '',
@@ -412,36 +448,36 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
-        // payment access
+        // Payment access.
         $form->setElement('text', 'payzen_site_id', array(
-            'label' => 'Shop ID',
+            'label' => 'Store identifier',
             'description' => 'The identifier provided by PayZen.',
-            'value' => '12345678',
+            'value' => PayzenTools::getDefault('SITE_ID'),
             'required' => true,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
         if(!PayzenTools::$pluginFeatures['qualif']) {
             $form->setElement('text', 'payzen_key_test', array(
-                'label' => 'Certificate in test mode',
-                'description' => 'Certificate provided by your bank for test mode (available in PayZen Back Office).',
-                'value' => '1111111111111111',
+                'label' => 'Key in test mode',
+                'description' => 'Key provided by PayZen for test mode (available in PayZen Back Office).',
+                'value' => PayzenTools::getDefault('KEY_TEST'),
                 'required' => true,
                 'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
             ));
         }
 
         $form->setElement('text', 'payzen_key_prod', array(
-            'label' => 'Certificate in production mode',
-            'description' => 'Certificate provided by your bank (available in PayZen Back Office after enabling production mode).',
-            'value' => '2222222222222222',
+            'label' => 'Key in production mode',
+            'description' => 'Key provided by your bank (available in PayZen Back Office after enabling production mode).',
+            'value' => PayzenTools::getDefault('KEY_PROD'),
             'required' => true,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
         $form->setElement('select', 'payzen_ctx_mode', array(
             'label' => 'Mode',
             'description' => 'The context mode of this module.',
-            'value' => 'TEST',
+            'value' => PayzenTools::getDefault('CTX_MODE'),
             'readOnly' => PayzenTools::$pluginFeatures['qualif'],
             'store' => $ctxModes,
             'editable' => false,
@@ -452,14 +488,14 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
 
         $form->setElement('select', 'payzen_sign_algo', array(
             'label' => 'Signature algorithm',
-            'description' => 'Algorithm used to compute the payment form signature. Selected algorithm must be the same as one configured in the PayZen Back Office.' . (! $sha2 ? '<br /><b>The SHA-256 algorithm should not be activated if it is not yet available in the PayZen Back Office, the feature will be available soon.</b>' : ''),
-            'value' => 'SHA-256',
+            'description' => 'Algorithm used to compute the payment form signature. Selected algorithm must be the same as one configured in the PayZen Back Office.' . (! $sha2 ? '<br /><b>The HMAC-SHA-256 algorithm should not be activated if it is not yet available in the PayZen Back Office, the feature will be available soon.</b>' : ''),
+            'value' => PayzenTools::getDefault('SIGN_ALGO'),
             'store' => $signAlgos,
             'editable' => false,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
-        // notification URL
+        // Notification URL.
         $shop = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop')->getActiveDefault();
 
         $form->setElement('text', 'payzen_check_url', array(
@@ -476,7 +512,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $form->setElement('text', 'payzen_platform_url', array(
             'label' => 'Payment page URL',
             'description' => 'Link to the payment page.',
-            'value' => 'https://secure.payzen.eu/vads-payment/',
+            'value' => PayzenTools::getDefault('GATEWAY_URL'),
             'required' => true,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
@@ -491,11 +527,11 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
-        // payment page
+        // Payment page.
         $form->setElement('select', 'payzen_language', array(
             'label' => 'Default language',
             'description' => 'Default language on the payment page.',
-            'value' => 'fr',
+            'value' => $defaultLanguage,
             'store' => $languages,
             'displayField' => 'label',
             'valueField' => 'value',
@@ -551,7 +587,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
-        // selective 3 DS
+        // Selective 3DS.
         $form->setElement('number', 'payzen_3ds_min_amount', array(
             'label' => 'Disable 3DS',
             'description' => 'Amount below which 3DS will be disabled. Needs subscription to selective 3DS option. For more information, refer to the module documentation.',
@@ -569,7 +605,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
-        // amount restrictions
+        // Amount restrictions.
         $form->setElement('number', 'payzen_min_amount', array(
             'label' => 'Minimum amount',
             'description' => 'Minimum amount to activate this payment method.',
@@ -593,7 +629,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
-        // return to shop
+        // Return to shop.
         $form->setElement('select', 'payzen_redirect_enabled', array(
             'label' => 'Automatic redirection',
             'description' => 'If enabled, the buyer is automatically redirected to your site at the end of the payment.',
@@ -614,7 +650,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $form->setElement('text', 'payzen_redirect_success_message', array(
             'label' => 'Redirection message on success',
             'description' => 'Message displayed on the payment page prior to redirection after a successful payment.',
-            'value' => 'Redirection to shop in a few seconds...',
+            'value' => $defaultRedirectionMsg[$defaultLanguage],
             'required' => false,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
@@ -628,7 +664,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $form->setElement('text', 'payzen_redirect_error_message', array(
             'label' => 'Redirection message on failure',
             'description' => 'Message displayed on the payment page prior to redirection after a declined payment.',
-            'value' => 'Redirection to shop in a few seconds...',
+            'value' => $defaultRedirectionMsg[$defaultLanguage],
             'required' => false,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
@@ -640,6 +676,47 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'editable' => false,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
+        $form->setElement('select', 'payzen_payment_status_on_success', array(
+            'label' => 'Order payment status',
+            'description' => 'Defines the payment status of orders paid with this payment mode.',
+            'value' => 12,
+            'store' => $paymentStatuses,
+            'editable' => false,
+            'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
+        ));
+    }
+
+    private function getPaymentStatuses($oldVersion = false)
+    {
+        $repository = Shopware()->Models()->getRepository('\Shopware\Models\Order\Order');
+        $paymentStatuses = $repository->getPaymentStatusQuery()->getArrayResult();
+
+        $snippetNamespace = $this->Application()->Snippets()->getNamespace('backend/static/payment_status');
+        $paymentStatuses = array_map(function($status) use($snippetNamespace) {
+            $status['description'] = $snippetNamespace->get($status['name'], $status['name'], true);
+
+            return $status;
+        }, $paymentStatuses);
+
+        $result = array();
+        if ($oldVersion) {
+            $result['fields'] = array('value', 'label');
+            $result['data'] = array();
+        }
+
+        foreach ($paymentStatuses as $paymentStatus) {
+            if (! $paymentStatus['description']) {
+                continue;
+            }
+
+            if ($oldVersion) {
+                $result['data'][] = array('value' => $paymentStatus['id'], 'label' => $paymentStatus['description']);
+            } else {
+                $result[] = array($paymentStatus['id'], $paymentStatus['description']);
+            }
+        }
+
+        return $result;
     }
 
     private function getBaseUrl($shop)
@@ -664,22 +741,22 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $translations = array(
             'de_DE' => array(
                 'payzen_developed_by' => array('Entwickelt von', null),
-                'payzen_contact_email' => array('Kontakt', null),
+                'payzen_contact_email' => array('E-Mail-Adresse', null),
                 'payzen_module_version' => array('Modulversion', null),
-                'payzen_gateway_version' => array('Plattformversion', null),
+                'payzen_gateway_version' => array('Kompatibel mit Zahlungsschnittstelle', null),
                 'payzen_gateway_access' => array('ZUGANG ZAHLUNGSSCHNITTSTELLE', null),
-                'payzen_site_id' => array('Site ID', 'Kennung, die von Ihrer Bank bereitgestellt wird.'),
-                'payzen_key_test' => array('Zertifikat im Testbetrieb', 'Zertifikat, das von Ihrer Bank zu Testzwecken bereitgestellt wird (im PayZen-System verfügbar).'),
-                'payzen_key_prod' => array('Zertifikat im Produktivbetrieb', 'Von Ihrer Bank bereitgestelltes Zertifikat (im PayZen-System verfügbar).'),
+                'payzen_site_id' => array('Shop ID', 'Die Kennung von PayZen bereitgestellt.'),
+                'payzen_key_test' => array('Schlüssel im Testbetrieb', 'Schlüssel, das von Ihrer Bank zu Testzwecken bereitgestellt wird (im PayZen Back Office verfügbar).'),
+                'payzen_key_prod' => array('Schlüssel im Produktivbetrieb', 'Schlüssel, das von PayZen zu Testzwecken bereitgestellt wird (im PayZen Back Office verfügbar).'),
                 'payzen_ctx_mode' => array('Modus', 'Kontextmodus dieses Moduls.'),
-                'payzen_sign_algo' => array('Signaturalgorithmus', 'Algorithmus zur Berechnung der Zahlungsformsignatur. Der ausgewählte Algorithmus muss derselbe sein, wie er im PayZen Back Office.' . (! $sha2 ? '<br /><b>Der SHA-256-Algorithmus sollte nicht aktiviert werden, wenn er noch nicht im PayZen Back Office verfügbar ist. Die Funktion wird in Kürze verfügbar sein.</b>' : '')),
+                'payzen_sign_algo' => array('Signaturalgorithmus', 'Algorithmus zur Berechnung der Zahlungsformsignatur. Der ausgewählte Algorithmus muss derselbe sein, wie er im PayZen Back Office.' . (! $sha2 ? '<br /><b>Der HMAC-SHA-256-Algorithmus sollte nicht aktiviert werden, wenn er noch nicht im PayZen Back Office verfügbar ist. Die Funktion wird in Kürze verfügbar sein.</b>' : '')),
                 'payzen_platform_url' => array('Plattform-URL', 'Link zur Bezahlungsplattform.'),
                 'payzen_check_url' => array('Benachrichtigung-URL', 'URL, die Sie in Ihre PayZen Back Office kopieren sollen > Einstellung > Regeln der Benachrichtigungen.'),
                 'payzen_payment_page' => array('ZAHLUNGSSEITE', null),
-                'payzen_language' => array('Standardsprache', 'Wählen Sie bitte die Spracheinstellung der Zahlungsseiten aus.'),
+                'payzen_language' => array('Standardsprache', 'Standardsprache auf Zahlungsseite.'),
                 'payzen_available_languages' => array('Verfügbare Sprachen', 'Verfügbare Sprachen der Zahlungsseite. Nichts auswählen, um die Einstellung der Zahlungsplattform zu benutzen.'),
-                'payzen_capture_delay' => array('Einzugsfrist', 'Anzahl der Tage bis zum Einzug der Zahlung (Einstellung über Ihr PayZen-System).'),
-                'payzen_validation_mode' => array('Bestätigungsmodus', 'Bei manueller Eingabe müssen Sie Zahlungen manuell in Ihrem Banksystem bestätigen.'),
+                'payzen_capture_delay' => array('Einzugsfrist', 'Anzahl der Tage bis zum Einzug der Zahlung (Einstellung über Ihr PayZen Back Office).'),
+                'payzen_validation_mode' => array('Bestätigungsmodus', 'Bei manueller Eingabe müssen Sie Zahlungen manuell in Ihr PayZen Back Office bestätigen.'),
                 'payzen_payment_cards' => array('Kartentypen', 'Wählen Sie die zur Zahlung verfügbaren Kartentypen aus. Nichts auswählen, um die Einstellungen der Plattform zu verwenden.'),
                 'payzen_selective_3ds' => array('SELEKTIVES 3DS', null),
                 'payzen_3ds_min_amount' => array('3DS deaktivieren', 'Betrag, unter dem 3DS deaktiviert wird. Muss für die Option Selektives 3DS freigeschaltet sein. Weitere Informationen finden Sie in der Moduldokumentation.'),
@@ -692,7 +769,8 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'payzen_redirect_success_message' => array('Weiterleitungs-Nachricht im Erfolgsfall', 'Nachricht, die nach erfolgter Zahlung und vor der Weiterleitung auf der Plattform angezeigt wird.'),
                 'payzen_redirect_error_timeout' => array('Zeitbeschränkung Weiterleitung nach Ablehnung', 'Zeitspanne in Sekunden (0-300) bis zur automatischen Weiterleitung des Kunden auf Ihre Seite nach fehlgeschlagener Zahlung.'),
                 'payzen_redirect_error_message' => array('Weiterleitungs-Nachricht nach Ablehnung', 'Nachricht, die nach fehlgeschlagener Zahlung und vor der Weiterleitung auf der Plattform angezeigt wird.'),
-                'payzen_return_mode' => array('Übermittlungs-Modus', 'Methode, die zur Übermittlung des Zahlungsergebnisses von der Zahlungsschnittstelle an Ihren Shop verwendet wird.')
+                'payzen_return_mode' => array('Übermittlungs-Modus', 'Methode, die zur Übermittlung des Zahlungsergebnisses von der Zahlungsschnittstelle an Ihren Shop verwendet wird.'),
+                'payzen_payment_status_on_success' => array('Zahlungsstatus der Bestellung', 'Der Zahlungsstatus der bezahlten Bestellungen durch dieses Beszahlungsmittel definieren.')
             ),
 
             'fr_FR' => array(
@@ -702,17 +780,17 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'payzen_gateway_version' => array('Version de la plateforme', null),
                 'payzen_gateway_access' => array('ACCÈS À LA PLATEFORME', null),
                 'payzen_site_id' => array('Identifiant de la boutique', 'Identifiant fourni par PayZen.'),
-                'payzen_key_test' => array('Certificat en mode test', 'Certificat fourni par PayZen pour le mode test (disponible sur le Back Office de votre boutique).'),
-                'payzen_key_prod' => array('Certificat en mode production', 'Certificat fourni par PayZen (disponible sur le Back Office de votre boutique après passage en production).'),
+                'payzen_key_test' => array('Clé en mode test', 'Clé fournie par PayZen pour le mode test (disponible sur le Back Office PayZen).'),
+                'payzen_key_prod' => array('Clé en mode production', 'Clé fournie par PayZen (disponible sur le Back Office PayZen après passage en production).'),
                 'payzen_ctx_mode' => array('Mode', 'Mode de fonctionnement du module.'),
-                'payzen_sign_algo' => array('Algorithme de signature', 'Algorithme utilisé pour calculer la signature du formulaire de paiement. L\'algorithme sélectionné doit être le même que celui configuré sur le Back Office PayZen.' . (! $sha2 ? '<br /><b>Le SHA-256 ne doit pas être activé si celui-ci n\'est pas encore disponible depuis le Back Office PayZen, la fonctionnalité sera disponible prochainement.</b>' : '')),
+                'payzen_sign_algo' => array('Algorithme de signature', 'Algorithme utilisé pour calculer la signature du formulaire de paiement. L\'algorithme sélectionné doit être le même que celui configuré sur le Back Office PayZen.' . (! $sha2 ? '<br /><b>Le HMAC-SHA-256 ne doit pas être activé si celui-ci n\'est pas encore disponible depuis le Back Office PayZen, la fonctionnalité sera disponible prochainement.</b>' : '')),
                 'payzen_platform_url' => array('URL de la page de paiement', 'URL vers laquelle l\'acheteur sera redirigé pour le paiement.'),
                 'payzen_check_url' => array('URL de notification', 'URL à copier dans le Back Office PayZen > Paramétrage > Règles de notifications.'),
                 'payzen_payment_page' => array('PAGE DE PAIEMENT', null),
                 'payzen_language' => array('Langue par défaut', 'Sélectionner la langue par défaut à utiliser sur la page de paiement.'),
-                'payzen_available_languages' => array('Langues disponibles', 'Sélectionner les langues à proposer sur la page de paiement.'),
+                'payzen_available_languages' => array('Langues disponibles', 'Sélectionner les langues à proposer sur la page de paiement. Ne rien sélectionner pour utiliser la configuration de la plateforme.'),
                 'payzen_capture_delay' => array('Délai avant remise en banque', 'Le nombre de jours avant la remise en banque (paramétrable sur votre Back Office PayZen).'),
-                'payzen_validation_mode' => array('Mode de validation', 'En mode manuel, vous devrez confirmer les paiements dans le Back Office de votre boutique.'),
+                'payzen_validation_mode' => array('Mode de validation', 'En mode manuel, vous devrez confirmer les paiements dans le Back Office PayZen.'),
                 'payzen_payment_cards' => array('Types de carte', 'Le(s) type(s) de carte pouvant être utilisé(s) pour le paiement. Ne rien sélectionner pour utiliser la configuration de la plateforme.'),
                 'payzen_selective_3ds' => array('3DS SÉLECTIF', null),
                 'payzen_3ds_min_amount' => array('Désactiver 3DS', 'Montant en dessous duquel 3DS sera désactivé. Nécessite la souscription à l\'option 3DS sélectif. Pour plus d\'informations, reportez-vous à la documentation du module.'),
@@ -725,20 +803,55 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'payzen_redirect_success_message' => array('Message avant redirection (succès)', 'Message affiché sur la page de paiement avant redirection lorsque le paiement a réussi.'),
                 'payzen_redirect_error_timeout' => array('Temps avant redirection (échec)', 'Temps en secondes (0-300) avant que l\'acheteur ne soit redirigé automatiquement vers votre site lorsque le paiement a échoué.'),
                 'payzen_redirect_error_message' => array('Message avant redirection (échec)', 'Message affiché sur la page de paiement avant redirection, lorsque le paiement a échoué.'),
-                'payzen_return_mode' => array('Mode de retour', 'Façon dont l\'acheteur transmettra le résultat du paiement lors de son retour à la boutique.')
+                'payzen_return_mode' => array('Mode de retour', 'Façon dont l\'acheteur transmettra le résultat du paiement lors de son retour à la boutique.'),
+                'payzen_payment_status_on_success' => array('Statut de paiement de la commande', 'Définir le statut de paiement des commandes payées par ce mode de paiement.')
+            ),
+
+            'es_ES' => array(
+                'payzen_developed_by' => array('Desarrollado por', null),
+                'payzen_contact_email' => array('Courriel de contact', null),
+                'payzen_module_version' => array('Versión del módulo', null),
+                'payzen_gateway_version' => array('Versión del portal', null),
+                'payzen_gateway_access' => array('ACCESO AL PORTAL DE PAGO', null),
+                'payzen_site_id' => array('Identificador de tienda', 'El identificador proporcionado por PayZen.'),
+                'payzen_key_test' => array('Clave en modo test', 'Clave proporcionada por PayZen para modo test (disponible en el Back Office PayZen).'),
+                'payzen_key_prod' => array('Clave en modo production', 'Clave proporcionada por PayZen (disponible en el Back Office PayZen después de habilitar el modo production).'),
+                'payzen_ctx_mode' => array('Modo', 'El modo de contexto de este módulo.'),
+                'payzen_sign_algo' => array('Algoritmo de firma', 'Algoritmo usado para calcular la firma del formulario de pago. El algoritmo seleccionado debe ser el mismo que el configurado en el Back Office PayZen.' . (! $sha2 ? '<br /><b>El algoritmo HMAC-SHA-256 no se debe activar si aún no está disponible el Back Office PayZen, la función estará disponible pronto.' : '')),
+                'payzen_platform_url' => array('URL de página de pago', 'Enlace a la página de pago.'),
+                'payzen_check_url' => array('URL de notificación de pago instantáneo', 'URL a copiar en el Back Office PayZen > Configuración > Reglas de notificación.'),
+                'payzen_payment_page' => array('PÁGINA DE PAGO', null),
+                'payzen_language' => array('Idioma por defecto', 'Idioma por defecto en la página de pago.'),
+                'payzen_available_languages' => array('Idiomas disponibles', 'Idiomas disponibles en la página de pago. Si no selecciona ninguno, todos los idiomas compatibles estarán disponibles.'),
+                'payzen_capture_delay' => array('Plazo de captura', 'El número de días antes de la captura del pago (ajustable en su Back Office PayZen).'),
+                'payzen_validation_mode' => array('Modo de validación', 'Si se selecciona manual, deberá confirmar los pagos manualmente en su Back Office PayZen.'),
+                'payzen_payment_cards' => array('Tipos de tarjeta', 'El tipo(s) de tarjeta que se puede usar para el pago. No haga ninguna selección para usar la configuración del portal.'),
+                'payzen_selective_3ds' => array('3DS SELECTIVO', null),
+                'payzen_3ds_min_amount' => array('Deshabilitar 3DS', 'Monto por debajo del cual se deshabilitará 3DS. Requiere suscripción a la opción 3DS selectivo. Para más información, consulte la documentación del módulo.'),
+                'payzen_amount_restrictions' => array('RESTRICCIONES DE MONTO', null),
+                'payzen_min_amount' => array('Monto mínimo', 'Monto mínimo para activar este método de pago.'),
+                'payzen_max_amount' => array('Monto máximo', 'Monto máximo para activar este método de pago.'),
+                'payzen_return_to_shop' => array('VOLVER A LA TIENDA', null),
+                'payzen_redirect_enabled' => array('Redirección automática', 'Si está habilitada, el comprador es redirigido automáticamente a su sitio al final del pago.'),
+                'payzen_redirect_success_timeout' => array('Tiempo de espera de la redirección en pago exitoso', 'Tiempo en segundos (0-300) antes de que el comprador sea redirigido automáticamente a su sitio web después de un pago exitoso.'),
+                'payzen_redirect_success_message' => array('Mensaje de redirección en pago exitoso', 'Mensaje mostrado en la página de pago antes de la redirección después de un pago exitoso.'),
+                'payzen_redirect_error_timeout' => array('Tiempo de espera de la redirección en pago rechazado', 'Tiempo en segundos (0-300) antes de que el comprador sea redirigido automáticamente a su sitio web después de un pago rechazado.'),
+                'payzen_redirect_error_message' => array('Mensaje de redirección en pago rechazado', 'Mensaje mostrado en la página de pago antes de la redirección después de un pago rechazado.'),
+                'payzen_return_mode' => array('Modo de retorno', 'Método que se usará para transmitir el resultado del pago de la página de pago a su tienda.'),
+                'payzen_payment_status_on_success' => array('Estado de pago del pedido', 'Define el estado de pago de los pedidos pagados con este modo de pago.')
             )
         );
 
         $shopRepository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Locale');
         foreach ($translations as $locale => $snippets) {
             $localeModel = $shopRepository->findOneBy(array('locale' => $locale));
-            if ($localeModel === null) { // unsupported language
+            if ($localeModel === null) { // Unsupported language.
                 continue;
             }
 
             foreach ($snippets as $element => $snippet) {
                 $elementModel = $form->getElement($element);
-                if ($elementModel === null) { // undefined element with such text
+                if ($elementModel === null) { // Undefined element with such text.
                     continue;
                 }
 
@@ -769,7 +882,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $this->subscribeEvent(
             'Enlight_Controller_Front_RouteShutdown',
             'onRouteShutdown',
-            -500 // must be the highest priority
+            -500 // Must be the highest priority.
         );
 
         $this->subscribeEvent(
@@ -798,20 +911,20 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $paymentMeans = $args->getReturn();
 
         $request = Shopware()->Front()->Request();
-        if ($request->getControllerName() == 'account'
-                && $request->getActionName() == 'payment'
-                    && $request->getParam('sTarget', $request->getControllerName()) != 'checkout') {
+        if ($request->getControllerName() === 'account'
+                && $request->getActionName() === 'payment'
+                    && $request->getParam('sTarget', $request->getControllerName()) !== 'checkout') {
             return $paymentMeans;
         }
 
-        $currency = Shopware()->Currency()->getShortName(); // current shop currency
-        $amount = Shopware()->Session()->sBasketAmount; // current basket amount
-        $min = $this->Config()->get('payzen_min_amount'); // min amount to activate this module
-        $max = $this->Config()->get('payzen_max_amount'); // max amount to activate this module
+        $currency = Shopware()->Currency()->getShortName(); // Current shop currency.
+        $amount = Shopware()->Session()->sBasketAmount; // Current basket amount.
+        $min = $this->Config()->get('payzen_min_amount'); // Min amount to activate this module.
+        $max = $this->Config()->get('payzen_max_amount'); // Max amount to activate this module.
 
         if (($min && $amount < $min) || ($max && $amount > $max) || ! PayzenApi::findCurrencyByAlphaCode($currency)) {
-            foreach ($paymentMeans as $key => $mean) {
-                if ($mean['name'] == 'payzen') {
+            foreach ($paymentMeans as $key => $method) {
+                if ($method['name'] === 'payzen') {
                     unset($paymentMeans[$key]);
                     break;
                 }
@@ -830,20 +943,15 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
     public function onRouteShutdown(Enlight_Event_EventArgs $args) {
         $request = $args->getSubject()->Request();
 
-        if ($request->getControllerName() == 'payment_payzen' && $request->getActionName() == 'process') {
-            // rename vads_order_id parameter to avoid ShopWare filter on "s_order_"-like strings
+        if ($request->getControllerName() === 'payment_payzen' && $request->getActionName() === 'process') {
+            // Rename vads_order_id parameter to avoid ShopWare filter on "s_order_"-like strings.
             if ($request->getParam('vads_order_id')) {
                 $request->setParam('tmp_order_id', $request->getParam('vads_order_id'));
             }
 
-            // rename vads_order_info parameter to avoid ShopWare filter on "s_order_"-like strings
+            // Rename vads_order_info parameter to avoid ShopWare filter on "s_order_"-like strings.
             if ($request->getParam('vads_order_info')) {
                 $request->setParam('tmp_order_info', $request->getParam('vads_order_info'));
-            }
-
-            // rename vads_order_info2 parameter to avoid ShopWare filter on "s_order_"-like strings
-            if ($request->getParam('vads_order_info2')) {
-                $request->setParam('tmp_order_info2', $request->getParam('vads_order_info2'));
             }
         }
     }
@@ -853,7 +961,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $request = $args->getRequest();
         $view = $args->getSubject()->View();
 
-        if ($request->getActionName() != 'confirm') {
+        if ($request->getActionName() !== 'confirm') {
             return;
         }
 
@@ -874,7 +982,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $request = $args->getSubject()->Request();
         $view = $args->getSubject()->View();
 
-        if ($request->getActionName() != 'finish') {
+        if ($request->getActionName() !== 'finish') {
             return;
         }
 
@@ -902,7 +1010,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $request = $args->getRequest();
         $view = $args->getSubject()->View();
 
-        if ($request->getActionName() != 'index') {
+        if ($request->getActionName() !== 'index') {
             return;
         }
 
@@ -922,7 +1030,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         $request = $args->getSubject()->Request();
         $view = $args->getSubject()->View();
 
-        if ($request->getActionName() != 'getList' && $request->getActionName() != 'load') {
+        if ($request->getActionName() !== 'getList' && $request->getActionName() !== 'load') {
             return;
         }
 

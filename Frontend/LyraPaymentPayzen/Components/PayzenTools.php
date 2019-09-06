@@ -1,32 +1,55 @@
 <?php
 /**
- * PayZen V2-Payment Module version 1.2.0 for ShopWare 4.x-5.x. Support contact : support@payzen.eu.
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for ShopWare. See COPYING.md for license details.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @author    Lyra Network (http://www.lyra-network.com/)
- * @copyright 2014-2018 Lyra Network and contributors
- * @license   http://www.gnu.org/licenses/agpl.html  GNU Affero General Public License (AGPL v3)
- * @category  payment
- * @package   payzen
+ * @author    Lyra Network (https://www.lyra.com/)
+ * @copyright Lyra Network
+ * @license   http://www.gnu.org/licenses/agpl.html GNU Affero General Public License (AGPL v3)
  */
 
 class PayzenTools
 {
+    private static $GATEWAY_CODE = 'PayZen';
+    private static $GATEWAY_NAME = 'PayZen';
+    private static $BACKOFFICE_NAME = 'PayZen';
+    private static $GATEWAY_URL = 'https://secure.payzen.eu/vads-payment/';
+    private static $SITE_ID = '12345678';
+    private static $KEY_TEST = '1111111111111111';
+    private static $KEY_PROD = '2222222222222222';
+    private static $CTX_MODE = 'TEST';
+    private static $SIGN_ALGO = 'SHA-256';
+    private static $LANGUAGE = 'fr';
+
+    private static $CMS_IDENTIFIER = 'ShopWare_4.x-5.x';
+    private static $SUPPORT_EMAIL = 'support@payzen.eu';
+    private static $PLUGIN_VERSION = '1.3.0';
+    private static $GATEWAY_VERSION = 'V2';
+
     public static $pluginFeatures = array(
         'qualif' => false,
         'prodfaq' => true,
         'shatwo' => true
     );
+
+    public static function getDefault($name)
+    {
+        if (! is_string($name)) {
+            return '';
+        }
+
+        if (! isset(self::$$name)) {
+            return '';
+        }
+
+        return self::$$name;
+    }
+
+    public static function getDocPattern()
+    {
+        $version = self::getDefault('PLUGIN_VERSION');
+        $minor = substr($version, 0, strrpos($version, '.'));
+
+        return self::getDefault('GATEWAY_CODE') . '_' . self::getDefault('CMS_IDENTIFIER') . '_v' . $minor . '*.pdf';
+    }
 }
