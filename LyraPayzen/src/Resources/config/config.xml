@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ */
+ -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>MODULE INFORMATION</title>
+        <title lang="de-DE">MODULINFORMATIONEN</title>
+        <title lang="fr-FR">INFORMATIONS SUR LE MODULE</title>
+        <title lang="es-ES">INFORMACIÓN DEL MÓDULO</title>
+        <input-field type="text">
+            <name>payzenDevelopedBy</name>
+            <label>Developed by</label>
+            <label lang="de-DE">Entwickelt von</label>
+            <label lang="fr-FR">Développé par</label>
+            <label lang="es-ES">Desarrollado por</label>
+            <disabled>true</disabled>
+        </input-field>
+        <input-field type="text">
+            <name>payzenContactEmail</name>
+            <copyable>true</copyable>
+            <label>Contact us</label>
+            <label lang="de-DE">E-Mail-Adresse</label>
+            <label lang="fr-FR">Courriel de contact</label>
+            <label lang="es-ES">Contáctenos</label>
+            <disabled>true</disabled>
+        </input-field>
+        <input-field type="text">
+            <name>payzenModuleVersion</name>
+            <copyable>true</copyable>
+            <label>Module version</label>
+            <label lang="de-DE">Modulversion</label>
+            <label lang="fr-FR">Version du module</label>
+            <label lang="es-ES">Versión del módulo</label>
+            <disabled>true</disabled>
+        </input-field>
+        <input-field type="text">
+            <name>payzenGatewayVersion</name>
+            <label>Gateway version</label>
+            <label lang="de-DE">Plattformversion</label>
+            <label lang="fr-FR">Version de la plateforme</label>
+            <label lang="es-ES">Versión del portal</label>
+            <disabled>true</disabled>
+        </input-field>
+    </card>
+
+    <card>
+        <title>PAYMENT GATEWAY ACCESS</title>
+        <title lang="de-DE">ZUGANG ZAHLUNGSSCHNITTSTELLE</title>
+        <title lang="fr-FR">ACCÈS À LA PLATEFORME</title>
+        <title lang="es-ES">ACCESO AL PORTAL DE PAGO</title>
+        <input-field type="text">
+            <name>payzenSiteId</name>
+            <label>Shop ID</label>
+            <label lang="de-DE">Shop ID</label>
+            <label lang="fr-FR">Identifiant de la boutique</label>
+            <label lang="es-ES">Identificador de tienda</label>
+            <helpText><![CDATA[The identifier provided by PayZen.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Die Kennung von PayZen bereitgestellt.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Identifiant fourni par PayZen.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[El identificador proporcionado por PayZen.]]></helpText>
+        </input-field>
+        <input-field type="text">
+            <name>payzenKeyTest</name>
+            <label>Key in test mode</label>
+            <label lang="de-DE">Schlüssel im Testbetrieb</label>
+            <label lang="fr-FR">Clé en mode test</label>
+            <label lang="es-ES">Clave en modo test</label>
+            <helpText><![CDATA[Key provided by PayZen for test mode (available in PayZen Back Office).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Schlüssel, das von PayZen zu Testzwecken bereitgestellt wird (im PayZen Back Office verfügbar).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Clé fournie par PayZen pour le mode test (disponible sur le Back Office PayZen).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Clave proporcionada por PayZen para modo test (disponible en el Back Office PayZen).]]></helpText>
+        </input-field>
+        <input-field type="text">
+            <name>payzenKeyProd</name>
+            <label>Key in production mode</label>
+            <label lang="de-DE">Schlüssel im Produktivbetrieb</label>
+            <label lang="fr-FR">Clé en mode production</label>
+            <label lang="es-ES">Clave en modo production</label>
+            <helpText><![CDATA[Key provided by PayZen (available in PayZen Back Office after enabling production mode).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Von PayZen bereitgestelltes Schlüssel (im PayZen Back Office verfügbar, nachdem der Produktionsmodus aktiviert wurde).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Clé fournie par PayZen (disponible sur le Back Office PayZen après passage en production).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Clave proporcionada por PayZen (disponible en el Back Office PayZen después de habilitar el modo production).]]></helpText>
+        </input-field>
+        <input-field type="single-select">
+            <name>payzenCtxMode</name>
+            <label>Mode</label>
+            <label lang="de-DE">Modus</label>
+            <label lang="fr-FR">Mode</label>
+            <label lang="es-ES">Modo</label>
+            <helpText>The context mode of this module.</helpText>
+            <helpText lang="de-DE">Kontextmodus dieses Moduls.</helpText>
+            <helpText lang="fr-FR">Mode de fonctionnement du module.</helpText>
+            <helpText lang="es-ES">El modo de contexto de este módulo.</helpText>
+            <options>
+                <option>
+                    <id>TEST</id>
+                    <name>TEST</name>
+                    <name lang="de-DE">TEST</name>
+                    <name lang="fr-FR">TEST</name>
+                    <name lang="es-ES">TEST</name>
+                </option>
+                <option>
+                    <id>PRODUCTION</id>
+                    <name>PRODUCTION</name>
+                    <name lang="de-DE">PRODUKTION</name>
+                    <name lang="fr-FR">PRODUCTION</name>
+                    <name lang="es-ES">PRODUCTION</name>
+                </option>
+            </options>
+        </input-field>
+        <input-field type="single-select">
+            <name>payzenSignAlgo</name>
+            <label>Signature algorithm</label>
+            <label lang="de-DE">Signaturalgorithmus</label>
+            <label lang="fr-FR">Algorithme de signature</label>
+            <label lang="es-ES">Algoritmo de firma</label>
+            <helpText><![CDATA[Algorithm used to compute the payment form signature. Selected algorithm must be the same as one configured in the PayZen Back Office.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Algorithmus zur Berechnung der Zahlungsformsignatur. Der ausgewählte Algorithmus muss derselbe sein, wie er im PayZen Back Office.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Algorithme utilisé pour calculer la signature du formulaire de paiement. L'algorithme sélectionné doit être le même que celui configuré sur le Back Office PayZen.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Algoritmo usado para calcular la firma del formulario de pago. El algoritmo seleccionado debe ser el mismo que el configurado en el Back Office PayZen.]]></helpText>
+            <options>
+                <option>
+                    <id>SHA-1</id>
+                    <name>SHA-1</name>
+                </option>
+                <option>
+                    <id>SHA-256</id>
+                    <name>HMAC-SHA-256</name>
+                </option>
+            </options>
+        </input-field>
+        <input-field type="text">
+            <name>payzenCheckUrl</name>
+            <copyable>true</copyable>
+            <label>Instant Payment Notification URL</label>
+            <label lang="de-DE">Benachrichtigung-URL</label>
+            <label lang="fr-FR">URL de notification</label>
+            <label lang="es-ES">URL de notificación de pago instantáneo</label>
+            <helpText><![CDATA[URL to copy into your PayZen Back Office > Settings > Notification rules.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[URL, die Sie in Ihre PayZen Back Office kopieren sollen > Einstellung > Regeln der Benachrichtigungen.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[URL à copier dans le Back Office PayZen > Paramétrage > Règles de notifications.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[URL a copiar en el Back Office PayZen > Configuración > Reglas de notificación.]]></helpText>
+            <disabled>true</disabled>
+        </input-field>
+        <input-field type="text">
+            <name>payzenPlatformUrl</name>
+            <label>Plattform URL</label>
+            <label lang="de-DE">Plattform-URL</label>
+            <label lang="fr-FR">URL de la page de paiement</label>
+            <label lang="es-ES">URL de notificación de pago instantáneo</label>
+            <helpText>Link to the payment page.</helpText>
+            <helpText lang="de-DE">Link zur Bezahlungsplattform.</helpText>
+            <helpText lang="fr-FR">Lien vers la page de paiement.</helpText>
+            <helpText lang="es-ES">Enlace a la página de pago.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>PAYMENT PAGE</title>
+        <title lang="de-DE">ZAHLUNGSSEITE</title>
+        <title lang="fr-FR">PAGE DE PAIEMENT</title>
+        <title lang="es-ES">PÁGINA DE PAGO</title>
+        <input-field type="single-select">
+            <name>payzenLanguage</name>
+            <label>Default language</label>
+            <label lang="de-DE">Standardsprache</label>
+            <label lang="fr-FR">Langue par défaut</label>
+            <label lang="es-ES">Idioma por defecto</label>
+            <helpText>Default language on the payment page.</helpText>
+            <helpText lang="de-DE">Standardsprache auf Zahlungsseite.</helpText>
+            <helpText lang="fr-FR">Sélectionner la langue par défaut à utiliser sur la page de paiement.</helpText>
+            <helpText lang="es-ES">Idioma por defecto en la página de pago.</helpText>
+        </input-field>
+        <input-field type="multi-select">
+            <name>payzenAvailableLanguages</name>
+            <label>Available languages</label>
+            <label lang="de-DE">Verfügbare Sprachen</label>
+            <label lang="fr-FR">Langues disponibles</label>
+            <label lang="es-ES">Idiomas disponibles</label>
+            <helpText>Languages available on the payment page. If you do not select any, all the supported languages will be available.</helpText>
+            <helpText lang="de-DE">Verfügbare Sprachen der Zahlungsseite. Nichts auswählen, um die Einstellung der Zahlungsplattform zu benutzen.</helpText>
+            <helpText lang="fr-FR">Sélectionner les langues à proposer sur la page de paiement. Ne rien sélectionner pour utiliser la configuration de la plateforme.</helpText>
+            <helpText lang="es-ES">Idiomas disponibles en la página de pago. Si no selecciona ninguno, todos los idiomas compatibles estarán disponibles.</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>payzenCaptureDelay</name>
+            <label>Capture delay</label>
+            <label lang="de-DE">Einzugsfrist</label>
+            <label lang="fr-FR">Délai avant remise en banque</label>
+            <label lang="es-ES">Plazo de captura</label>
+            <helpText><![CDATA[The number of days before the bank capture (adjustable in your PayZen Back Office).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Anzahl der Tage bis zum Einzug der Zahlung (Einstellung über Ihr PayZen Back Office).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Le nombre de jours avant la remise en banque (paramétrable sur votre Back Office PayZen).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[El número de días antes de la captura del pago (ajustable en su Back Office PayZen).]]></helpText>
+        </input-field>
+        <input-field type="single-select">
+            <name>payzenValidationMode</name>
+            <label>Validation mode</label>
+            <label lang="de-DE">Bestätigungsmodus</label>
+            <label lang="fr-FR">Mode de validation</label>
+            <label lang="es-ES">Modo de validación</label>
+            <helpText><![CDATA[If manual is selected, you will have to confirm payments manually in your PayZen Back Office.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Bei manueller Eingabe müssen Sie Zahlungen manuell in Ihr PayZen Back Office bestätigen.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[En mode manuel, vous devrez confirmer les paiements dans le Back Office PayZen.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Si se selecciona manual, deberá confirmar los pagos manualmente en su Back Office PayZen.]]></helpText>
+            <options>
+                <option>
+                    <id />
+                    <name><![CDATA[PayZen Back Office configuration]]></name>
+                    <name lang="de-DE"><![CDATA[Einstellungen des PayZen Back Office]]></name>
+                    <name lang="fr-FR"><![CDATA[Configuration Back Office PayZen]]></name>
+                    <name lang="es-ES"><![CDATA[Configuración de Back Office PayZen]]></name>
+                </option>
+                <option>
+                    <id>0</id>
+                    <name>Automatic</name>
+                    <name lang="de-DE">Automatisch</name>
+                    <name lang="fr-FR">Automatique</name>
+                    <name lang="es-ES">Automático</name>
+                </option>
+                <option>
+                    <id>1</id>
+                    <name>Manual</name>
+                    <name lang="de-DE">Manuell</name>
+                    <name lang="fr-FR">Manuelle</name>
+                    <name lang="es-ES">Manual</name>
+                </option>
+            </options>
+        </input-field>
+        <input-field type="multi-select">
+            <name>payzenPaymentCards</name>
+            <label>Card Types</label>
+            <label lang="de-DE">Kartentypen</label>
+            <label lang="fr-FR">Types de carte</label>
+            <label lang="es-ES">Tipos de tarjeta</label>
+            <helpText>The card type(s) that can be used for the payment. Select none to use gateway configuration.</helpText>
+            <helpText lang="de-DE">Wählen Sie die zur Zahlung verfügbaren Kartentypen aus. Nichts auswählen, um die Einstellungen der Plattform zu verwenden.</helpText>
+            <helpText lang="fr-FR">Le(s) type(s) de carte pouvant être utilisé(s) pour le paiement. Ne rien sélectionner pour utiliser la configuration de la plateforme.</helpText>
+            <helpText lang="es-ES">El tipo(s) de tarjeta que se puede usar para el pago. No haga ninguna selección para usar la configuración del portal.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>SELECTIVE 3DS</title>
+        <title lang="de-DE">SELEKTIVES 3DS</title>
+        <title lang="fr-FR">3DS SÉLECTIF</title>
+        <title lang="es-ES">3DS SELECTIVO</title>
+        <input-field type="int">
+            <name>payzen3dsMinAmount</name>
+            <label>Disable 3DS</label>
+            <label lang="de-DE">3DS deaktivieren</label>
+            <label lang="fr-FR">Désactiver 3DS</label>
+            <label lang="es-ES">Deshabilitar 3DS</label>
+            <helpText>Amount below which 3DS will be disabled. Needs subscription to selective 3DS option. For more information, refer to the module documentation.</helpText>
+            <helpText lang="de-DE">Betrag, unter dem 3DS deaktiviert wird. Muss für die Option Selektives 3DS freigeschaltet sein. Weitere Informationen finden Sie in der Moduldokumentation.</helpText>
+            <helpText lang="fr-FR">Montant en dessous duquel 3DS sera désactivé. Nécessite la souscription à l'option 3DS sélectif. Pour plus d'informations, reportez-vous à la documentation du module.</helpText>
+            <helpText lang="es-ES">Monto por debajo del cual se deshabilitará 3DS. Requiere suscripción a la opción 3DS selectivo. Para más información, consulte la documentación del módulo.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>AMOUNT RESTRICTIONS</title>
+        <title lang="de-DE">BETRAGSBESCHRÄNKUNGEN</title>
+        <title lang="fr-FR">RESTRICTIONS SUR LE MONTANT</title>
+        <title lang="es-ES">RESTRICCIONES DE MONTO</title>
+        <input-field type="int">
+            <name>payzenMinAmount</name>
+            <label>Minimum amount</label>
+            <label lang="de-DE">Mindestbetrag</label>
+            <label lang="fr-FR">Montant minimum</label>
+            <label lang="es-ES">Monto mínimo</label>
+            <helpText>Minimum amount to activate this payment method.</helpText>
+            <helpText lang="de-DE">Mindestbetrag für die Nutzung dieser Zahlungsweise.</helpText>
+            <helpText lang="fr-FR">Montant maximum pour lequel cette méthode de paiement est disponible.</helpText>
+            <helpText lang="es-ES">Monto mínimo para activar este método de pago.</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>payzenMaxAmount</name>
+            <label>Maximum amount</label>
+            <label lang="de-DE">Höchstbetragt</label>
+            <label lang="fr-FR">Montant maximum</label>
+            <label lang="es-ES">Monto máximo</label>
+            <helpText>Maximum amount to activate this payment method.</helpText>
+            <helpText lang="de-DE">Höchstbetrag für die Nutzung dieser Zahlungsweise.</helpText>
+            <helpText lang="fr-FR">Montant maximum pour lequel cette méthode de paiement est disponible.</helpText>
+            <helpText lang="es-ES">Monto máximo para activar este método de pago.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>RETURN TO SHOP</title>
+        <title lang="de-DE">RÜCKKEHR ZUM LADEN</title>
+        <title lang="fr-FR">RETOUR À LA BOUTIQUE</title>
+        <title lang="es-ES">VOLVER A LA TIENDA</title>
+        <input-field type="bool">
+            <name>payzenRedirectEnabled</name>
+            <label>Automatic redirection</label>
+            <label lang="de-DE">Automatische Weiterleitung</label>
+            <label lang="fr-FR">Redirection automatique</label>
+            <label lang="es-ES">Redirección automática</label>
+            <helpText>If enabled, the buyer is automatically redirected to your site at the end of the payment.</helpText>
+            <helpText lang="de-DE">Ist diese Einstellung aktiviert, wird der Kunde am Ende des Bezahlvorgangs automatisch auf Ihre Seite weitergeleitet.</helpText>
+            <helpText lang="fr-FR">Si activée, l'acheteur sera redirigé automatiquement vers votre site à la fin du paiement.</helpText>
+            <helpText lang="es-ES">Si está habilitada, el comprador es redirigido automáticamente a su sitio al final del pago.</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>payzenRedirectSuccessTimeout</name>
+            <label>Redirection timeout on success</label>
+            <label lang="de-DE">Zeitbeschränkung Weiterleitung im Erfolgsfall</label>
+            <label lang="fr-FR">Temps avant redirection (succès)</label>
+            <label lang="es-ES">Tiempo de espera de la redirección en pago exitoso</label>
+            <helpText>Time in seconds (0-300) before the buyer is automatically redirected to your website after a successful payment.</helpText>
+            <helpText lang="de-DE">Zeitspanne in Sekunden (0-300) bis zur automatischen Weiterleitung des Kunden auf Ihre Seite nach erfolgter Zahlung.</helpText>
+            <helpText lang="fr-FR">Temps en secondes (0-300) avant que l'acheteur ne soit redirigé automatiquement vers votre site lorsque le paiement a réussi.</helpText>
+            <helpText lang="es-ES">Tiempo en segundos (0-300) antes de que el comprador sea redirigido automáticamente a su sitio web después de un pago exitoso.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>payzenRedirectSuccessMessage</name>
+            <label>Redirection message on success</label>
+            <label lang="de-DE">Weiterleitungs-Nachricht im Erfolgsfall</label>
+            <label lang="fr-FR">Message avant redirection (succès)</label>
+            <label lang="es-ES">Mensaje de redirección en pago exitoso</label>
+            <helpText>Message displayed on the payment page prior to redirection after a successful payment.</helpText>
+            <helpText lang="de-DE">Nachricht, die nach erfolgter Zahlung und vor der Weiterleitung auf der Plattform angezeigt wird.</helpText>
+            <helpText lang="fr-FR">Message affiché sur la page de paiement avant redirection lorsque le paiement a réussi.</helpText>
+            <helpText lang="es-ES">Mensaje mostrado en la página de pago antes de la redirección después de un pago exitoso.</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>payzenRedirectErrorTimeout</name>
+            <label>Redirection timeout on failure</label>
+            <label lang="de-DE">Zeitbeschränkung Weiterleitung nach Ablehnung</label>
+            <label lang="fr-FR">Temps avant redirection (échec)</label>
+            <label lang="es-ES">Tiempo de espera de la redirección en pago rechazado</label>
+            <helpText>Time in seconds (0-300) before the buyer is automatically redirected to your website after a declined payment.</helpText>
+            <helpText lang="de-DE">Zeitspanne in Sekunden (0-300) bis zur automatischen Weiterleitung des Kunden auf Ihre Seite nach fehlgeschlagener Zahlung.</helpText>
+            <helpText lang="fr-FR">Temps en secondes (0-300) avant que l'acheteur ne soit redirigé automatiquement vers votre site lorsque le paiement a échoué.</helpText>
+            <helpText lang="es-ES">Tiempo en segundos (0-300) antes de que el comprador sea redirigido automáticamente a su sitio web después de un pago rechazado.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>payzenRedirectErrorMessage</name>
+            <label>Redirection message on failure</label>
+            <label lang="de-DE">Weiterleitungs-Nachricht nach Ablehnung</label>
+            <label lang="fr-FR">Message avant redirection (échec)</label>
+            <label lang="es-ES">Mensaje de redirección en pago rechazado</label>
+            <helpText>Message displayed on the payment page prior to redirection after a declined payment.</helpText>
+            <helpText lang="de-DE">Nachricht, die nach fehlgeschlagener Zahlung und vor der Weiterleitung auf der Plattform angezeigt wird.</helpText>
+            <helpText lang="fr-FR">Message affiché sur la page de paiement avant redirection, lorsque le paiement a échoué.</helpText>
+            <helpText lang="es-ES">Mensaje mostrado en la página de pago antes de la redirección después de un pago rechazado.</helpText>
+        </input-field>
+        <input-field type="single-select">
+            <name>payzenReturnMode</name>
+            <label>Return mode</label>
+            <label lang="de-DE">Übermittlungs-Modus</label>
+            <label lang="fr-FR">Mode de retour</label>
+            <label lang="es-ES">Modo de retorno</label>
+            <helpText>Method that will be used for transmitting the payment result from the payment page to your shop.</helpText>
+            <helpText lang="de-DE">Methode, die zur Übermittlung des Zahlungsergebnisses von der Zahlungsschnittstelle an Ihren Shop verwendet wird.</helpText>
+            <helpText lang="fr-FR">Façon dont l'acheteur transmettra le résultat du paiement lors de son retour à la boutique.</helpText>
+            <helpText lang="es-ES">Método que se usará para transmitir el resultado del pago de la página de pago a su tienda.</helpText>
+            <options>
+                <option>
+                    <id>GET</id>
+                    <name>GET</name>
+                </option>
+                <option>
+                    <id>POST</id>
+                    <name>POST</name>
+                </option>
+            </options>
+        </input-field>
+        <input-field type="single-select">
+            <name>payzenPaymentStatusOnSuccess</name>
+            <label>Order payment status</label>
+            <label lang="de-DE">Zahlungsstatus der Bestellung</label>
+            <label lang="fr-FR">Statut de paiement de la commande</label>
+            <label lang="es-ES">Estado de pago del pedido</label>
+            <helpText>Defines the payment status of orders paid with this payment mode.</helpText>
+            <helpText lang="de-DE">Der Zahlungsstatus der bezahlten Bestellungen durch dieses Beszahlungsmittel definieren.</helpText>
+            <helpText lang="fr-FR">Définir le statut de paiement des commandes payées par ce mode de paiement.</helpText>
+            <helpText lang="es-ES">Define el estado de pago de los pedidos pagados con este modo de pago.</helpText>
+        </input-field>
+    </card>
+</config>

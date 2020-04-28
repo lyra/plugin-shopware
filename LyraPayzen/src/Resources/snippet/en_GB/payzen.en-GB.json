@@ -1,0 +1,15 @@
+{
+    "payzenPaymentError": "Your payment was not accepted. Please, try to re-order.",
+    "payzenPaymentCancel": "The payment has been canceled.",
+    "payzenGoingIntoProductionInfo": "GOING INTO PRODUCTION: You want to know how to put your shop into production mode, please read chapters « Proceeding to test phase » and « Shifting the shop to production mode » in the documentation of the module.",
+    "payzenCheckUrlWarn": "The automatic validation has not worked. Have you correctly set up the notification URL in your PayZen Back Office?",
+    "payzenCheckUrlWarnDetails": "For understanding the problem, please read the documentation of the module:- Chapter « To read carefully before going further » - Chapter « Notification URL settings »",
+    "payzenMaintenanceModeWarn": "The shop is in maintenance mode. The automatic notification cannot work.",
+    "payzenPaymentFatal": "An error has occurred during the payment process.",
+    "payzenRedirectTitle": "Pay by credit card",
+    "payzenRedirectWaitText": "Please wait, you will be redirected to the payment gateway.",
+    "payzenRedirectClickText": "If nothing happens in 10 seconds, please click the button below.",
+    "payzenRedirectButtonText": "Pay",
+    "payzenUserChoice": "card brand chosen by buyer",
+    "payzenDefaultChoice": "default card brand used"
+}

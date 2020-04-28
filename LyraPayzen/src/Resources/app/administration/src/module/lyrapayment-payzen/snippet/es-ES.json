@@ -1,0 +1,35 @@
+{
+    "lyrapayment-payzen": {
+        "payzenTitle": "PayZen",
+        "payzenGeneral": {
+            "mainMenuItemGeneral": "PayZen",
+            "descriptionTextModule": "Configuración de PayZen"
+        },
+        "payzenPaymentInformation": "Información del pago",
+        "payzenTransactionId": "ID de transacción",
+        "payzenTransactionUuid": "UUID de transacción",
+        "payzenTransactionType": "Tipo de transacción",
+        "payzenMeansOfPayment": "Medio de pago",
+        "payzenCardNumber": "Número de tarjeta",
+        "payzenCardExpirationDate": "Fecha de expiración",
+        "payzenLanguages": {
+            "fr": "Francés",
+            "de": "Alemán",
+            "en": "Inglés",
+            "es": "Español",
+            "zh": "Chino",
+            "it": "Italiano",
+            "ja": "Japonés",
+            "pt": "Portugués",
+            "nl": "Holandés",
+            "sv": "Sueco",
+            "ru": "Ruso",
+            "pl": "Polaco",
+            "tr": "Turco"
+        },
+        "payzenDoc": "Documentación",
+        "payzenDescription": "Este plugin le permite configurar el sistema de pago PayZen en su sitio web Shopware.",
+        "payzenDocumentationDescription": "Haga clic para ver la documentación de la configuración del módulo:",
+        "payzenSignAlgoDesc": "Algoritmo usado para calcular la firma del formulario de pago. El algoritmo seleccionado debe ser el mismo que el configurado en el Back Office PayZen. El algoritmo HMAC-SHA-256 no se debe activar si aún no está disponible el Back Office PayZen, la función estará disponible pronto."
+    }
+}

@@ -1,23 +1,31 @@
-# PayZen for ShopWare
+# PayZen for Shopware
 
-PayZen for ShopWare is an open source plugin that links e-commerce websites based on ShopWare to PayZen secure payment gateway developed by [Lyra Network](https://https://www.lyra.com/).
+PayZen for Shopware is an open source plugin that links e-commerce websites based on Shopware to PayZen secure payment gateway developed by [Lyra Network](https://www.lyra.com/).
 
 ## Installation & Upgrade
 
 To update the payment plugin, you must first uninstall and delete the previous version. Make sure you saved the parameters of your plugin before deleting it.
 
-To install the plugin, follow these steps :
+To install the plugin, follow these steps:
+- Goto `Settings > System > Plugins` menu.
+- Upload `Lyra_Payzen` directory to `[SHOPWARE]/custom/plugins/` via FTP or upload plugin ZIP from Shopware administration interface.
+- Click on "Install/Uninstall" (3 dots icon) button corresponding to the PayZen plugin entry.
+- Click on the checkbox (corresponding to PayZen) in the `Active` column to (de)activate the plugin. If you cannot click on the button, the plugin is not installed.
 
-- Goto `Configuration > Plugin Manager` menu.
-- Upload "Frontend" directory to `[SHOPWARE]/engine/Shopware/Plugins/Community/` via FTP or upload plugin ZIP from ShopWare backend interface.
-- Click on "Install/Uninstall" (+ icon) button corresponding to the PayZen plugin entry.
+Once activated, you can add the payment method `PayZen` to your sales channel from your Shopware administration interface:
+- Click on your sales channel from the list displayed below the Sales Channels menu.
+- Goto `General > General Settings` section.
+- Add `PayZen` to the list of available payment methods, then click the `Save` button.
 
 ## Configuration
 
-To configure the payment plugin, click on "Open" (pencil icon) button corresponding to "PayZen" payment plugin entry. The payment plugin configuration interface is composed of several sections. Enter your gateway credentials in "PAYMENT GATEWAY ACCESS" section.
+In the Shopware administration interface:
+- Go to `Settings > Plugins`.
+- Click on PayZen to display the plugin configuration interface.
+- The payment plugin configuration interface is composed of several sections. Set your gateway credentials in "PAYMENT GATEWAY ACCESS" section then click the `Save` button.
 
 ## License
 
-Each PayZen for ShopWare source file included in this distribution is licensed under the GNU AFFERO GENERAL PUBLIC LICENSE (AGPL 3.0 or later).
+Each PayZen payment module source file included in this distribution is licensed under the The MIT License (MIT).
 
-Please see LICENSE for the full text of the AGPL 3.0 license. It is also available through the world-wide-web at this URL: http://www.gnu.org/licenses/agpl.html
+Please see LICENSE.txt for the full text of the MIT license. It is also available through the world-wide-web at this URL: https://opensource.org/licenses/mit-license.html.
