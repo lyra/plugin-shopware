@@ -1,0 +1,20 @@
+{#
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ #}
+
+{% sw_extends 'administration/index.html.twig' %}
+{% block administration_stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="{{ asset('bundles/lyrapaymentpayzen/administration/css/lyra-payment-payzen.css') }}">
+{% endblock %}
+{% block administration_scripts %}
+    {{ parent() }}
+
+    <script type="text/javascript" src="{{ asset('bundles/lyrapaymentpayzen/administration/js/lyra-payment-payzen.js') }}"></script>
+{% endblock %}

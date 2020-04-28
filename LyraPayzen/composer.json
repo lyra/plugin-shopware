@@ -1,0 +1,42 @@
+{
+	"name" : "lyrapayment/payzen",
+	"description" : "This plugin enables you to setup the PayZen payment gateway on your Shopware website.",
+	"version" : "2.0.0",
+	"type" : "shopware-platform-plugin",
+	"license" : "MIT",
+	"authors" : [{
+		"name" : "Lyra Network",
+		"email" : "support@payzen.eu",
+		"homepage" : "https://www.lyra.com/"
+	}],
+	"extra" : {
+		"shopware-plugin-class" : "LyraPayment\\Payzen\\LyraPaymentPayzen",
+		"plugin-icon" : "src/Resources/public/images/payzen_icon.png",
+		"copyright" : "Copyright © 2020, Lyra Network",
+		"label" : {
+			"de-DE" : "PayZen",
+			"en-GB" : "PayZen",
+			"es-ES" : "PayZen",
+			"fr-FR" : "PayZen"
+		},
+		"description" : {
+			"de-DE" : "PayZen Zahlungsgateway",
+			"en-GB" : "PayZen Payment Gateway",
+			"es-ES" : "Pasarela de pago de PayZen",
+			"fr-FR" : "Plateforme de paiment PayZen"
+		}
+	},
+	"autoload" : {
+		"psr-4" : {
+			"LyraPayment\\Payzen\\" : "src/"
+		}
+	},
+	"require" : {
+		"php" : "^7.2",
+		"shopware/core" : ">=6.1",
+		"shopware/administration" : ">=6.1",
+		"shopware/storefront" : ">=6.1"
+	},
+	"minimum-stability" : "RC",
+	"prefer-stable" : true
+}

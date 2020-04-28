@@ -1,0 +1,45 @@
+{#
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ #}
+
+{% block sw_order_detail_base_status_card %}
+    {% parent %}
+
+    <template v-if="!isLoading" :isLoading="isLoading">
+        <template v-if="hasPayzenPayment(order)">
+            <sw-card class="sw-order-payzen-card" :title="$tc('lyrapayment-payzen.payzenPaymentInformation')">
+                <template v-for="transaction in order.transactions">
+                    <template v-if="isPayzenPayment(transaction)">
+                        <sw-container columns="1fr 1fr">
+                            <sw-description-list>
+                                <dt>{{ $tc('lyrapayment-payzen.payzenTransactionId') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.payzen_transaction_id }}</dd>
+
+                                <dt>{{ $tc('lyrapayment-payzen.payzenTransactionUuid') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.payzen_transaction_uuid }}</dd>
+
+                                <dt>{{ $tc('lyrapayment-payzen.payzenTransactionType') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.payzen_transaction_type }}</dd>
+                            </sw-description-list>
+                            <sw-description-list>
+                                <dt>{{ $tc('lyrapayment-payzen.payzenMeansOfPayment') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.payzen_means_of_payment }}</dd>
+
+                                <dt>{{ $tc('lyrapayment-payzen.payzenCardNumber') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.payzen_card_number }}</dd>
+
+                                <dt>{{ $tc('lyrapayment-payzen.payzenCardExpirationDate') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.payzen_card_expiration_date }}</dd>
+                            </sw-description-list>
+                        </sw-container>
+                    </template>
+                </template>
+            </sw-card>
+        </template>
+    </template>
+{% endblock %}

@@ -1,0 +1,20 @@
+{#
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ #}
+
+{% block sw_plugin_list_grid_columns_actions_settings %}
+    <template v-if="item.composerName === 'lyrapayment/payzen'">
+        <sw-context-menu-item :routerLink="{ name: 'lyrapayment.payzen.index' }">
+            {{ $tc('sw-plugin.list.config') }}
+        </sw-context-menu-item>
+    </template>
+
+    <template v-else>
+        {% parent %}
+    </template>
+{% endblock %}

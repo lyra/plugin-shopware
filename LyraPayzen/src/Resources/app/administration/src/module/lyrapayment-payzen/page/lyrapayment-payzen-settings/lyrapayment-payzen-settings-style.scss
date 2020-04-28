@@ -1,0 +1,35 @@
+/**
+ * Copyright © Lyra Network.
+ * This file is part of PayZen plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ */
+
+.payzen-doc {
+    &__icon {
+        text-align: center;
+
+        .sw-icon.sw-icon--large {
+            width: 50px;
+            height: 50px;
+        }
+    }
+
+    & &__payzen-icon {
+        height: 40px;
+    }
+
+    & &__desc {
+        font-size: 1.3em;
+        letter-spacing: .75px;
+        margin-bottom: 20px;
+    }
+
+    & &__docdesc {
+        font-size: 1.1em;
+        letter-spacing: .75px;
+        margin-bottom: 25px;
+    }
+}
