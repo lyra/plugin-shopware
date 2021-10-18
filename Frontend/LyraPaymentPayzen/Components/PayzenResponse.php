@@ -93,7 +93,7 @@ if (! class_exists('PayzenResponse', false)) {
          */
         public function __construct($params, $ctx_mode, $key_test, $key_prod, $algo = PayzenApi::ALGO_SHA1)
         {
-            $this->rawResponse = PayzenApi::uncharm($params);
+            $this->rawResponse = $params;
             $this->certificate = trim(($ctx_mode == 'PRODUCTION') ? $key_prod : $key_test);
 
             if (in_array($algo, PayzenApi::$SUPPORTED_ALGOS)) {
@@ -134,15 +134,7 @@ if (! class_exists('PayzenResponse', false)) {
          */
         public function isAcceptedPayment()
         {
-            $confirmedStatuses = array(
-                'AUTHORISED',
-                'AUTHORISED_TO_VALIDATE',
-                'CAPTURED',
-                'CAPTURE_FAILED', /* capture will be redone */
-                'ACCEPTED'
-            );
-
-            return in_array($this->transStatus, $confirmedStatuses) || $this->isPendingPayment();
+            return in_array($this->transStatus, PayzenApi::getSuccessStatuses()) || $this->isPendingPayment();
         }
 
         /**
@@ -152,25 +144,16 @@ if (! class_exists('PayzenResponse', false)) {
          */
         public function isPendingPayment()
         {
-            $pendingStatuses = array(
-                'INITIAL',
-                'WAITING_AUTHORISATION',
-                'WAITING_AUTHORISATION_TO_VALIDATE',
-                'UNDER_VERIFICATION',
-                'WAITING_FOR_PAYMENT'
-            );
-
-            return in_array($this->transStatus, $pendingStatuses);
+            return in_array($this->transStatus, PayzenApi::getPendingStatuses());
         }
 
         /**
-         * Check if the payment process was interrupted by the client.
+         * Check if the payment process was interrupted by the buyer.
          * @return bool
          */
         public function isCancelledPayment()
         {
-            $cancelledStatuses = array('NOT_CREATED', 'ABANDONED');
-            return in_array($this->transStatus, $cancelledStatuses);
+            return in_array($this->transStatus, PayzenApi::getCancelledStatuses());
         }
 
         /**
@@ -179,8 +162,7 @@ if (! class_exists('PayzenResponse', false)) {
          */
         public function isToValidatePayment()
         {
-            $toValidateStatuses = array('WAITING_AUTHORISATION_TO_VALIDATE', 'AUTHORISED_TO_VALIDATE');
-            return in_array($this->transStatus, $toValidateStatuses);
+            return in_array($this->transStatus, PayzenApi::getToValidateStatuses());
         }
 
         /**
@@ -243,12 +225,14 @@ if (! class_exists('PayzenResponse', false)) {
          * @param string $name
          * @return string
          */
-        public function get($name)
+        public function get($name, $hasPrefix = true)
         {
-            // Manage shortcut notations by adding 'vads_'.
-            $name = (substr($name, 0, 5) != 'vads_') ? 'vads_' . $name : $name;
+            if ($hasPrefix) {
+                // Manage shortcut notations by adding 'vads_' prefix.
+                $name = (substr($name, 0, 5) != 'vads_') ? 'vads_' . $name : $name;
+            }
 
-            return @$this->rawResponse[$name];
+            return array_key_exists($name, $this->rawResponse) ? $this->rawResponse[$name] : null;
         }
 
         /**
@@ -267,7 +251,7 @@ if (! class_exists('PayzenResponse', false)) {
          */
         public function getSignature()
         {
-            return @$this->rawResponse['signature'];
+            return $this->get('signature', false);
         }
 
         /**
