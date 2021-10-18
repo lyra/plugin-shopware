@@ -121,6 +121,7 @@ if (! class_exists('PayzenRequest', false)) {
             // Defining all parameters and setting formats and default values.
             $this->addField('signature', 'Signature', '#^[0-9a-f]{40}$#u', true);
 
+            $this->addField('vads_acquirer_transient_data', 'Acquirer transient data', $ans255);
             $this->addField('vads_action_mode', 'Action mode', '#^INTERACTIVE|SILENT$#u', true, 11);
             $this->addField('vads_amount', 'Amount', '#^' . $supzero . '$#u', true);
             $this->addField('vads_available_languages', 'Available languages', '#^(|[A-Za-z]{2}(;[A-Za-z]{2})*)$#u', false, 2);
@@ -393,12 +394,12 @@ if (! class_exists('PayzenRequest', false)) {
         /**
          * Enable/disable vads_redirect_* parameters.
          *
-         * @param mixed $enabled false, 0, null, negative integer or 'false' to disable
+         * @param mixed $enabled false, 0, null or 'false' to disable
          * @return boolean
          */
         public function setRedirectEnabled($enabled)
         {
-            $this->redirectEnabled = ($enabled && $enabled != '0' && strtolower($enabled) != 'false');
+            $this->redirectEnabled = ($enabled && (! is_string($enabled) || strtolower($enabled) !== 'false'));
             return true;
         }
 

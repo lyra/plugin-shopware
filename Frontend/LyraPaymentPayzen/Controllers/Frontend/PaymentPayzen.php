@@ -81,7 +81,13 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
         $currency = PayzenApi::findCurrencyByAlphaCode($this->getCurrencyShortName());
 
         // Get current language.
-        $lang = strtolower(Shopware()->Locale()->getLanguage());
+        $lang = '';
+        if (version_compare(Shopware()->Config()->version, '5.7', '>=')) {
+            $lang = substr(strtolower(Shopware()->Shop()->getLocale()->getLocale()), 0, 2);
+        } else {
+            $lang = strtolower(Shopware()->Locale()->getLanguage());
+        }
+
         $payzenLang = PayzenApi::isSupportedLanguage($lang) ? $lang : $config->get('payzen_language');
 
         // Disable 3DS?
@@ -91,19 +97,14 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
         }
 
         $version = PayzenTools::getDefault('CMS_IDENTIFIER') . '_v' .  PayzenTools::getDefault('PLUGIN_VERSION');
-
-        $contextInfo = 'session_id=' . \Enlight_Components_Session::getId();
-        $contextInfo .= '&shop_id=' . $user['additional']['user']['subshopID'];
-        $contextInfo .= '&unique_id=' . $this->createPaymentUniqueId(); // Unique ID to be assigned to order if payment successful.
-
         $predictedOrderId = Shopware()->Db()->fetchOne("SELECT number FROM s_order_number WHERE name = 'invoice'") + 1 ;
+
         $params = array(
             'amount' => $currency->convertAmountToInteger($this->getAmount()),
             'currency' => $currency->getNum(),
             'language' => $payzenLang,
             'contrib' => $version . '/' . Shopware()->Config()->version . '/' . PHP_VERSION,
             'order_id' => $predictedOrderId,
-            'order_info' => $contextInfo,
 
             'cust_id' => isset($user['additional']['user']['customerId']) ? $user['additional']['user']['customerId'] : $user['additional']['user']['userID'],
             'cust_email' => $user['additional']['user']['email'],
@@ -126,10 +127,23 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             'ship_to_phone_num' => $user['billingaddress']['phone'],
 
             'threeds_mpi' => $threedsMpi,
-
             'url_return'  => $this->Front()->Router()->assemble(array('action' => 'process', 'forceSecure' => true))
         );
         $request->setFromArray($params);
+
+        $request->addExtInfo('session_id', session_id());
+        $request->addExtInfo('shop_id', $user['additional']['user']['subshopID']);
+        $request->addExtInfo('unique_id', $this->createPaymentUniqueId()); // Unique ID to be assigned to order if payment successful.
+
+        // Shopware 5.6+ supports session restoring
+        if (version_compare(Shopware()->Config()->get('version'), '5.6.3', '>=')){
+            $this->getLogger()->info('Session token generation.');
+            $token = $this->createPaymentToken();
+
+            if ($token !== null) {
+                $request->addExtInfo(Shopware\Components\Cart\PaymentTokenService::TYPE_PAYMENT_TOKEN, $token);
+            }
+        }
 
         // Process billing and shipping states.
         if (! empty($user['additional']['state'])) {
@@ -166,6 +180,19 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
         $this->View()->PayzenAction = $request->get('platform_url');
     }
 
+    protected function restoreShopwareSession($sessionId)
+    {
+        if (version_compare(Shopware()->Config()->get('version'), '5.7.0', '>=')) {
+            Shopware()->Session()->save();
+            Shopware()->Session()->setId($sessionId);
+            Shopware()->Session()->start();
+        } else {
+            \Enlight_Components_Session::writeClose();
+            \Enlight_Components_Session::setId($sessionId);
+            \Enlight_Components_Session::start();
+        }
+    }
+
     /**
      * Process action method. Manages payment result for IPN and client calls.
      */
@@ -178,25 +205,15 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             $this->Request()->setParam('vads_order_id', $this->Request()->getParam('tmp_order_id'));
         }
 
-        // Reset real name for parameter vads_order_info after avoiding ShopWare filter on "s_order_"-like strings.
-        if ($this->Request()->getParam('tmp_order_info')) {
-            $this->Request()->setParam('vads_order_info', $this->Request()->getParam('tmp_order_info'));
-        }
-
-        $contextInfo = explode('&', $this->Request()->getParam('vads_order_info'));
-
         // Restore initial session for an IPN call.
-        if ($this->Request()->getParam('vads_hash') && ! empty($contextInfo)) {
-            $sessionId = substr($contextInfo[0], strlen('session_id='));
-
-            \Enlight_Components_Session::writeClose();
-            \Enlight_Components_Session::setId($sessionId);
-            \Enlight_Components_Session::start();
+        if ($this->Request()->getParam('vads_hash')
+            && ($sessionId = $this->Request()->getParam('vads_ext_info_session_id'))) {
+            // Restore Shopware session.
+            $this->restoreShopwareSession($sessionId);
 
             // Restore active shop.
             $repository = Shopware()->Models()->getRepository('Shopware\Models\Shop\Shop');
-            $shopId = substr($contextInfo[1], strlen('shop_id='));
-            $shop = $repository->getActiveById($shopId);
+            $shop = $repository->getActiveById($this->Request()->getParam('vads_ext_info_shop_id'));
             $shop->registerResources(Shopware()->Bootstrap());
 
             // For backward compatibility.
@@ -243,14 +260,21 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
         }
 
         // Search for temporary order.
-        $sql = 'SELECT `id` FROM `s_order` WHERE `transactionID` = ? AND `temporaryID` = ? AND `userID` = ? AND `status` = -1';
-        $tmpOrderId = Shopware()->Db()->fetchOne($sql, array(
+        $userIdSql = '';
+        $sqlParams = array(
             '', // Empty transactionID.
-            \Enlight_Components_Session::getId(),
-            $payzenResponse->get('cust_id')
-        ));
+            session_id()
+        );
 
-        $paymentUniqueId = isset($contextInfo[2]) ? substr($contextInfo[2], strlen('unique_id=')) : '';
+        if ($cust_id = $payzenResponse->get('cust_id')) {
+            $userIdSql = 'AND `userID` = ? ';
+            $sqlParams[] = $cust_id;
+        }
+
+        $sql = 'SELECT `id` FROM `s_order` WHERE `transactionID` = ? AND `temporaryID` = ? ' . $userIdSql . 'AND `status` = -1';
+        $tmpOrderId = Shopware()->Db()->fetchOne($sql, $sqlParams);
+
+        $paymentUniqueId = $this->Request()->getParam('vads_ext_info_unique_id');
 
         if (isset($tmpOrderId) && ! empty($tmpOrderId)) {
             // Temporary order exists in DB, order not yet processed.
@@ -462,7 +486,13 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             $expiry = str_pad($payzenResponse->get('expiry_month'), 2, '0', STR_PAD_LEFT) . ' / ' . $payzenResponse->get('expiry_year');
         }
 
-        $locale = Shopware()->Locale()->toString();
+        $locale = '';
+        if (version_compare(Shopware()->Config()->version, '5.7', '>=')) {
+            $locale = Shopware()->Shop()->getLocale()->getLocale();
+        } else {
+            $locale = Shopware()->Locale()->toString();
+        }
+
         $brandChoiceMessages = array(
             'user_choice' => array(
                 'de_DE' => 'Kartenmarke von Käufer gewählt',
@@ -500,5 +530,17 @@ class Shopware_Controllers_Frontend_PaymentPayzen extends AbstractPaymentPayzen
             'attribute6' => $expiry
         );
         Shopware()->Db()->update('s_order_attributes', $paymentInfo, '`orderID` = ' . $orderId);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function createPaymentToken()
+    {
+        if ($this->container->has(Shopware\Components\Cart\PaymentTokenService::class)) {
+            return $this->container->get(Shopware\Components\Cart\PaymentTokenService::class)->generate();
+        }
+
+        return null;
     }
 }

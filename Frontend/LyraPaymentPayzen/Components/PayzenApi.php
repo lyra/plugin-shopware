@@ -117,7 +117,7 @@ if (! class_exists('PayzenApi', false)) {
                 array('SGD', '702', 2), array('ZAR', '710', 2), array('SEK', '752', 2), array('CHF', '756', 2),
                 array('THB', '764', 2), array('TND', '788', 3), array('GBP', '826', 2), array('USD', '840', 2),
                 array('TWD', '901', 2), array('TRY', '949', 2), array('EUR', '978', 2), array('PLN', '985', 2),
-                array('BRL', '986', 2)
+                array('BRL', '986', 2), array('ARS', '032', 2), array('COP', '170', 2), array('PEN', '604', 2)
             );
 
             $payzen_currencies = array();
@@ -212,41 +212,85 @@ if (! class_exists('PayzenApi', false)) {
         public static function getSupportedCardTypes()
         {
             return array(
-                'CB' => 'CB', 'E-CARTEBLEUE' => 'e-Carte Bleue', 'MAESTRO' => 'Maestro', 'MASTERCARD' => 'MasterCard',
+                'CB' => 'CB', 'E-CARTEBLEUE' => 'e-Carte Bleue', 'MAESTRO' => 'Maestro', 'MASTERCARD' => 'Mastercard',
                 'VISA' => 'Visa', 'VISA_ELECTRON' => 'Visa Electron', 'VPAY' => 'V PAY', 'AMEX' => 'American Express',
-                'ACCORD_STORE' => 'Carte enseigne Accord', 'ACCORD_STORE_SB' => 'Carte enseigne Accord - Sandbox',
-                'ALINEA' => 'Carte enseigne Alinéa', 'ALINEA_CDX' => 'Carte cadeau Alinéa',
-                'ALINEA_CDX_SB' => 'Carte cadeau Alinéa - Sandbox', 'ALINEA_SB' => 'Carte enseigne Alinéa - Sandbox',
-                'ALIPAY' => 'Alipay', 'ALLOBEBE_CDX' => 'Carte cadeau AlloBébé', 'ALLOBEBE_CDX_SB' => 'Carte cadeau AlloBébé - Sandbox',
-                'AUCHAN' => 'Carte enseigne Auchan', 'AUCHAN_SB' => 'Carte enseigne Auchan - Sandbox', 'AURORE_MULTI' => 'Carte Aurore',
-                'BANCONTACT' => 'Bancontact Mistercash', 'BIZZBEE_CDX' => 'Carte cadeau BizzBee',
-                'BIZZBEE_CDX_SB' => 'Carte cadeau BizzBee - Sandbox', 'BOULANGER' => 'Carte enseigne Boulanger',
-                'BOULANGER_SB' => 'Carte enseigne Boulanger - Sandbox', 'BRICE_CDX' => 'Carte cadeau Brice',
-                'BRICE_CDX_SB' => 'Carte cadeau Brice - Sandbox', 'COFINOGA' => 'Carte Cofinoga Be Smart',
-                'CONECS' => 'Titre-Restaurant Dématérialisé Conecs', 'APETIZ' => 'Titre-Restaurant Dématérialisé Apetiz',
-                'CHQ_DEJ' => 'Titre-Restaurant Dématérialisé Chèque Déjeuner',
-                'SODEXO' => 'Titre-Restaurant Dématérialisé Sodexo', 'EDENRED' => 'Ticket Restaurant',
-                'DINERS' => 'Carte Diners Club', 'DISCOVER' => 'Carte Discover', 'E_CV' => 'e-Chèque-Vacances', 'ECCARD' => 'Euro-Cheque card',
-                'EDENRED_EC' => 'Ticket Eco Chèque Edenred', 'EDENRED_TC' => 'Ticket Culture Edenred',
-                'EDENRED_TR' => 'Ticket Restaurant Edenred', 'ELV' => 'Prélèvement Bancaire Hobex',
-                'EPS' => 'EPS Online Überweisung', 'EPS_GIROPAY' => 'EPS Online Überweisung',
-                'FULLCB_3X' => 'Paiement en 3x sans frais par BNPP PF', 'FULLCB_4X' => 'Paiement en 4x sans frais par BNPP PF',
-                'GOOGLEPAY' => 'Google Pay', 'GIROPAY' => 'Giropay', 'IDEAL' => 'iDEAL', 'ILLICADO' => 'Cartes Cadeau Illicado',
-                'ILLICADO_SB' => 'Cartes Cadeau Illicado - Sandbox - Sandbox', 'JCB' => 'JCB',
-                'JOUECLUB_CDX' => 'Carte cadeau JouéClub', 'JOUECLUB_CDX_SB' => 'Carte cadeau JouéClub - Sandbox',
-                'KLARNA' => 'Klarna Internet Banking', 'LEROY-MERLIN' => 'Carte enseigne Leroy-Merlin',
-                'LEROY-MERLIN_SB' => 'Carte enseigne Leroy-Merlin - Sandbox', 'MASTERPASS' => 'MasterPass',
-                'MULTIBANCO' => 'Multibanco', 'NORAUTO' => 'Carte enseigne Norauto', 'NORAUTO_SB' => 'Carte enseigne Norauto - Sandbox',
-                'ONEY' => 'FacilyPay Oney', 'ONEY_SANDBOX' => 'FacilyPay Oney - Sandbox', 'PAYDIREKT' => 'PayDirekt',
-                'PAYLIB' => 'Wallet Paylib', 'PAYPAL' => 'PayPal', 'PAYPAL_SB' => 'PayPal - Sandbox',
-                'PAYSAFECARD' => 'Carte prépayée paysafecard', 'PICWIC' => 'Carte enseigne PicWic',
-                'PICWIC_SB' => 'Carte enseigne PicWic - Sandbox', 'POSTFINANCE' => 'PostFinance',
-                'POSTFINANCE_EFIN' => 'PostFinance E-finance', 'SCT' => 'Virement SEPA Credit Transfer',
-                'SDD' => 'Prélèvement SEPA Direct Debit', 'SOFICARTE' => 'Carte Soficarte',
-                'SOFORT_BANKING' => 'Sofort', 'TRUFFAUX_CDX' => 'Carte Cadeau Truffaut', 'UNION_PAY' => 'UnionPay',
-                'VILLAVERDE' => 'Carte enseigne Villaverde', 'VILLAVERDE_SB' => 'Carte enseigne Villaverde - Sandbox',
-                'WECHAT' => 'WeChat Pay', 'MYBANK' => 'MyBank', 'PRZELEWY24' => 'Przelewy24'
+                'ACCORD_STORE' => 'Cartes Enseignes Partenaires', 'ACCORD_STORE_SB' => 'Cartes Enseignes Partenaires (sandbox)',
+                'ALINEA_CDX' => 'Carte Cadeau Alinéa', 'ALINEA_CDX_SB' => 'Carte Cadeau Alinéa (sandbox)', 'ALIPAY' => 'Alipay',
+                'ALLOBEBE_CDX' => 'Carte Cadeau Allobébé', 'ALLOBEBE_CDX_SB' => 'Carte Cadeau Allobébé (sandbox)', 'APETIZ' => 'Apetiz',
+                'AUCHAN' => 'Carte Auchan', 'AUCHAN_SB' => 'Carte Auchan (sandbox)', 'AURORE-MULTI' => 'Cpay Aurore',
+                'BANCONTACT' => 'Bancontact Mistercash', 'BIZZBEE_CDX' => 'Carte Cadeau Bizzbee',
+                'BIZZBEE_CDX_SB' => 'Carte Cadeau Bizzbee (sandbox)', 'BOULANGER' => 'Carte b+', 'BOULANGER_SB' => 'Carte b+ (sandbox)',
+                'BRICE_CDX' => 'Carte Cadeau Brice', 'BRICE_CDX_SB' => 'Carte Cadeau Brice (sandbox)', 'BUT' => 'But', 'CABAL' => 'Cabal',
+                'CARNET' => 'Carnet', 'CA_DO_CARTE' => 'CA DO Carte', 'CHQ_DEJ' => 'Chèque Déjeuner', 'CONECS' => 'Conecs',
+                'CONFORAMA' => 'Conforama', 'CORA' => 'Cora', 'CORA_BLANCHE' => 'Cora blanche', 'CORA_PREM' => 'Cora Visa Premier',
+                'CORA_VISA' => 'Cora Visa', 'CVCO' => 'Chèque-Vacances Connect', 'DINERS' => 'Diners', 'DISCOVER' => 'Discover',
+                'ECCARD' => 'EC Card', 'EDENRED' => 'Ticket Restaurant', 'EDENRED_EC' => 'Ticket EcoCheque',
+                'EDENRED_SC' => 'Ticket Sport & Culture', 'EDENRED_TC' => 'Ticket Compliments', 'EDENRED_TR' => 'Ticket Restaurant',
+                'ELO' => 'Elo', 'E_CV' => 'e-Chèque-Vacances', 'FRANFINANCE_3X' => 'Paiement en 3 fois',
+                'FRANFINANCE_4X' => 'Paiement en 4 fois', 'FULLCB3X' => 'Paiement en 3 fois CB', 'FULLCB4X' => 'Paiement en 4 fois CB',
+                'GEMO_CDX' => 'Carte Cadeau Gémo', 'GEMO_CDX_SB' => 'Carte Cadeau Gémo (sandbox)', 'GIROPAY' => 'Giropay',
+                'GOOGLEPAY' => 'Google Pay', 'HIPER' => 'Hiper', 'HIPERCARD' => 'Hipercard', 'IDEAL' => 'iDEAL', 'JCB' => 'JCB',
+                'JOUECLUB_CDX' => 'Carte Cadeau Joué Club', 'JOUECLUB_CDX_SB' => 'Carte Cadeau Joué Club (sandbox)',
+                'JULES_CDX' => 'Carte Cadeau Jules', 'JULES_CDX_SB' => 'Carte Cadeau Jules (sandbox)', 'KLARNA' => 'Klarna',
+                'LECLERC' => 'Carte Reglo', 'MC_CORDOBESA' => 'Mastercard Cordobesa',
+                'MULTIBANCO' => 'Multibanco', 'MYBANK' => 'MyBank', 'NARANJA' => 'Naranja', 'NORAUTO' => 'Carte Norauto option Financement',
+                'NORAUTO_SB' => 'Carte Norauto option Financement (sandbox)', 'ONEY_3X_4X' => 'Paiement en 3 ou 4 fois Oney',
+                'ONEY_ENSEIGNE' => 'Cartes enseignes Oney', 'PAYDIREKT' => 'Paydirekt', 'PAYLIB' => 'Paylib', 'PAYPAL' => 'PayPal',
+                'PAYPAL_SB' => 'PayPal Sandbox', 'PICWIC' => 'Carte Picwic', 'PICWIC_SB' => 'Carte Picwic (sandbox)',
+                'POSTFINANCE' => 'PostFinance Card', 'POSTFINANCE_EFIN' => 'PostFinance E-Finance', 'PRESTO' => 'Presto',
+                'PRZELEWY24' => 'Przelewy24', 'S-MONEY' => 'S-money', 'SCT' => 'Virement SEPA', 'SDD' => 'Prélèvement SEPA',
+                'SODEXO' => 'Pass Restaurant', 'SOFORT_BANKING' => 'Sofort', 'SOROCRED' => 'Sorocred',
+                'TRUFFAUT_CDX' => 'Carte Cadeau Truffaut', 'UNION_PAY' => 'UnionPay', 'WECHAT' => 'WeChat Pay'
             );
+        }
+
+        /**
+         * Return the statuses list of finalized successful payments (authorized or captured).
+         * @return array
+         */
+        public static function getSuccessStatuses()
+        {
+            return array(
+                'AUTHORISED',
+                'AUTHORISED_TO_VALIDATE', // TODO is this a pending status?
+                'CAPTURED',
+                'ACCEPTED'
+            );
+        }
+
+        /**
+         * Return the statuses list of payments that are waiting confirmation (successful but
+         * the amount has not been transfered and is not yet guaranteed).
+         * @return array
+         */
+        public static function getPendingStatuses()
+        {
+            return array(
+                'INITIAL',
+                'WAITING_AUTHORISATION',
+                'WAITING_AUTHORISATION_TO_VALIDATE',
+                'UNDER_VERIFICATION',
+                'PRE_AUTHORISED',
+                'WAITING_FOR_PAYMENT'
+            );
+        }
+
+        /**
+         * Return the statuses list of payments interrupted by the buyer.
+         * @return array
+         */
+        public static function getCancelledStatuses()
+        {
+            return array('ABANDONED');
+        }
+
+        /**
+         * Return the statuses list of payments waiting manual validation from the gateway Back Office.
+         * @return array
+         */
+        public static function getToValidateStatuses()
+        {
+            return array('WAITING_AUTHORISATION_TO_VALIDATE', 'AUTHORISED_TO_VALIDATE');
         }
 
         /**
@@ -286,26 +330,53 @@ if (! class_exists('PayzenApi', false)) {
         }
 
         /**
-         * PHP is not yet a sufficiently advanced technology to be indistinguishable from magic...
-         * so don't use magic_quotes, they mess up with the gateway response analysis.
-         *
-         * @param array $potentially_quoted_data
-         * @return mixed
+         * Get current PHP version without build info.
+         * @return string
          */
-        public static function uncharm($potentially_quoted_data)
+        public static function shortPhpVersion()
         {
-            if (get_magic_quotes_gpc()) {
-                $sane = array();
-                foreach ($potentially_quoted_data as $k => $v) {
-                    $sane_key = stripslashes($k);
-                    $sane_value = is_array($v) ? self::uncharm($v) : stripslashes($v);
-                    $sane[$sane_key] = $sane_value;
-                }
-            } else {
-                $sane = $potentially_quoted_data;
+            $version = PHP_VERSION;
+
+            $match = array();
+            if (preg_match('#^\d+(\.\d+)*#', $version, $match) === 1) {
+                $version = $match[0];
             }
 
-            return $sane;
+            return $version;
+        }
+
+        /**
+         * Format a given list of e-mails separated by commas and render them as HTML links.
+         * @param string $emails
+         * @return string
+         */
+        public static function formatSupportEmails($emails)
+        {
+            $formatted = '';
+
+            $parts = explode(', ', $emails);
+            foreach ($parts as $part) {
+                $elts = explode(':', $part);
+                if (count($elts) === 2) {
+                    $label = trim($elts[0]) . ': ';
+                    $email = $elts[1];
+                } elseif (count($elts) === 1) {
+                    $label = '';
+                    $email = $elts[0];
+                } else {
+                    throw new \InvalidArgumentException("Invalid support e-mails string passed: {$emails}.");
+                }
+
+                $email = trim($email);
+
+                if (! empty($formatted)) {
+                    $formatted .= '<br />';
+                }
+
+                $formatted .= $label . '<a href="mailto:' . $email . '">' . $email . '</a>';
+            }
+
+            return $formatted;
         }
     }
 }
