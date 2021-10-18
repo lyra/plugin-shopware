@@ -23,7 +23,7 @@ class PayzenTools
 
     private static $CMS_IDENTIFIER = 'ShopWare_4.x-5.x';
     private static $SUPPORT_EMAIL = 'support@payzen.eu';
-    private static $PLUGIN_VERSION = '1.3.0';
+    private static $PLUGIN_VERSION = '1.3.1';
     private static $GATEWAY_VERSION = 'V2';
 
     public static $pluginFeatures = array(

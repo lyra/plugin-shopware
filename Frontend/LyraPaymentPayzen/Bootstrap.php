@@ -198,7 +198,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 '<p>This plugin enables you to setup the PayZen payment system on your ShopWare website.</p>' .
                 'Click to view the module configuration documentation: ' . $docs,
             'author' => 'Lyra Network',
-            'copyright' => 'Copyright © 2015-2019, Lyra Network',
+            'copyright' => 'Copyright © 2015-2021, Lyra Network',
             'license' => 'AGPLv3',
             'support' => PayzenTools::getDefault('SUPPORT_EMAIL'),
             'link' => 'https://www.lyra.com/'
@@ -283,7 +283,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
 
         if (version_compare(Shopware()->Config()->version, '4.3.0', '>=')) {
             $ctxModes = array(
-                array('PRODUCTION', array('de_DE' => 'PRODUKTION', 'en_GB' => 'PRODUCTION', 'fr_FR' => 'PRODUCTION', 'es_ES' => 'PRODUCTION')),
+                array('PRODUCTION', array('de_DE' => 'PRODUCTION', 'en_GB' => 'PRODUCTION', 'fr_FR' => 'PRODUCTION', 'es_ES' => 'PRODUCTION')),
                 array('TEST', array('de_DE' => 'TEST', 'en_GB' => 'TEST', 'fr_FR' => 'TEST', 'es_ES' => 'TEST'))
             );
 
@@ -383,7 +383,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'fields' => array('value', 'label'),
                 'data' => array(
                     array('value' => 'SHA-1', 'label' => 'SHA-1'),
-                    array('value' => 'SHA-1', 'label' => 'HMAC-SHA-256')
+                    array('value' => 'SHA-256', 'label' => 'HMAC-SHA-256')
                 )
             );
         }
@@ -469,7 +469,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
 
         $form->setElement('text', 'payzen_key_prod', array(
             'label' => 'Key in production mode',
-            'description' => 'Key provided by your bank (available in PayZen Back Office after enabling production mode).',
+            'description' => 'Key provided by PayZen (available in PayZen Back Office after enabling production mode).',
             'value' => PayzenTools::getDefault('KEY_PROD'),
             'required' => true,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
@@ -578,7 +578,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
         ));
 
         $form->setElement('text', 'payzen_selective_3ds', array(
-            'label' => 'SELECTIVE 3DS',
+            'label' => 'CUSTOM 3DS',
             'value' => '',
             'readOnly' => true,
             'baseBodyCls' => '',
@@ -587,10 +587,10 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
 
-        // Selective 3DS.
+        // Custom 3DS.
         $form->setElement('number', 'payzen_3ds_min_amount', array(
-            'label' => 'Disable 3DS',
-            'description' => 'Amount below which 3DS will be disabled. Needs subscription to selective 3DS option. For more information, refer to the module documentation.',
+            'label' => 'Manage 3DS',
+            'description' => 'Amount below which customer could be exempt from strong authentication. Needs subscription to «Selective 3DS1» or «Frictionless 3DS2» options. For more information, refer to the module documentation.',
             'required' => false,
             'scope' => Shopware\Models\Config\Element::SCOPE_SHOP
         ));
@@ -693,7 +693,9 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
 
         $snippetNamespace = $this->Application()->Snippets()->getNamespace('backend/static/payment_status');
         $paymentStatuses = array_map(function($status) use($snippetNamespace) {
-            $status['description'] = $snippetNamespace->get($status['name'], $status['name'], true);
+            if ($status['name']) {
+                $status['description'] = $snippetNamespace->get($status['name'], $status['name'], true);
+            }
 
             return $status;
         }, $paymentStatuses);
@@ -746,8 +748,8 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'payzen_gateway_version' => array('Kompatibel mit Zahlungsschnittstelle', null),
                 'payzen_gateway_access' => array('ZUGANG ZAHLUNGSSCHNITTSTELLE', null),
                 'payzen_site_id' => array('Shop ID', 'Die Kennung von PayZen bereitgestellt.'),
-                'payzen_key_test' => array('Schlüssel im Testbetrieb', 'Schlüssel, das von Ihrer Bank zu Testzwecken bereitgestellt wird (im PayZen Back Office verfügbar).'),
-                'payzen_key_prod' => array('Schlüssel im Produktivbetrieb', 'Schlüssel, das von PayZen zu Testzwecken bereitgestellt wird (im PayZen Back Office verfügbar).'),
+                'payzen_key_test' => array('Schlüssel im Testbetrieb', 'Schlüssel, das von PayZen zu Testzwecken bereitgestellt wird (im PayZen Back Office verfügbar).'),
+                'payzen_key_prod' => array('Schlüssel im Produktivbetrieb', 'Von PayZen bereitgestelltes Schlüssel (im PayZen Back Office verfügbar, nachdem der Produktionsmodus aktiviert wurde).'),
                 'payzen_ctx_mode' => array('Modus', 'Kontextmodus dieses Moduls.'),
                 'payzen_sign_algo' => array('Signaturalgorithmus', 'Algorithmus zur Berechnung der Zahlungsformsignatur. Der ausgewählte Algorithmus muss derselbe sein, wie er im PayZen Back Office.' . (! $sha2 ? '<br /><b>Der HMAC-SHA-256-Algorithmus sollte nicht aktiviert werden, wenn er noch nicht im PayZen Back Office verfügbar ist. Die Funktion wird in Kürze verfügbar sein.</b>' : '')),
                 'payzen_platform_url' => array('Plattform-URL', 'Link zur Bezahlungsplattform.'),
@@ -758,8 +760,8 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'payzen_capture_delay' => array('Einzugsfrist', 'Anzahl der Tage bis zum Einzug der Zahlung (Einstellung über Ihr PayZen Back Office).'),
                 'payzen_validation_mode' => array('Bestätigungsmodus', 'Bei manueller Eingabe müssen Sie Zahlungen manuell in Ihr PayZen Back Office bestätigen.'),
                 'payzen_payment_cards' => array('Kartentypen', 'Wählen Sie die zur Zahlung verfügbaren Kartentypen aus. Nichts auswählen, um die Einstellungen der Plattform zu verwenden.'),
-                'payzen_selective_3ds' => array('SELEKTIVES 3DS', null),
-                'payzen_3ds_min_amount' => array('3DS deaktivieren', 'Betrag, unter dem 3DS deaktiviert wird. Muss für die Option Selektives 3DS freigeschaltet sein. Weitere Informationen finden Sie in der Moduldokumentation.'),
+                'payzen_selective_3ds' => array('CUSTOM 3DS', null),
+                'payzen_3ds_min_amount' => array('Manage 3DS', 'Amount below which customer could be exempt from strong authentication. Needs subscription to «Selective 3DS1» or «Frictionless 3DS2» options. For more information, refer to the module documentation.'),
                 'payzen_amount_restrictions' => array('BETRAGSBESCHRÄNKUNGEN', null),
                 'payzen_min_amount' => array('Mindestbetrag', 'Mindestbetrag für die Nutzung dieser Zahlungsweise.'),
                 'payzen_max_amount' => array('Höchstbetrag', 'Höchstbetrag für die Nutzung dieser Zahlungsweise.'),
@@ -792,8 +794,8 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'payzen_capture_delay' => array('Délai avant remise en banque', 'Le nombre de jours avant la remise en banque (paramétrable sur votre Back Office PayZen).'),
                 'payzen_validation_mode' => array('Mode de validation', 'En mode manuel, vous devrez confirmer les paiements dans le Back Office PayZen.'),
                 'payzen_payment_cards' => array('Types de carte', 'Le(s) type(s) de carte pouvant être utilisé(s) pour le paiement. Ne rien sélectionner pour utiliser la configuration de la plateforme.'),
-                'payzen_selective_3ds' => array('3DS SÉLECTIF', null),
-                'payzen_3ds_min_amount' => array('Désactiver 3DS', 'Montant en dessous duquel 3DS sera désactivé. Nécessite la souscription à l\'option 3DS sélectif. Pour plus d\'informations, reportez-vous à la documentation du module.'),
+                'payzen_selective_3ds' => array('3DS PERSONNALISÉ', null),
+                'payzen_3ds_min_amount' => array('Gérer le 3DS', 'Nécessite la souscription à l\'option «Selective 3DS1» ou l\'option  «Frictionless 3DS2». Pour plus d\'informations, reportez-vous à la documentation du module.'),
                 'payzen_amount_restrictions' => array('RESTRICTIONS SUR LE MONTANT', null),
                 'payzen_min_amount' => array('Montant minimum', 'Montant minimum pour lequel cette méthode de paiement est disponible.'),
                 'payzen_max_amount' => array('Montant maximum', 'Montant maximum pour lequel cette méthode de paiement est disponible.'),
@@ -809,7 +811,7 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
 
             'es_ES' => array(
                 'payzen_developed_by' => array('Desarrollado por', null),
-                'payzen_contact_email' => array('Courriel de contact', null),
+                'payzen_contact_email' => array('Contáctenos', null),
                 'payzen_module_version' => array('Versión del módulo', null),
                 'payzen_gateway_version' => array('Versión del portal', null),
                 'payzen_gateway_access' => array('ACCESO AL PORTAL DE PAGO', null),
@@ -826,8 +828,8 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 'payzen_capture_delay' => array('Plazo de captura', 'El número de días antes de la captura del pago (ajustable en su Back Office PayZen).'),
                 'payzen_validation_mode' => array('Modo de validación', 'Si se selecciona manual, deberá confirmar los pagos manualmente en su Back Office PayZen.'),
                 'payzen_payment_cards' => array('Tipos de tarjeta', 'El tipo(s) de tarjeta que se puede usar para el pago. No haga ninguna selección para usar la configuración del portal.'),
-                'payzen_selective_3ds' => array('3DS SELECTIVO', null),
-                'payzen_3ds_min_amount' => array('Deshabilitar 3DS', 'Monto por debajo del cual se deshabilitará 3DS. Requiere suscripción a la opción 3DS selectivo. Para más información, consulte la documentación del módulo.'),
+                'payzen_selective_3ds' => array('3DS PERSONALIZADO', null),
+                'payzen_3ds_min_amount' => array('Gestionar el  3DS', 'Monto por debajo del cual el comprador podría estar exento de de la autenticación fuerte. Requiere suscripción a la opción «Selective 3DS1» o a la opción «Frictionless 3DS2». Para más información, consulte la documentación del módulo.'),
                 'payzen_amount_restrictions' => array('RESTRICCIONES DE MONTO', null),
                 'payzen_min_amount' => array('Monto mínimo', 'Monto mínimo para activar este método de pago.'),
                 'payzen_max_amount' => array('Monto máximo', 'Monto máximo para activar este método de pago.'),
@@ -917,7 +919,14 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
             return $paymentMeans;
         }
 
-        $currency = Shopware()->Currency()->getShortName(); // Current shop currency.
+        // Current shop currency.
+        $currency = '';
+        if (version_compare(Shopware()->Config()->version, '5.7', '>=')) {
+            $currency = Shopware()->Shop()->getCurrency()->getCurrency();
+        } else {
+            $currency = Shopware()->Currency()->getShortName();
+        }
+
         $amount = Shopware()->Session()->sBasketAmount; // Current basket amount.
         $min = $this->Config()->get('payzen_min_amount'); // Min amount to activate this module.
         $max = $this->Config()->get('payzen_max_amount'); // Max amount to activate this module.
@@ -949,9 +958,14 @@ class Shopware_Plugins_Frontend_LyraPaymentPayzen_Bootstrap extends Shopware_Com
                 $request->setParam('tmp_order_id', $request->getParam('vads_order_id'));
             }
 
-            // Rename vads_order_info parameter to avoid ShopWare filter on "s_order_"-like strings.
-            if ($request->getParam('vads_order_info')) {
-                $request->setParam('tmp_order_info', $request->getParam('vads_order_info'));
+            // Retrieve ShopWare payment token.
+            if (version_compare(Shopware()->Config()->get('version'), '5.6.3', '>=')) {
+                $token = $request->getParam('vads_ext_info_' . Shopware\Components\Cart\PaymentTokenService::TYPE_PAYMENT_TOKEN);
+
+                if ($token && ! $request->getParam('vads_hash')) {
+                    $request->setParam(Shopware\Components\Cart\PaymentTokenService::TYPE_PAYMENT_TOKEN, $token);
+                    $_POST[Shopware\Components\Cart\PaymentTokenService::TYPE_PAYMENT_TOKEN] = $token;
+                }
             }
         }
     }

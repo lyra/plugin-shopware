@@ -1,7 +1,13 @@
+1.3.1, 2021-10-18:
+- Bug fix: no final order creation in anonymous customer case.
+- Compatibility with ShopWare 5.7.
+- Do not use vads\_order\_info* gateway parameter (use vads\_ext\_info* instead).
+- Update 3DS management option description.
+
 1.3.0, 2019-09-06:
-- Bug fix: correction of return to shop in POST mode. 
+- Bug fix: correction of return to shop in POST mode.
 - Bug fix: correction of orders display in Shopware backend (on recent versions).
-- Added Spanish translation. 
+- Added Spanish translation.
 - [prodfaq] Fix notice about shifting the shop to production mode.
 - Fix new signature algorithm name (HMAC-SHA-256).
 - Display card brand user choice if any in backend order details.
