@@ -26,7 +26,7 @@ class PayzenTools
     private static $SIGN_ALGO = 'SHA-256';
     private static $LANGUAGE = 'fr';
 
-    private static $CMS_IDENTIFIER = 'Shopware_6.x';
+    private static $CMS_IDENTIFIER = 'Shopware_6.1.x-6.3.x';
     private static $SUPPORT_EMAIL = 'support@payzen.eu';
     private static $PLUGIN_VERSION = '2.0.0';
     private static $GATEWAY_VERSION = 'V2';
