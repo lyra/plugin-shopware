@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/**
+ * Copyright © Lyra Network.
+ * This file is part of Lyra Collect plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ */
+ -->
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="true" autowire="true" />
+
+        <service id="Lyranetwork\Lyra\Controller\SettingsController">
+            <argument type="service" id="state_machine_state.repository" />
+            <argument type="string">%kernel.project_dir%</argument>
+            <argument type="service" id="lyra.logger" />
+        </service>
+
+        <service id="Lyranetwork\Lyra\Controller\PaymentController" public="true">
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService" />
+            <argument type="service" id="Shopware\Storefront\Framework\Routing\Router" />
+            <argument key="$standardPayment" type="service" id="Lyranetwork\Lyra\PaymentMethods\Standard" />
+            <argument key="$transactionRepository" type="service" id="order_transaction.repository" />
+            <argument key="$logger" type="service" id="lyra.logger" />
+
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+            <tag name="controller.service_arguments" />
+        </service>
+    </services>
+</container>

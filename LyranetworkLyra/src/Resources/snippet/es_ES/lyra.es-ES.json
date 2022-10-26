@@ -1,0 +1,15 @@
+{
+    "lyraPaymentError": "Su pago no fue aceptado. Intente realizar de nuevo el pedido.",
+    "lyraPaymentCancel": "El pago ha sido cancelado.",
+    "lyraGoingIntoProductionInfo": "IR A PRODUCTION: Si desea saber cómo poner su tienda en modo production, lea los capítulos « Proceder a la fase de prueba » y « Paso de una tienda al modo producción » en la documentación del módulo.",
+    "lyraCheckUrlWarn": "La validación automática no ha funcionado. ¿Configuró correctamente la URL de notificación en su Back Office Lyra Expert?",
+    "lyraCheckUrlWarnDetails": "Para entender el problema, lea la documentación del módulo: - Capítulo « Leer detenidamente antes de continuar » - Capítulo « Configuración de la URL de notificación »",
+    "lyraMaintenanceModeWarn": "La tienda está en modo de mantenimiento. La notificación automática no puede funcionar.",
+    "lyraPaymentFatal": "Ocurrió un error en el proceso de pago.",
+    "lyraRedirectTitle": "Pagar con tarjeta de crédito",
+    "lyraRedirectWaitText": "Espere, será redireccionado al portal de pago.",
+    "lyraRedirectClickText": "Si no sucede nada en 10 segundos, haga clic en el botón a continuación.",
+    "lyraRedirectButtonText": "Pagar",
+    "lyraUserChoice": "marca de tarjeta elegida por el comprador",
+    "lyraDefaultChoice": "marca de tarjeta predeterminada en uso"
+}

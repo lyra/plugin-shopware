@@ -1,0 +1,8 @@
+{
+    "name": "lyranetworklyra-admin",
+    "version": "3.0.0",
+    "description": "Administration for Lyra Collect",
+    "main": "index.js",
+    "author": "Lyra Network",
+    "license": "MIT"
+}

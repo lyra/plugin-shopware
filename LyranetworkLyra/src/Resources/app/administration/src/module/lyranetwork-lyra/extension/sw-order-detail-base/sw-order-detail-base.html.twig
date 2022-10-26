@@ -1,0 +1,45 @@
+{#
+ * Copyright © Lyra Network.
+ * This file is part of Lyra Collect plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ #}
+
+{% block sw_order_detail_base_status_card %}
+    {% parent %}
+
+    <template v-if="!isLoading" :isLoading="isLoading">
+        <template v-if="hasLyraPayment(order)">
+            <sw-card class="sw-order-lyra-card" :title="$tc('lyraPaymentInformation')">
+                <template v-for="transaction in order.transactions">
+                    <template v-if="isLyraPayment(transaction)">
+                        <sw-container columns="1fr 1fr">
+                            <sw-description-list>
+                                <dt>{{ $tc('lyraTransactionId') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_id }}</dd>
+
+                                <dt>{{ $tc('lyraTransactionUuid') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_uuid }}</dd>
+
+                                <dt>{{ $tc('lyraTransactionType') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_type }}</dd>
+                            </sw-description-list>
+                            <sw-description-list>
+                                <dt>{{ $tc('lyraMeansOfPayment') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_means_of_payment }}</dd>
+
+                                <dt>{{ $tc('lyraCardNumber') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_card_number }}</dd>
+
+                                <dt>{{ $tc('lyraCardExpirationDate') }}</dt>
+                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_card_expiration_date }}</dd>
+                            </sw-description-list>
+                        </sw-container>
+                    </template>
+                </template>
+            </sw-card>
+        </template>
+    </template>
+{% endblock %}

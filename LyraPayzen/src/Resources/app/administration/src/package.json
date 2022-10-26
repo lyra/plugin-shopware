@@ -1,8 +1,0 @@
-{
-    "name": "lyrapaymentpayzen",
-    "version": "2.0.0",
-    "description": "Administration for PayZen",
-    "main": "index.js",
-    "author": "Lyra Network",
-    "license": "MIT"
-}
