@@ -1,0 +1,142 @@
+{#
+ * Copyright © Lyra Network.
+ * This file is part of Lyra Collect plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ #}
+
+{% block lyranetwork_lyra %}
+    <sw-page class="lyranetwork-lyra">
+        {% block lyranetwork_lyra_header %}
+            <template #smart-bar-header>
+                <h2>
+                    {{ $tc('sw-settings.index.title') }}
+                    <sw-icon name="small-arrow-medium-right" small></sw-icon>
+                    {{ $tc('lyraTitle') }}
+                </h2>
+            </template>
+        {% endblock %}
+
+        {% block lyranetwork_lyra_config_actions %}
+            <template #smart-bar-actions>
+                {% block lyranetwork_lyra_config_actions_doc %}
+                    <sw-button
+                            @click="isdocModalOpen = true"
+                            :disabled="false"
+                            variant="ghost"
+                            :square="false"
+                            :block="false"
+                            :isLoading="false">
+                        {{ $tc('lyraDoc') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block lyranetwork_lyra_config_actions_abort %}
+                    <sw-button :routerLink="{ name: 'sw.plugin.index' }">
+                        {{ $tc('cancel') }}
+                    </sw-button>
+                {% endblock %}
+
+                {% block lyranetwork_lyra_config_actions_save %}
+                    <sw-button variant="primary" class="lyranetwork-lyra-config__save-action" @click.prevent="onSave">
+                        {{ $tc('save') }}
+                    </sw-button>
+                {% endblock %}
+            </template>
+        {% endblock %}
+
+        {% block lyranetwork_lyra_config_content %}
+            <template #content>
+                <sw-modal
+                v-if="isdocModalOpen"
+                @modal-close="isdocModalOpen = false"
+                :title="$tc('lyraDoc')"
+                class="lyra-doc sw-modal--small">
+                    <sw-container columns="1fr">
+                        <div class="lyra-doc__col">
+                            <div class="lyra-doc__icon">
+                                <img class="lyra-doc__lyra-icon" :src="'lyranetworklyra/images/lyra_logo.png' | asset">
+                            </div>
+                            <p class="lyra-doc__desc">
+                                {{ $tc('lyraDescription') }}
+                            </p>
+
+                            <p class="lyra-doc__docdesc">
+                                {{ $tc('lyraDocumentationDescription') }}
+                            </p>
+
+                            <sw-dashboard-external-link
+                                v-for="docFile in docFiles"
+                                :name="docFile.name"
+                                :title="docFile.title"
+                                :link="docFile.link">
+                            </sw-dashboard-external-link>
+                        </div>
+                    </sw-container>
+                </sw-modal>
+
+                <sw-card-view>
+                    <sw-system-config
+                            ref="systemConfig"
+                            salesChannelSwitchable
+                            inherit
+                            domain="LyranetworkLyra.config">
+                        <template #card-element="{ element, config }">
+                            <sw-form-field-renderer
+                            v-if="element.name.startsWith('LyranetworkLyra.config.lyraPaymentStatusOnSuccess')"
+                            :config="{
+                                        componentName: 'sw-single-select',
+                                        label: getElementLabel(element.name),
+                                        helpText: getElementHelptext(element.name),
+                                        options: paymentStatuses
+                                    }"
+                            v-model="config[element.name]"/>
+
+                            <sw-form-field-renderer
+                            v-else-if="element.name.startsWith('LyranetworkLyra.config.lyraLanguage')"
+                            :config="{
+                                        componentName: 'sw-single-select',
+                                        label: getElementLabel(element.name),
+                                        helpText: getElementHelptext(element.name),
+                                        options: languages
+                                    }"
+                            v-model="config[element.name]"/>
+
+                            <sw-form-field-renderer
+                            v-else-if="element.name.startsWith('LyranetworkLyra.config.lyraAvailableLanguages')"
+                            :config="{
+                                        componentName: 'sw-multi-select',
+                                        label: getElementLabel(element.name),
+                                        helpText: getElementHelptext(element.name),
+                                        options: languages
+                                    }"
+                            v-model="config[element.name]"/>
+
+                            <sw-form-field-renderer
+                            v-else-if="element.name.startsWith('LyranetworkLyra.config.lyraPaymentCards')"
+                            :config="{
+                                        componentName: 'sw-multi-select',
+                                        label: getElementLabel(element.name),
+                                        helpText: getElementHelptext(element.name),
+                                        options: cardTypes
+                                    }"
+                            v-model="config[element.name]"/>
+
+                            <sw-form-field-renderer
+                                v-else
+                                v-bind="getBind(element)"
+                                v-model="config[element.name]"
+                                :disabled="isDisabled(element)"
+                                v-show="isShown(element)">
+
+                            </sw-form-field-renderer>
+
+                        </template>
+                    </sw-system-config>
+                </sw-card-view>
+            </template>
+        {% endblock %}
+    </sw-page>
+{% endblock %}

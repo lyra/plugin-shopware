@@ -1,0 +1,42 @@
+{
+    "name" : "lyranetwork/lyra",
+    "description" : "This plugin enables you to setup the Lyra Collect payment gateway on your Shopware website.",
+    "version" : "3.0.0",
+    "type" : "shopware-platform-plugin",
+    "license" : "MIT",
+    "authors" : [{
+            "name" : "Lyra Network",
+            "homepage" : "https://www.lyra.com/"
+        }
+    ],
+    "extra" : {
+        "shopware-plugin-class" : "Lyranetwork\\Lyra\\LyranetworkLyra",
+        "plugin-icon" : "src/Resources/public/images/lyra_icon.png",
+        "copyright" : "Copyright © 2020-2022, Lyra Network",
+        "label" : {
+            "de-DE" : "Lyra Collect",
+            "en-GB" : "Lyra Collect",
+            "es-ES" : "Lyra Collect",
+            "fr-FR" : "Lyra Collect"
+        },
+        "description" : {
+            "de-DE" : "Lyra Collect Zahlungsgateway",
+            "en-GB" : "Lyra Collect Payment Gateway",
+            "es-ES" : "Pasarela de pago de Lyra Collect",
+            "fr-FR" : "Plateforme de paiment Lyra Collect"
+        }
+    },
+    "autoload" : {
+        "psr-4" : {
+            "Lyranetwork\\Lyra\\" : "src/"
+        }
+    },
+    "require" : {
+        "php" : "^7.4.3 || ^8.0",
+        "shopware/core" : ">=6.4",
+        "shopware/administration" : ">=6.4",
+        "shopware/storefront" : ">=6.4"
+    },
+    "minimum-stability" : "RC",
+    "prefer-stable" : true
+}

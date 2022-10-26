@@ -1,2 +1,2 @@
-# 2.0.0, 2020-04-28:
-- New PayZen payment plugin for Shopware 6.1.x.
+# 3.0.0, 2022-10-26:
+- New plugin for Shopware 6.4.x.

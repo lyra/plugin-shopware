@@ -1,0 +1,20 @@
+{#
+ * Copyright © Lyra Network.
+ * This file is part of Lyra Collect plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ #}
+
+{% sw_extends 'administration/index.html.twig' %}
+{% block administration_stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="{{ asset('bundles/lyranetworklyra/administration/css/lyranetwork-lyra.css') }}">
+{% endblock %}
+{% block administration_scripts %}
+    {{ parent() }}
+
+    <script type="text/javascript" src="{{ asset('bundles/lyranetworklyra/administration/js/lyranetwork-lyra.js') }}"></script>
+{% endblock %}

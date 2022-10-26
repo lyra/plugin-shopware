@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/**
+ * Copyright © Lyra Network.
+ * This file is part of Lyra Collect plugin for Shopware. See COPYING.md for license details.
+ *
+ * @author    Lyra Network <https://www.lyra.com>
+ * @copyright Lyra Network
+ * @license   https://opensource.org/licenses/mit-license.html The MIT License (MIT)
+ */
+ -->
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="true" autowire="true" />
+
+        <service id="Lyranetwork\Lyra\Subscriber\CheckoutConfirmSubscriber">
+            <argument id="Lyranetwork\Lyra\Service\ConfigService" type="service" />
+            <argument id="Lyranetwork\Lyra\Service\PaymentMethodService" type="service" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="Lyranetwork\Lyra\Subscriber\CheckoutFinishSubscriber">
+            <argument type="service" id="translator" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+    </services>
+</container>

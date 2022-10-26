@@ -1,0 +1,15 @@
+{
+    "lyraPaymentError": "Your payment was not accepted. Please, try to re-order.",
+    "lyraPaymentCancel": "The payment has been canceled.",
+    "lyraGoingIntoProductionInfo": "GOING INTO PRODUCTION: You want to know how to put your shop into production mode, please read chapters « Proceeding to test phase » and « Shifting the shop to production mode » in the documentation of the module.",
+    "lyraCheckUrlWarn": "The automatic validation has not worked. Have you correctly set up the notification URL in your Lyra Expert Back Office?",
+    "lyraCheckUrlWarnDetails": "For understanding the problem, please read the documentation of the module:- Chapter « To read carefully before going further » - Chapter « Notification URL settings »",
+    "lyraMaintenanceModeWarn": "The shop is in maintenance mode. The automatic notification cannot work.",
+    "lyraPaymentFatal": "An error has occurred during the payment process.",
+    "lyraRedirectTitle": "Pay by credit card",
+    "lyraRedirectWaitText": "Please wait, you will be redirected to the payment gateway.",
+    "lyraRedirectClickText": "If nothing happens in 10 seconds, please click the button below.",
+    "lyraRedirectButtonText": "Pay",
+    "lyraUserChoice": "card brand chosen by buyer",
+    "lyraDefaultChoice": "default card brand used"
+}

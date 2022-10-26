@@ -1,0 +1,15 @@
+{
+    "lyraPaymentError": "Ihre Zahlung wurde abgelehnt. Bitte führen Sie den Bestellvorgang erneut durch.",
+    "lyraPaymentCancel": "Die Zahlung wurde storniert.",
+    "lyraGoingIntoProductionInfo": "UMSTELLUNG AUF PRODUKTIONSMODUS: Sie möchten wissen, wie Sie auf Produktionsumfeld umstellen können, bitte lesen Sie die Kapitel « Weiter zur Testphase » und « Verschieben des Shops in den Produktionsumfeld » in der Dokumentation des Moduls.",
+    "lyraCheckUrlWarn": "Die automatische Bestätigung hat nicht funktioniert. Haben Sie die Benachrichtigung-URL im Back Office Lyra Expert richtig eingestellt?",
+    "lyraCheckUrlWarnDetails": "Nähere Informationen zu diesem Problem entnehmen Sie bitte der Moduldokumentation: - Kapitel « Bitte vor dem Weiterlesen aufmerksam lesen » - Kapitel « Benachrichtigung-URL Einstellungen »",
+    "lyraMaintenanceModeWarn": "Dieser Shop befindet sich im Wartungsmodus. Es kann keine automatische Benachrichtigung erstellt werden.",
+    "lyraPaymentFatal": "Ein Fehler ist während dem Zahlungsvorgang unterlaufen.",
+    "lyraRedirectTitle": "Zahlung mit EC-/Kreditkarte",
+    "lyraRedirectWaitText": "Bitte warten Sie. Sie werden in Kürze zur Bezahlungsplattform weitergeleitet.",
+    "lyraRedirectClickText": "Sollte die Wartezeit mehr als 10 Sekunden betragen, klicken Sie bitte auf den untenstehenden Button.",
+    "lyraRedirectButtonText": "Bezahlen",
+    "lyraUserChoice": "Kartenmarke von Käufer gewählt",
+    "lyraDefaultChoice": "Standard-Kartenmarke verwendet"
+}
