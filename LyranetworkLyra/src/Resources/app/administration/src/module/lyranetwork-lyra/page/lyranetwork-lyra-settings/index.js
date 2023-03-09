@@ -8,6 +8,7 @@
  */
 
 const { Component, Mixin } = Shopware;
+const SHOPWARE_VERSION = Shopware.Context.app.config.version;
 import template from './lyranetwork-lyra-settings.html.twig';
 import './lyranetwork-lyra-settings.scss';
 
@@ -30,7 +31,8 @@ Component.register('lyranetwork-lyra-settings', {
             docFiles: [],
             isdocModalOpen: false,
             qualif: false,
-            shatwo: true
+            shatwo: true,
+            isFlow: false
         };
     },
 
@@ -46,6 +48,11 @@ Component.register('lyranetwork-lyra-settings', {
                 .then((result) => {
                     me.qualif = result.qualif;
                     me.shatwo = result.shatwo;
+                });
+
+            this.LyranetworkLyraSettingsService.isFlow({'shopwareVersion': SHOPWARE_VERSION,})
+                .then((result) => {
+                    me.isFlow = result.isFlow;
                 });
 
             this.LyranetworkLyraSettingsService.getDocFiles()
@@ -119,11 +126,11 @@ Component.register('lyranetwork-lyra-settings', {
         },
 
         isDisabled(element) {
-            return (element.name.startsWith('LyranetworkLyra.config.lyraCtxMode') && this.qualif);
+            return (element.name.startsWith('LyranetworkLyra.config.lyraCtxMode') && this.qualif) || (element.name.startsWith('LyranetworkLyra.config.lyraOrderPlacedFlowEnabled') && ! this.isFlow);
         },
 
         isShown(element) {
-            return (! element.name.startsWith('LyranetworkLyra.config.lyraKeyTest') || ! this.qualif);
+            return (! element.name.startsWith('LyranetworkLyra.config.lyraKeyTest') || ! this.qualif) && (! element.name.startsWith('LyranetworkLyra.config.lyraOrderPlacedFlowEnabled') || this.isFlow);
         },
 
         onSave() {
@@ -132,12 +139,19 @@ Component.register('lyranetwork-lyra-settings', {
                     title: this.$tc('titleSaveSuccess'),
                     message: this.$tc('messageSaveSuccess')
                 });
+
+	            const salesChannelId = this.$refs.systemConfig.currentSalesChannelId;
+	            this.LyranetworkLyraSettingsService.setOrderPlacedFlow({'salesChannelId': salesChannelId, 'shopwareVersion': SHOPWARE_VERSION,});
             }).catch((err) => {
                 this.createNotificationError({
                     title: this.$tc('titleSaveError'),
                     message: err
                 });
+
+	            const salesChannelId = this.$refs.systemConfig.currentSalesChannelId;
+	            this.LyranetworkLyraSettingsService.setOrderPlacedFlow({'salesChannelId': salesChannelId, 'shopwareVersion': SHOPWARE_VERSION,});
             });
+
         }
     }
 });

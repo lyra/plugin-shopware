@@ -51,5 +51,7 @@
     "lyraReturnMode": "Mode de retour",
     "lyraReturnModeHelptext": "Façon dont l'acheteur transmettra le résultat du paiement lors de son retour à la boutique.",
     "lyraPaymentStatusOnSuccess": "Statut de paiement de la commande",
-    "lyraPaymentStatusOnSuccessHelptext": "Définir le statut de paiement des commandes payées par ce mode de paiement."
+    "lyraPaymentStatusOnSuccessHelptext": "Définir le statut de paiement des commandes payées par ce mode de paiement.",
+    "lyraOrderPlacedFlowEnabled": "Flux Order placed",
+    "lyraOrderPlacedFlowEnabledHelptext": "Si activé, le flux « Order placed » sera activé. Attention: La désactivation de cette option va désactiver toutes les actions définies dans le flux « Order placed ». Le flux sera désactivé pour tous les autres plugins et applications."
 }
