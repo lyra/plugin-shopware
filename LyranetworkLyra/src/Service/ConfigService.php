@@ -40,6 +40,7 @@ class ConfigService
         $setting = 'lyra' .  str_replace(' ', '', ucwords(str_replace('_', ' ', $configSetting)));
         switch ($setting) {
             case 'lyraRedirectEnabled':
+            case 'lyraOrderPlacedFlowEnabled':
                 $lyraRedirectEnabled = (bool) $this->systemConfigService->get(self::SYSTEM_CONFIG_DOMAIN . $setting, $salesChannelId);
                 return ($lyraRedirectEnabled) ? "true" : "false";
 

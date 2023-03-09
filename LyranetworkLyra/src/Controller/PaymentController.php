@@ -75,11 +75,11 @@ class PaymentController extends StorefrontController
 
     /**
      * @RouteScope(scopes={"storefront"})
-     * @Route("/lyra/finalize", defaults={"csrf_protected"=false, "auth_required"=false}, name="lyra_finalize", methods={"POST"})
+     * @Route("/lyra/finalize", defaults={"csrf_protected"=false, "auth_required"=false}, name="lyra_finalize", methods={"GET", "POST"})
      */
     public function finalize(Request $request, SalesChannelContext $salesChannelContext): Response
     {
-        $params = $request->request;
+        $params = (($request->getMethod() === Request::METHOD_POST)) ? $request->request : $request->query;
 
         // Context information is passed through vads_ext_info_* since v3.0.0.
         $orderTransactionId = (string) $params->get('vads_ext_info_order_transaction_id');
@@ -124,17 +124,20 @@ class PaymentController extends StorefrontController
 
                 $transaction = new AsyncPaymentTransactionStruct($orderTransaction, $order, $returnUrl);
 
-                $this->standardPayment->finalize($transaction, $request, $salesChannelContext);
+                $messages = $this->standardPayment->finalizePayment($transaction, $request, $salesChannelContext);
 
                 // Buyer return in POST mode.
                 if (! $params->get('vads_hash')) {
                     $customerEmail = $params->get('vads_cust_email');
                     $this->accountService->login($customerEmail, $salesChannelContext, true);
 
-                    $orderId = $order->getId();
-                    $finishUrl = $this->router->generate('frontend.checkout.finish.page', [
-                        'orderId' => $orderId
-                    ]);
+                    if (($messages['lyraIsPaymentError'] == true) || ($messages['lyraIsCancelledPayment'] == true)) {
+                        $finishUrl = $this->getAccountOrderPage($this->router);
+                        $this->addFlashMessages($messages);
+                    } else {
+                        $orderId = $order->getId();
+                        $finishUrl = $this->getCheckoutFinishPage($orderId, $this->router);
+                    }
 
                     return new RedirectResponse($finishUrl);
                 }
@@ -142,5 +145,38 @@ class PaymentController extends StorefrontController
         }
 
         return new Response();
+    }
+    
+    /**
+     * @param RouterInterface $router
+     * @return string
+     */
+    public function addFlashMessages(array $messages)
+    {
+        if (array_key_exists('lyraIsCancelledPayment', $messages) && ($messages['lyraIsCancelledPayment'] == true)) {
+            $this->addFlash('warning', $this->trans('lyraPaymentCancel'));
+        }
+        if (array_key_exists('lyraIsPaymentError', $messages) && ($messages['lyraIsPaymentError'] == true)) {
+            $this->addFlash('warning', $this->trans('lyraPaymentError'));
+        }
+    }
+
+    /**
+     * @param RouterInterface $router
+     * @return string
+     */
+    public function getAccountOrderPage(RouterInterface $router): string
+    {
+        return $router->generate('frontend.account.order.page', [], $router::ABSOLUTE_URL);
+    }
+
+    /**
+     * @param string $orderId
+     * @param RouterInterface $router
+     * @return string
+     */
+    public function getCheckoutFinishPage(string $orderId, RouterInterface $router): string
+    {
+        return $router->generate('frontend.checkout.finish.page', ['orderId' => $orderId, ], $router::ABSOLUTE_URL);
     }
 }

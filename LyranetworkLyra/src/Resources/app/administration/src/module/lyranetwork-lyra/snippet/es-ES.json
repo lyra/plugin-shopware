@@ -51,5 +51,7 @@
     "lyraReturnMode": "Modo de retorno",
     "lyraReturnModeHelptext": "Método que se usará para transmitir el resultado del pago de la página de pago a su tienda.",
     "lyraPaymentStatusOnSuccess": "Estado de pago del pedido",
-    "lyraPaymentStatusOnSuccessHelptext": "Define el estado de pago de los pedidos pagados con este modo de pago."
+    "lyraPaymentStatusOnSuccessHelptext": "Define el estado de pago de los pedidos pagados con este modo de pago.",
+    "lyraOrderPlacedFlowEnabled": "Flujo Order placed",
+    "lyraOrderPlacedFlowEnabledHelptext": "Si está habilitado, el flujo « Order placed » se activará. Advertencia: Al deshabilitar esta opción, se deshabilitarán todas las acciones definidas en el flujo « Order placed ». El flujo se desactivará para todos los demás complementos y aplicaciones."
 }

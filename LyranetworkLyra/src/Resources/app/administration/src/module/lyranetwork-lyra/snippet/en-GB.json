@@ -51,5 +51,7 @@
     "lyraReturnMode": "Return mode",
     "lyraReturnModeHelptext": "Method that will be used for transmitting the payment result from the payment page to your shop.",
     "lyraPaymentStatusOnSuccess": "Order payment status",
-    "lyraPaymentStatusOnSuccessHelptext": "Defines the payment status of orders paid with this payment mode."
+    "lyraPaymentStatusOnSuccessHelptext": "Defines the payment status of orders paid with this payment mode.",
+    "lyraOrderPlacedFlowEnabled": "Order placed flow",
+    "lyraOrderPlacedFlowEnabledHelptext": "If enabled, the « Order placed » flow will be set to active. Warning: Disabling this option will disable all actions defined in the « Order placed » flow. The flow will be disabled for all other plugins and applications."
 }

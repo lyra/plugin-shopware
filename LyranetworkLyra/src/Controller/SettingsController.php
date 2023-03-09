@@ -28,6 +28,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Lyranetwork\Lyra\Sdk\Tools;
 use Lyranetwork\Lyra\Sdk\Form\Api as LyraApi;
+use Lyranetwork\Lyra\Service\ConfigService;
+use Lyranetwork\Lyra\Service\FlowService;
 
 class SettingsController extends AbstractController
 {
@@ -35,6 +37,16 @@ class SettingsController extends AbstractController
      * @var EntityRepositoryInterface
      */
     private $stateMachineStateRepository;
+
+    /**
+     * @var FlowService
+     */
+    private $flowService;
+
+    /**
+     * @var ConfigService
+     */
+    private $configService;
 
     /**
      * @var string
@@ -48,10 +60,14 @@ class SettingsController extends AbstractController
 
     public function __construct(
         EntityRepositoryInterface $stateMachineStateRepository,
+        FlowService $flowService,
+        ConfigService $configService,
         string $shopwareDirectory,
         LoggerInterface $logger
     ) {
         $this->stateMachineStateRepository = $stateMachineStateRepository;
+        $this->flowService = $flowService;
+        $this->configService = $configService;
         $this->shopwareDirectory = $shopwareDirectory;
         $this->logger = $logger;
     }
@@ -114,14 +130,11 @@ class SettingsController extends AbstractController
             // Complete when other languages are managed.
         ];
 
-        foreach ($filenames as $filename) {
-            $baseFilename = basename($filename, '.pdf');
-            $lang = substr($baseFilename, -2); // Extract language code.
-
+        foreach (LyraApi::getOnlineDocUri() as $lang => $docUri) {
             $docs[] = [
                 'name' => 'lyraDocumentation' . $lang,
                 'title' => $languages[strtolower($lang)],
-                'link' => '/bundles/lyranetworklyra/installation_doc/' . $baseFilename . '.pdf'
+                'link' => $docUri . 'shopware64/sitemap.html'
             ];
         }
 
@@ -153,5 +166,37 @@ class SettingsController extends AbstractController
         }
 
         return new JsonResponse(['data' => $paymentStatuses, 'total' => count($paymentStatuses)]);
+    }
+
+    /**
+     * @RouteScope(scopes={"api"})
+     * @Route("/api/_action/lyra/is-flow", name="api.action.lyra.is.flow", methods={"GET"})
+     * @Route("/api/v{version}/_action/lyra/is-flow", name="api.action.lyra.is.flow.legacy", methods={"GET"})
+     */
+    public function isFlow(Request $request, Context $context): JsonResponse
+    {
+        $shopwareVersion = $request->query->has('shopwareVersion') ? (string) $request->query->get('shopwareVersion') : null;
+        return new JsonResponse(
+            [
+                'isFlow' => (! empty($shopwareVersion) && version_compare($shopwareVersion, '6.4.6.0', '>='))
+            ]
+        );
+    }
+
+    /**
+     * @RouteScope(scopes={"api"})
+     * @Route("/api/_action/lyra/set-order-placed-flow", name="api.action.lyra.set.order_placed_flow", methods={"POST"})
+     * @Route("/api/v{version}/_action/lyra/set-order-placed-flow", name="api.action.lyra.set.order_placed_flow.legacy", methods={"POST"})
+     */
+    public function setOrderPlacedFlow(Request $request, Context $context): JsonResponse
+    {
+        $shopwareVersion = (string) $request->get('shopwareVersion');
+        if (! empty($shopwareVersion) && version_compare($shopwareVersion, '6.4.6.0', '>=')) {
+            $salesChannelId = empty((string) $request->get('salesChannelId')) ? null : (string) $request->get('salesChannelId');
+            $active = ($this->configService->get('order_placed_flow_enabled', $salesChannelId) == 'true') ? true : false;
+            $this->flowService->updateFlowActive('Order placed', $active, $context);
+        }
+
+        return $this->json(['success' => true,]);
     }
 }

@@ -80,7 +80,8 @@ class ConfigInstaller
             'lyraRedirectErrorTimeout' => '5',
             'lyraRedirectErrorMessage' => $this->translations[$lang]['lyraRedirectErrorMessageDefault'],
             'lyraReturnMode' => 'GET',
-            'lyraPaymentStatusOnSuccess' => 'paid'
+            'lyraPaymentStatusOnSuccess' => 'paid',
+            'lyraOrderPlacedFlowEnabled' => $this->getShopwareOrderPlacedFlowActive()
         ];
     }
 
@@ -191,5 +192,24 @@ class ConfigInstaller
         }
 
         return ($domains->count() > 0) ? $domains->first()->getUrl() : '';
+    }
+
+    private function getShopwareOrderPlacedFlowActive(): bool
+    {
+        $shopwareVersion = $this->container->getParameter('kernel.shopware_version');
+        if (version_compare($shopwareVersion, '6.4.6.0', '>=')) {
+            /**
+             * @var EntityRepository $flowRepository
+             */
+            $flowRepository = $this->container->get('flow.repository');
+
+            $criteria = new Criteria();
+            $criteria->addFilter(new EqualsFilter('name', 'Order placed'));
+            $orderPlacedFlow = $flowRepository->search($criteria, Context::createDefaultContext());
+
+            return ($orderPlacedFlow->count() > 0) ? $orderPlacedFlow->first()->isActive() : false;
+        }
+
+        return false;
     }
 }
