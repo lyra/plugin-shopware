@@ -104,8 +104,8 @@ class Api
     {
         $currencies = array(
             array('CAD', '124', 2), array('CHF', '756', 2), array('DKK', '208', 2), array('EUR', '978', 2),
-            array('GBP', '826', 2), array('JPY', '392', 0), array('DKK', '208', 2), array('NOK', '578', 2),
-            array('PLN', '985', 2), array('SEK', '752', 2), array('USD', '840', 2)
+            array('GBP', '826', 2), array('JPY', '392', 0), array('NOK', '578', 2), array('PLN', '985', 2),
+            array('SEK', '752', 2), array('USD', '840', 2)
         );
 
         $supported_currencies = array();
@@ -205,34 +205,36 @@ class Api
             'ACCORD_STORE' => 'Cartes Enseignes Partenaires', 'ACCORD_STORE_SB' => 'Cartes Enseignes Partenaires (sandbox)',
             'ALINEA' => 'Carte myalinea', 'ALINEA_CDX' => 'Carte Cadeau Alinéa', 'ALINEA_CDX_SB' => 'Carte Cadeau Alinéa (sandbox)',
             'ALINEA_SB' => 'Carte myalinea (sandbox)', 'ALIPAY' => 'Alipay', 'ALLOBEBE_CDX' => 'Carte Cadeau Allobébé',
-            'ALLOBEBE_CDX_SB' => 'Carte Cadeau Allobébé (sandbox)', 'APETIZ' => 'Apetiz', 'AUCHAN' => 'Carte Auchan',
-            'AUCHAN_SB' => 'Carte Auchan (sandbox)', 'AURORE-MULTI' => 'Cpay Aurore', 'BANCONTACT' => 'Bancontact Mistercash',
-            'BIZZBEE_CDX' => 'Carte Cadeau Bizzbee', 'BIZZBEE_CDX_SB' => 'Carte Cadeau Bizzbee (sandbox)',
-            'BOULANGER' => 'Carte b+', 'BOULANGER_SB' => 'Carte b+ (sandbox)', 'BRICE_CDX' => 'Carte Cadeau Brice',
-            'BRICE_CDX_SB' => 'Carte Cadeau Brice (sandbox)', 'BUT' => 'But', 'CA_DO_CARTE' => 'CA DO Carte', 'CABAL' => 'Cabal',
-            'CARNET' => 'Carnet', 'CHQ_DEJ' => 'Chèque Déjeuner', 'COM_BARRY_CDX' => 'Carte Cadeau Comtesse du Barry',
-            'COM_BARRY_CDX_SB' => 'Carte Cadeau Comtesse du Barry (sandbox)', 'CONECS' => 'Conecs', 'CONFORAMA' => 'Conforama',
-            'CORA' => 'Cora', 'CORA_BLANCHE' => 'Cora blanche', 'CORA_PREM' => 'Cora Visa Premier', 'CORA_VISA' => 'Cora Visa',
-            'CVCO' => 'Chèque-Vacances Connect', 'DINERS' => 'Diners', 'DISCOVER' => 'Discover', 'ECCARD' => 'EC Card',
-            'EDENRED' => 'Ticket Restaurant', 'EDENRED_EC' => 'Ticket EcoCheque', 'EDENRED_SC' => 'Ticket Sport & Culture',
+            'ALLOBEBE_CDX_SB' => 'Carte Cadeau Allobébé (sandbox)', 'APETIZ' => 'Apetiz', 'APPLE_PAY' => 'Apple Pay',
+            'AUCHAN' => 'Carte Auchan', 'AUCHAN_SB' => 'Carte Auchan (sandbox)', 'AURORE-MULTI' => 'Cpay Aurore',
+            'BANCONTACT' => 'Bancontact Mistercash', 'BIZUM' => 'Bizum', 'BIZZBEE_CDX' => 'Carte Cadeau Bizzbee',
+            'BIZZBEE_CDX_SB' => 'Carte Cadeau Bizzbee (sandbox)', 'BOULANGER' => 'Carte b+', 'BOULANGER_SB' => 'Carte b+ (sandbox)',
+            'BRICE_CDX' => 'Carte Cadeau Brice', 'BRICE_CDX_SB' => 'Carte Cadeau Brice (sandbox)', 'BUT' => 'But',
+            'CA_DO_CARTE' => 'CA DO Carte', 'CABAL' => 'Cabal', 'CARNET' => 'Carnet', 'CHQ_DEJ' => 'Chèque Déjeuner',
+            'COM_BARRY_CDX' => 'Carte Cadeau Comtesse du Barry', 'COM_BARRY_CDX_SB' => 'Carte Cadeau Comtesse du Barry (sandbox)',
+            'CONECS' => 'Conecs', 'CONFORAMA' => 'Conforama', 'CORA' => 'Cora', 'CORA_BLANCHE' => 'Cora blanche',
+            'CORA_PREM' => 'Cora Visa Premier', 'CORA_VISA' => 'Cora Visa', 'CVCO' => 'Chèque-Vacances Connect',
+            'DINERS' => 'Diners', 'DISCOVER' => 'Discover', 'ECCARD' => 'EC Card', 'EDENRED' => 'Ticket Restaurant',
+            'EDENRED_EC' => 'Ticket EcoCheque', 'EDENRED_SC' => 'Ticket Sport & Culture',
             'EDENRED_TC' => 'Ticket Compliments', 'EDENRED_TR' => 'Ticket Restaurant', 'ELO' => 'Elo',
             'FRANFINANCE_3X' => 'Paiement en 3 fois', 'FRANFINANCE_4X' => 'Paiement en 4 fois',
             'FULLCB3X' => 'Paiement en 3 fois CB', 'FULLCB4X' => 'Paiement en 4 fois CB', 'GEMO_CDX' => 'Carte Cadeau Gémo',
-            'GEMO_CDX_SB' => 'Carte Cadeau Gémo (sandbox)', 'GIROPAY' => 'Giropay', 'GOOGLEPAY' => 'Google Pay',
-            'HIPER' => 'Hiper', 'HIPERCARD' => 'Hipercard', 'IDEAL' => 'iDEAL', 'ILLICADO' => 'Carte Illicado',
-            'ILLICADO_SB' => 'Carte Illicado (sandbox)', 'JCB' => 'JCB', 'JOUECLUB_CDX' => 'Carte Cadeau Joué Club',
-            'JOUECLUB_CDX_SB' => 'Carte Cadeau Joué Club (sandbox)', 'JULES_CDX' => 'Carte Cadeau Jules',
-            'JULES_CDX_SB' => 'Carte Cadeau Jules (sandbox)', 'LEROY-MERLIN' => 'Carte Maison Financement',
-            'LEROY-MERLIN_SB' => 'Carte Maison Financement (sandbox)', 'MASTERPASS' => 'MasterPass',
-            'MC_CORDOBESA' => 'Mastercard Cordobesa', 'MULTIBANCO' => 'Multibanco', 'MYBANK' => 'MyBank', 'NARANJA' => 'Naranja',
-            'NORAUTO' => 'Carte Norauto option Financement', 'NORAUTO_SB' => 'Carte Norauto option Financement (sandbox)',
+            'GEMO_CDX_SB' => 'Carte Cadeau Gémo (sandbox)', 'GIROPAY' => 'Giropay', 'HIPER' => 'Hiper',
+            'HIPERCARD' => 'Hipercard', 'IDEAL' => 'iDEAL', 'ILLICADO' => 'Carte Illicado',
+            'ILLICADO_SB' => 'Carte Illicado (sandbox)', 'IP_WIRE' => 'Virement SEPA', 'IP_WIRE_INST' => 'Virement SEPA Instantané',
+            'JCB' => 'JCB', 'JOUECLUB_CDX' => 'Carte Cadeau Joué Club', 'JOUECLUB_CDX_SB' => 'Carte Cadeau Joué Club (sandbox)',
+            'JULES_CDX' => 'Carte Cadeau Jules', 'JULES_CDX_SB' => 'Carte Cadeau Jules (sandbox)', 'LECLERC' => 'Carte Reglo',
+            'LEROY-MERLIN' => 'Carte Maison Financement', 'LEROY-MERLIN_SB' => 'Carte Maison Financement (sandbox)',
+            'MASTERPASS' => 'MasterPass', 'MC_CORDOBESA' => 'Mastercard Cordobesa', 'MULTIBANCO' => 'Multibanco',
+            'MYBANK' => 'MyBank', 'NARANJA' => 'Naranja', 'NORAUTO' => 'Carte Norauto option Financement',
+            'NORAUTO_SB' => 'Carte Norauto option Financement (sandbox)', 'ONEY_10X_12X' => 'Paiement en 10 ou 12 fois Oney',
             'ONEY_3X_4X' => 'Paiement en 3 ou 4 fois Oney', 'ONEY_ENSEIGNE' => 'Cartes enseignes Oney',
-            'PAYDIREKT' => 'Paydirekt', 'PAYPAL' => 'PayPal', 'PAYPAL_SB' => 'PayPal Sandbox',
+            'ONEY_PAYLATER' => 'Pay Later Oney', 'PAYDIREKT' => 'Paydirekt', 'PAYPAL' => 'PayPal', 'PAYPAL_SB' => 'PayPal Sandbox',
             'PICWIC' => 'Carte Picwic', 'PICWIC_SB' => 'Carte Picwic (sandbox)', 'POSTFINANCE' => 'PostFinance Card',
             'POSTFINANCE_EFIN' => 'PostFinance E-Finance', 'PRESTO' => 'Presto', 'PRZELEWY24' => 'Przelewy24',
-            'SDD' => 'SEPA direct debit', 'SODEXO' => 'Pass Restaurant', 'SOFORT_BANKING' => 'Sofort',
-            'SOROCRED' => 'Sorocred', 'UNION_PAY' => 'UnionPay', 'VILLAVERDE' => 'Carte Cadeau VillaVerde',
-            'VILLAVERDE_SB' => 'Carte Cadeau VillaVerde (sandbox)', 'WECHAT' => 'WeChat Pay'
+            'S-MONEY' => 'S-money', 'SCT' => 'Virement SEPA', 'SDD' => 'SEPA direct debit', 'SODEXO' => 'Pass Restaurant',
+            'SOFORT_BANKING' => 'Sofort', 'SOROCRED' => 'Sorocred', 'UNION_PAY' => 'UnionPay',
+            'VILLAVERDE' => 'Carte Cadeau VillaVerde', 'VILLAVERDE_SB' => 'Carte Cadeau VillaVerde (sandbox)', 'WECHAT' => 'WeChat Pay'
         );
     }
 
@@ -246,7 +248,8 @@ class Api
             'AUTHORISED',
             'AUTHORISED_TO_VALIDATE', // TODO is this a pending status?
             'CAPTURED',
-            'ACCEPTED'
+            'ACCEPTED',
+            'PARTIALLY_AUTHORISED'
         );
     }
 
@@ -263,7 +266,8 @@ class Api
             'WAITING_AUTHORISATION_TO_VALIDATE',
             'UNDER_VERIFICATION',
             'PRE_AUTHORISED',
-            'WAITING_FOR_PAYMENT'
+            'WAITING_FOR_PAYMENT',
+            'PENDING'
         );
     }
 
@@ -396,6 +400,20 @@ class Api
         return array(
             'BL', 'GF', 'GP', 'MF', 'MQ', 'NC', 'PF', 'PM', 'RE',
             'TF', 'WF', 'YT'
+        );
+    }
+
+    /**
+     * Returns an array of the online documentation URI of the payment module.
+     *
+     * @return array[string][string]
+     */
+    public static function getOnlineDocUri()
+    {
+        return array(
+            'fr' => 'https://docs.lyra.com/fr/collect/plugins/',
+            'en' => 'https://docs.lyra.com/en/collect/plugins/',
+            'es' => 'https://docs.lyra.com/es-ES/collect/plugins/'
         );
     }
 }

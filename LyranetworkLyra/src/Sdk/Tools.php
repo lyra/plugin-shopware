@@ -28,7 +28,7 @@ class Tools
 
     private static $CMS_IDENTIFIER = 'Shopware_6.4.x';
     private static $SUPPORT_EMAIL = 'support-ecommerce@lyra-collect.com';
-    private static $PLUGIN_VERSION = '3.0.0';
+    private static $PLUGIN_VERSION = '3.0.1';
     private static $GATEWAY_VERSION = 'V2';
 
     public static $pluginFeatures = [

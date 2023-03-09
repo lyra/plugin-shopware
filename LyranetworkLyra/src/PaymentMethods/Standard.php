@@ -93,6 +93,11 @@ class Standard implements AsynchronousPaymentHandlerInterface
      * @var string
      */
     private $shopwareVersion;
+    
+    /**
+     * @var array
+     */
+    private $paymentResult;
 
     public function __construct(
         OrderTransactionStateHandler $transactionStateHandler,
@@ -114,6 +119,10 @@ class Standard implements AsynchronousPaymentHandlerInterface
         $this->csrfTokenManager = $csrfTokenManager;
         $this->translator = $translator;
         $this->shopwareVersion = $shopwareVersion;
+        $this->paymentResult = array(
+            'lyraIsCancelledPayment' => false,
+            'lyraIsPaymentError' => false
+        );
     }
 
     /**
@@ -183,7 +192,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
 
             'threeds_mpi' => $threedsMpi,
 
-            'url_return' => ($this->getConfig('return_mode', $salesChannelId) == 'POST') ? $this->getConfig('check_url', $salesChannelId) : $transaction->getReturnUrl()
+            'url_return' => $this->getConfig('check_url', $salesChannelId)
         ];
 
         $request->setFromArray($params);
@@ -275,9 +284,6 @@ EOT;
         $session->set('lyraGoingIntoProductionInfo', false);
         $session->set('lyraCheckUrlWarn', false);
         $session->set('lyraTechError', false);
-
-        $session->set('lyraIsCancelledPayment', false);
-        $session->set('lyraIsPaymentError', false);
 
         $lyraResponse = new LyraResponse(
             $params->all(),
@@ -406,9 +412,9 @@ EOT;
                 } else {
                     $this->logger->info("Payment failed or cancelled for order #$orderId. {$lyraResponse->getLogMessage()}");
                     if ($lyraResponse->isCancelledPayment()) {
-                        $session->set('lyraIsCancelledPayment', true);
+                        $this->paymentResult['lyraIsCancelledPayment'] = true;
                     } else {
-                        $session->set('lyraIsPaymentError', true);
+                        $this->paymentResult['lyraIsPaymentError'] = true;
                     }
                 }
 
@@ -452,9 +458,9 @@ EOT;
                     $this->logger->info('RETURN URL PROCESS END.');
 
                     if ($lyraResponse->isCancelledPayment()) {
-                        $session->set('lyraIsCancelledPayment', true);
+                        $this->paymentResult['lyraIsCancelledPayment'] = true;
                     } else {
-                        $session->set('lyraIsPaymentError', true);
+                        $this->paymentResult['lyraIsPaymentError'] = true;
                     }
                 }
             }
@@ -464,6 +470,15 @@ EOT;
             && Tools::$pluginFeatures['prodfaq'] && $lyraResponse->isAcceptedPayment()) {
             $session->set('lyraGoingIntoProductionInfo', true);
         }
+    }
+
+    public function finalizePayment(
+        AsyncPaymentTransactionStruct $transaction,
+        Request $request,
+        SalesChannelContext $salesChannelContext
+        ): array {
+            $this->finalize($transaction, $request, $salesChannelContext);
+            return $this->paymentResult;
     }
 
     /**

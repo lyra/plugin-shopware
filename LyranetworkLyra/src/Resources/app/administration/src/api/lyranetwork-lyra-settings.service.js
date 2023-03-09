@@ -89,6 +89,38 @@ class LyranetworkLyraSettingsService extends ApiService {
                 return ApiService.handleResponse(response);
             });
     }
+
+    setOrderPlacedFlow(requestBody) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .post(
+                `_action/${this.getApiBasePath()}/set-order-placed-flow`,
+                requestBody,
+                {
+                    headers: headers
+                }
+            )
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
+
+    isFlow(params) {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .get(
+                `_action/${this.getApiBasePath()}/is-flow`,
+                {
+                    params: params,
+                    headers: headers
+                }
+            )
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
 }
 
 Application.addServiceProvider('LyranetworkLyraSettingsService', (container) => {

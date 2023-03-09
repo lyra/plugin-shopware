@@ -20,6 +20,11 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService" />
         </service>
 
+        <service id="Lyranetwork\Lyra\Service\FlowService">
+            <argument type="service" id="flow.repository" />
+            <argument type="service" id="lyra.logger" />
+        </service>
+
         <service id="Lyranetwork\Lyra\Service\LocaleCodeService">
             <argument type="service" id="language.repository" />
         </service>

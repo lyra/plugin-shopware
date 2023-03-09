@@ -18,6 +18,8 @@
 
         <service id="Lyranetwork\Lyra\Controller\SettingsController">
             <argument type="service" id="state_machine_state.repository" />
+            <argument type="service" id="Lyranetwork\Lyra\Service\FlowService" />
+            <argument type="service" id="Lyranetwork\Lyra\Service\ConfigService" />
             <argument type="string">%kernel.project_dir%</argument>
             <argument type="service" id="lyra.logger" />
         </service>

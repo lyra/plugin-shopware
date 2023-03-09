@@ -388,5 +388,16 @@
             <helpText lang="fr-FR">Définir le statut de paiement des commandes payées par ce mode de paiement.</helpText>
             <helpText lang="es-ES">Define el estado de pago de los pedidos pagados con este modo de pago.</helpText>
         </input-field>
+        <input-field type="bool">
+            <name>lyraOrderPlacedFlowEnabled</name>
+            <label>Order placed flow</label>
+            <label lang="de-DE">Order placed flow</label>
+            <label lang="fr-FR">Flux Order placed</label>
+            <label lang="es-ES">Flujo Order placed</label>
+            <helpText>If enabled, the « Order placed » flow will be set to active. Warning: Disabling this option will disable all actions defined in the « Order placed » flow. The flow will be disabled for all other plugins and applications.</helpText>
+            <helpText lang="de-DE">If enabled, the « Order placed » flow will be set to active. Warning: Disabling this option will disable all actions defined in the « Order placed » flow. The flow will be disabled for all other plugins and applications.</helpText>
+            <helpText lang="fr-FR">Si activé, le flux « Order placed » sera activé. Attention: La désactivation de cette option va désactiver toutes les actions définies dans le flux « Order placed ». Le flux sera désactivé pour tous les autres plugins et applications.</helpText>
+            <helpText lang="es-ES">Si está habilitado, el flujo « Order placed » se activará. Advertencia: Al deshabilitar esta opción, se deshabilitarán todas las acciones definidas en el flujo « Order placed ». El flujo se desactivará para todos los demás complementos y aplicaciones.</helpText>
+        </input-field>
     </card>
 </config>
