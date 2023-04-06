@@ -163,6 +163,14 @@ class Standard implements AsynchronousPaymentHandlerInterface
 
         $version = Tools::getDefault('CMS_IDENTIFIER') . '_v' . Tools::getDefault('PLUGIN_VERSION');
 
+        $transactionReturnUrl = $transaction->getReturnUrl();
+        if (strpos($transactionReturnUrl, '/payment/finalize-transaction') !== false) {
+            $returnurl = explode('/payment/finalize-transaction', $transactionReturnUrl);
+            $transactionReturnUrl = $returnurl[0] . '/lyra/finalize';
+        } else {
+            $transactionReturnUrl = $this->getConfig('check_url', $salesChannelId);
+        }
+
         $params = [
             'amount' => $currency->convertAmountToInteger($transaction->getOrderTransaction()->getAmount()->getTotalPrice()),
             'currency' => $currency->getNum(),
@@ -192,7 +200,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
 
             'threeds_mpi' => $threedsMpi,
 
-            'url_return' => $this->getConfig('check_url', $salesChannelId)
+            'url_return' => $transactionReturnUrl
         ];
 
         $request->setFromArray($params);
