@@ -49,15 +49,15 @@ class ConfigInstaller
      */
     private $defaultValues;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, Context $context)
     {
         $this->container = $container;
         $this->systemConfigService = $this->container->get(SystemConfigService::class);
         $this->initTranslations();
-        $this->initDefaults();
+        $this->initDefaults($context);
     }
 
-    private function initDefaults()
+    private function initDefaults(Context $context)
     {
         $lang = Tools::getDefault('LANGUAGE');
 
@@ -71,7 +71,7 @@ class ConfigInstaller
             'lyraKeyProd' => Tools::getDefault('KEY_PROD'),
             'lyraCtxMode' => Tools::getDefault('CTX_MODE'),
             'lyraSignAlgo' => Tools::getDefault('SIGN_ALGO'),
-            'lyraCheckUrl' => $this->getBaseUrl() . '/lyra/finalize',
+            'lyraCheckUrl' => $this->getBaseUrl($context) . '/lyra/finalize',
             'lyraPlatformUrl' => Tools::getDefault('GATEWAY_URL'),
             'lyraLanguage' => Tools::getDefault('LANGUAGE'),
             'lyraRedirectSuccessTimeout' => '5',
@@ -81,7 +81,7 @@ class ConfigInstaller
             'lyraRedirectErrorMessage' => $this->translations[$lang]['lyraRedirectErrorMessageDefault'],
             'lyraReturnMode' => 'GET',
             'lyraPaymentStatusOnSuccess' => 'paid',
-            'lyraOrderPlacedFlowEnabled' => $this->getShopwareOrderPlacedFlowActive()
+            'lyraOrderPlacedFlowEnabled' => $this->getShopwareOrderPlacedFlowActive($context)
         ];
     }
 
@@ -169,7 +169,7 @@ class ConfigInstaller
         }
     }
 
-    private function getBaseUrl(): ?string
+    private function getBaseUrl(Context $context): ?string
     {
         /**
          * @var EntityRepository $domainRepository
@@ -182,19 +182,19 @@ class ConfigInstaller
         $criteria->addFilter(new EqualsFilter('salesChannel.active', '1'));
         $criteria->addFilter(new ContainsFilter('url', 'https'));
 
-        $domains = $domainRepository->search($criteria, Context::createDefaultContext());
+        $domains = $domainRepository->search($criteria, $context);
         if ($domains->count() === 0) {
             $criteria = new Criteria();
             $criteria->addAssociation('salesChannel');
             $criteria->addFilter(new EqualsFilter('salesChannel.active', '1'));
 
-            $domains = $domainRepository->search($criteria, Context::createDefaultContext());
+            $domains = $domainRepository->search($criteria, $context);
         }
 
         return ($domains->count() > 0) ? $domains->first()->getUrl() : '';
     }
 
-    private function getShopwareOrderPlacedFlowActive(): bool
+    private function getShopwareOrderPlacedFlowActive(Context $context): bool
     {
         $shopwareVersion = $this->container->getParameter('kernel.shopware_version');
         if (version_compare($shopwareVersion, '6.4.6.0', '>=')) {
@@ -205,7 +205,7 @@ class ConfigInstaller
 
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('name', 'Order placed'));
-            $orderPlacedFlow = $flowRepository->search($criteria, Context::createDefaultContext());
+            $orderPlacedFlow = $flowRepository->search($criteria, $context);
 
             return ($orderPlacedFlow->count() > 0) ? $orderPlacedFlow->first()->isActive() : false;
         }

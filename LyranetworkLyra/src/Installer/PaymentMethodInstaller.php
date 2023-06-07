@@ -63,16 +63,17 @@ class PaymentMethodInstaller
         $this->paymentMethodSalesChannelRepository = $this->container->get('sales_channel_payment_method.repository');
     }
 
-    public function install(InstallContext $context): void
+    public function install(InstallContext $installContext): void
     {
-        $paymentMethodExists = $this->getPaymentMethodId();
+        $context = $installContext->getContext();
+        $paymentMethodExists = $this->getPaymentMethodId($context);
 
         // Payment method exists already, no need to continue here.
         if ($paymentMethodExists) {
             return;
         }
 
-        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass('Lyranetwork\\Lyra\\LyranetworkLyra', $context->getContext());
+        $pluginId = $this->pluginIdProvider->getPluginIdByBaseClass('Lyranetwork\\Lyra\\LyranetworkLyra', $context);
 
         $data = [
              // Payment handler will be selected by the identifier.
@@ -82,9 +83,9 @@ class PaymentMethodInstaller
             'pluginId' => $pluginId
         ];
 
-        $this->paymentMethodRepository->create([$data], $context->getContext());
+        $this->paymentMethodRepository->create([$data], $context);
 
-        $this->enablePaymentMethodForSaleChannels($this->getPaymentMethodId(), $context->getContext());
+        $this->enablePaymentMethodForSaleChannels($this->getPaymentMethodId($context), $context);
     }
 
     public function update(UpdateContext $context): void
@@ -106,11 +107,11 @@ class PaymentMethodInstaller
         $this->setPaymentMethodStatus(false, $context->getContext());
     }
 
-    private function getPaymentMethodId(): ?string
+    private function getPaymentMethodId(Context $context): ?string
     {
         // Fetch ID for update.
         $paymentCriteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', Standard::class));
-        $paymentIds = $this->paymentMethodRepository->searchIds($paymentCriteria, Context::createDefaultContext());
+        $paymentIds = $this->paymentMethodRepository->searchIds($paymentCriteria, $context);
 
         if ($paymentIds->getTotal() === 0) {
             return null;
@@ -121,7 +122,7 @@ class PaymentMethodInstaller
 
     private function setPaymentMethodStatus(bool $active, Context $context): void
     {
-        $paymentMethodId = $this->getPaymentMethodId();
+        $paymentMethodId = $this->getPaymentMethodId($context);
 
         // Payment does not even exist, so nothing to (de-)activate here.
         if (! $paymentMethodId) {
