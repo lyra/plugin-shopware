@@ -1,3 +1,7 @@
+# 3.0.3, 2023-05-30:
+- Replace deprecated code.
+- Some code fixes.
+
 # 3.0.2, 2023-04-06:
 - Bug fix: Fix return Url in case of multiple domains for a saleschannel.
 

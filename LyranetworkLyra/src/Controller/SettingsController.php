@@ -152,7 +152,7 @@ class SettingsController extends AbstractController
         $criteria->addAssociation('stateMachine');
         $criteria->addFilter(new EqualsFilter('stateMachine.technicalName', 'order_transaction.state'));
 
-        $entities = $this->stateMachineStateRepository->search($criteria, Context::createDefaultContext())->getEntities();
+        $entities = $this->stateMachineStateRepository->search($criteria, $context)->getEntities();
 
         $paymentStatuses = [];
         if($entities instanceof StateMachineStateCollection) {
@@ -190,9 +190,9 @@ class SettingsController extends AbstractController
      */
     public function setOrderPlacedFlow(Request $request, Context $context): JsonResponse
     {
-        $shopwareVersion = (string) $request->get('shopwareVersion');
+        $shopwareVersion = $request->request->has('shopwareVersion') ? (string) $request->request->get('shopwareVersion') : null;
         if (! empty($shopwareVersion) && version_compare($shopwareVersion, '6.4.6.0', '>=')) {
-            $salesChannelId = empty((string) $request->get('salesChannelId')) ? null : (string) $request->get('salesChannelId');
+            $salesChannelId = $request->request->has('salesChannelId') ? (string) $request->request->get('salesChannelId') : null;
             $active = ($this->configService->get('order_placed_flow_enabled', $salesChannelId) == 'true') ? true : false;
             $this->flowService->updateFlowActive('Order placed', $active, $context);
         }

@@ -35,7 +35,7 @@ class LyranetworkLyra extends Plugin
 {
     public function install(InstallContext $context): void
     {
-        (new ConfigInstaller($this->container))->install($context);
+        (new ConfigInstaller($this->container, $context->getContext()))->install($context);
 
         (new PaymentMethodInstaller($this->container))->install($context);
         (new CustomFieldInstaller($this->container))->install($context);

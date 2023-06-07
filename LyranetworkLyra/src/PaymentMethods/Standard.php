@@ -40,6 +40,7 @@ use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\RouterInterface;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -90,6 +91,11 @@ class Standard implements AsynchronousPaymentHandlerInterface
     private $translator;
 
     /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
      * @var string
      */
     private $shopwareVersion;
@@ -108,6 +114,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
         LocaleCodeService $localeCodeService,
         CsrfTokenManagerInterface $csrfTokenManager,
         TranslatorInterface $translator,
+        RouterInterface $router,
         string $shopwareVersion
     ) {
         $this->transactionStateHandler = $transactionStateHandler;
@@ -118,6 +125,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
         $this->localeCodeService = $localeCodeService;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->translator = $translator;
+        $this->router = $router;
         $this->shopwareVersion = $shopwareVersion;
         $this->paymentResult = array(
             'lyraIsCancelledPayment' => false,
@@ -163,14 +171,6 @@ class Standard implements AsynchronousPaymentHandlerInterface
 
         $version = Tools::getDefault('CMS_IDENTIFIER') . '_v' . Tools::getDefault('PLUGIN_VERSION');
 
-        $transactionReturnUrl = $transaction->getReturnUrl();
-        if (strpos($transactionReturnUrl, '/payment/finalize-transaction') !== false) {
-            $returnurl = explode('/payment/finalize-transaction', $transactionReturnUrl);
-            $transactionReturnUrl = $returnurl[0] . '/lyra/finalize';
-        } else {
-            $transactionReturnUrl = $this->getConfig('check_url', $salesChannelId);
-        }
-
         $params = [
             'amount' => $currency->convertAmountToInteger($transaction->getOrderTransaction()->getAmount()->getTotalPrice()),
             'currency' => $currency->getNum(),
@@ -200,7 +200,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
 
             'threeds_mpi' => $threedsMpi,
 
-            'url_return' => $transactionReturnUrl
+            'url_return' => $this->router->generate('lyra_finalize', [], $this->router::ABSOLUTE_URL)
         ];
 
         $request->setFromArray($params);
