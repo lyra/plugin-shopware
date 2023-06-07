@@ -17,24 +17,36 @@
                     <template v-if="isLyraPayment(transaction)">
                         <sw-container columns="1fr 1fr">
                             <sw-description-list>
-                                <dt>{{ $tc('lyraTransactionId') }}</dt>
-                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_id }}</dd>
-
-                                <dt>{{ $tc('lyraTransactionUuid') }}</dt>
-                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_uuid }}</dd>
-
-                                <dt>{{ $tc('lyraTransactionType') }}</dt>
-                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_type }}</dd>
+                                <dl>
+                                    <div>
+                                        <dt>{{ $tc('lyraTransactionId') }}</dt>
+                                        <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_id }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>{{ $tc('lyraTransactionUuid') }}</dt>
+                                        <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_uuid }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>{{ $tc('lyraTransactionType') }}</dt>
+                                        <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_transaction_type }}</dd>
+                                    </div>
+                                </dl>
                             </sw-description-list>
                             <sw-description-list>
-                                <dt>{{ $tc('lyraMeansOfPayment') }}</dt>
-                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_means_of_payment }}</dd>
-
-                                <dt>{{ $tc('lyraCardNumber') }}</dt>
-                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_card_number }}</dd>
-
-                                <dt>{{ $tc('lyraCardExpirationDate') }}</dt>
-                                <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_card_expiration_date }}</dd>
+                                <dl>
+                                    <div>
+                                        <dt>{{ $tc('lyraMeansOfPayment') }}</dt>
+                                        <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_means_of_payment }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>{{ $tc('lyraCardNumber') }}</dt>
+                                        <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_card_number }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt>{{ $tc('lyraCardExpirationDate') }}</dt>
+                                        <dd class="sw-order-base__label-sales-channel">{{ transaction.customFields.lyra_card_expiration_date }}</dd>
+                                    </div>
+                                </dl>
                             </sw-description-list>
                         </sw-container>
                     </template>

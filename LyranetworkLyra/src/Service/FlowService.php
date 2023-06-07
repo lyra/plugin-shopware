@@ -35,19 +35,30 @@ class FlowService
         $this->logger = $logger;
     }
 
-    public function getFlowIdByName(string $name): ?string
+    /**
+     * @param string $name
+     * @return string|null
+     */
+    public function getFlowIdByName(string $name, Context $context): ?string
     {
         if (! empty($name)) {
             $criteria = new Criteria();
             $criteria->addFilter(new EqualsFilter('name', $name));
 
-            return $this->flowRepository->searchIds($criteria, Context::createDefaultContext())->firstId();
+            return $this->flowRepository->searchIds($criteria, $context)->firstId();
         }
+
+        return null;
     }
 
+    /**
+     * @param string $name
+     * @param bool $active
+     * @param Context $context
+     */
     public function updateFlowActive(string $name, bool $active, Context $context)
     {
-        $flowId = $this->getFlowIdByName($name);
+        $flowId = $this->getFlowIdByName($name, $context);
         if ($flowId) {
             $flow = [
                 'id' => $flowId,

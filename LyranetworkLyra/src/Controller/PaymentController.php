@@ -38,7 +38,7 @@ class PaymentController extends StorefrontController
      * @var AccountService
      */
     private $accountService;
-    
+
     /**
      * @var RouterInterface
      */
@@ -105,7 +105,7 @@ class PaymentController extends StorefrontController
             /**
              * @var null|OrderTransactionEntity $orderTransaction
              */
-            $orderTransaction = $this->transactionRepository->search($criteria, Context::createDefaultContext())->first();
+            $orderTransaction = $this->transactionRepository->search($criteria, $salesChannelContext->getContext())->first();
 
             if ($orderTransaction) {
                 /**
@@ -149,7 +149,6 @@ class PaymentController extends StorefrontController
     
     /**
      * @param RouterInterface $router
-     * @return string
      */
     public function addFlashMessages(array $messages)
     {

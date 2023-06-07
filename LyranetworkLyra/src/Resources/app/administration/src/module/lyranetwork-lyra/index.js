@@ -26,7 +26,7 @@ let configuration = {
     name: 'Lyra Collect',
     title: 'lyraTitle',
     description: 'lyraGeneral.descriptionTextModule',
-    version: '3.0.2',
+    version: '3.0.3',
     icon: 'default-action-settings',
 
     snippets: {
