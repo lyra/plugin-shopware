@@ -8,10 +8,10 @@
  */
 
 const { Component, Mixin } = Shopware;
-import template from './sw-order-detail-base.html.twig';
-import './sw-order-detail-base.scss';
+import template from './sw-order-detail-details.html.twig';
+import './sw-order-detail-details.scss';
 
-Component.override('sw-order-detail-base', {
+Component.override('sw-order-detail-details', {
     template,
 
     methods: {

@@ -13,7 +13,7 @@ namespace Lyranetwork\Lyra\Controller;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
@@ -31,10 +31,11 @@ use Lyranetwork\Lyra\Sdk\Form\Api as LyraApi;
 use Lyranetwork\Lyra\Service\ConfigService;
 use Lyranetwork\Lyra\Service\FlowService;
 
+#[Route(defaults: ['_routeScope' => ['api']])]
 class SettingsController extends AbstractController
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $stateMachineStateRepository;
 
@@ -59,7 +60,7 @@ class SettingsController extends AbstractController
     private $logger;
 
     public function __construct(
-        EntityRepositoryInterface $stateMachineStateRepository,
+        EntityRepository $stateMachineStateRepository,
         FlowService $flowService,
         ConfigService $configService,
         string $shopwareDirectory,
@@ -72,11 +73,7 @@ class SettingsController extends AbstractController
         $this->logger = $logger;
     }
 
-    /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/_action/lyra/get-features", name="api.action.lyra.get.features", methods={"GET"})
-     * @Route("/api/v{version}/_action/lyra/get-features", name="api.action.lyra.get.features.legacy", methods={"GET"})
-     */
+    #[Route(path: '/api/_action/lyra/get-features', name: 'api.action.lyra.get.features', methods: ['GET'])]
     public function getFeatures(Request $request, Context $context): JsonResponse
     {
         return new JsonResponse(
@@ -87,41 +84,24 @@ class SettingsController extends AbstractController
         );
     }
 
-    /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/_action/lyra/get-card-types", name="api.action.lyra.get.card_types", methods={"GET"})
-     * @Route("/api/v{version}/_action/lyra/get-card-types", name="api.action.lyra.get.card_types.legacy", methods={"GET"})
-     */
+    #[Route(path: '/api/_action/lyra/get-card-types', name: 'api.action.lyra.get.card_types', methods: ['GET'])]
     public function getCardTypes(Request $request, Context $context): JsonResponse
     {
         $cardTypes = LyraApi::getSupportedCardTypes();
         return new JsonResponse(['data' => $cardTypes, 'total' => count($cardTypes)]);
     }
 
-    /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/_action/lyra/get-languages", name="api.action.lyra.get.languages", methods={"GET"})
-     * @Route("/api/v{version}/_action/lyra/get-languages", name="api.action.lyra.get.languages.legacy", methods={"GET"})
-     */
+    #[Route(path: '/api/_action/lyra/get-languages', name: 'api.action.lyra.get.languages', methods: ['GET'])]
     public function getLanguages(Request $request, Context $context): JsonResponse
     {
         $supportedLanguages = LyraApi::getSupportedLanguages();
         return new JsonResponse(['data' => $supportedLanguages, 'total' => count($supportedLanguages)]);
     }
 
-    /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/_action/lyra/get-doc-files", name="api.action.lyra.get.doc_files", methods={"GET"})
-     * @Route("/api/v{version}/_action/lyra/get-doc-files", name="api.action.lyra.get.doc_files.legacy", methods={"GET"})
-     */
+    #[Route(path: '/api/_action/lyra/get-doc-files', name: 'api.action.lyra.get.doc_files', methods: ['GET'])]
     public function getDocFiles(Request $request, Context $context): JsonResponse
     {
-        $docPattern= $this->shopwareDirectory . '/public/bundles/lyranetworklyra/installation_doc/' . Tools::getDocPattern();
-
         // Get documentation links.
-        $docs = [];
-        $filenames = glob(str_replace('\\', '/', $docPattern));
-
         $languages = [
             'fr' => 'Français',
             'en' => 'English',
@@ -130,22 +110,19 @@ class SettingsController extends AbstractController
             // Complete when other languages are managed.
         ];
 
+        $docs = [];
         foreach (LyraApi::getOnlineDocUri() as $lang => $docUri) {
             $docs[] = [
                 'name' => 'lyraDocumentation' . $lang,
                 'title' => $languages[strtolower($lang)],
-                'link' => $docUri . 'shopware64/sitemap.html'
+                'link' => $docUri . 'shopware65/sitemap.html'
             ];
         }
 
         return new JsonResponse(['data' => $docs, 'total' => count($docs)]);
     }
 
-    /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/_action/lyra/get-payment-statuses", name="api.action.lyra.get.payment_statuses", methods={"GET"})
-     * @Route("/api/v{version}/_action/lyra/get-payment-statuses", name="api.action.lyra.get.payment_statuses.legacy", methods={"GET"})
-     */
+    #[Route(path: '/api/_action/lyra/get-payment-statuses', name: 'api.action.lyra.get.payment_statuses', methods: ['GET'])]
     public function getPaymentStatuses(Request $request, Context $context): JsonResponse
     {
         $criteria = new Criteria();
@@ -168,11 +145,7 @@ class SettingsController extends AbstractController
         return new JsonResponse(['data' => $paymentStatuses, 'total' => count($paymentStatuses)]);
     }
 
-    /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/_action/lyra/is-flow", name="api.action.lyra.is.flow", methods={"GET"})
-     * @Route("/api/v{version}/_action/lyra/is-flow", name="api.action.lyra.is.flow.legacy", methods={"GET"})
-     */
+    #[Route(path: '/api/_action/lyra/is-flow', name: 'api.action.lyra.is.flow', methods: ['GET'])]
     public function isFlow(Request $request, Context $context): JsonResponse
     {
         $shopwareVersion = $request->query->has('shopwareVersion') ? (string) $request->query->get('shopwareVersion') : null;
@@ -183,11 +156,7 @@ class SettingsController extends AbstractController
         );
     }
 
-    /**
-     * @RouteScope(scopes={"api"})
-     * @Route("/api/_action/lyra/set-order-placed-flow", name="api.action.lyra.set.order_placed_flow", methods={"POST"})
-     * @Route("/api/v{version}/_action/lyra/set-order-placed-flow", name="api.action.lyra.set.order_placed_flow.legacy", methods={"POST"})
-     */
+    #[Route(path: '/api/_action/lyra/set-order-placed-flow', name: 'api.action.lyra.set.order_placed_flow', methods: ['POST'])]
     public function setOrderPlacedFlow(Request $request, Context $context): JsonResponse
     {
         $shopwareVersion = $request->request->has('shopwareVersion') ? (string) $request->request->get('shopwareVersion') : null;

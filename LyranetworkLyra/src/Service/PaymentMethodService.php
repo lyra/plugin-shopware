@@ -14,7 +14,7 @@ namespace Lyranetwork\Lyra\Service;
 use Shopware\Core\Checkout\Payment\PaymentMethodCollection;
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
@@ -24,18 +24,18 @@ use Lyranetwork\Lyra\PaymentMethods\Standard;
 class PaymentMethodService
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $paymentRepository;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $salesChannelRepository;
 
     public function __construct(
-        EntityRepositoryInterface $paymentRepository,
-        EntityRepositoryInterface $salesChannelRepository
+        EntityRepository $paymentRepository,
+        EntityRepository $salesChannelRepository
     ) {
         $this->paymentRepository = $paymentRepository;
         $this->salesChannelRepository = $salesChannelRepository;

@@ -18,7 +18,7 @@ use Lyranetwork\Lyra\Installer\PaymentMethodInstaller;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Plugin;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
@@ -33,6 +33,14 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class LyranetworkLyra extends Plugin
 {
+    public function build(ContainerBuilder $container): void
+    {
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/DependencyInjection'));
+        $loader->load('services.xml');
+
+        parent::build($container);
+    }
+
     public function install(InstallContext $context): void
     {
         (new ConfigInstaller($this->container, $context->getContext()))->install($context);
