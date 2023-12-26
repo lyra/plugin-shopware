@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace Lyranetwork\Lyra\Installer;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Plugin\Context\ActivateContext;
 use Shopware\Core\Framework\Plugin\Context\DeactivateContext;
 use Shopware\Core\Framework\Plugin\Context\InstallContext;
@@ -34,12 +34,12 @@ class CustomFieldInstaller
     public const FIELDSET_ID_ORDER_TRANSACTION = '25193afbc92646a8b898b211518ccf6d';
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $customFieldRepository;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $customFieldSetRepository;
 

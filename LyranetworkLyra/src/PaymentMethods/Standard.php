@@ -43,9 +43,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Context;
 
 class Standard implements AsynchronousPaymentHandlerInterface
@@ -56,7 +55,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
     private $transactionStateHandler;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $transactionRepository;
 
@@ -81,11 +80,6 @@ class Standard implements AsynchronousPaymentHandlerInterface
     private $localeCodeService;
 
     /**
-     * @var CsrfTokenManagerInterface
-     */
-    private $csrfTokenManager;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -99,7 +93,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
      * @var string
      */
     private $shopwareVersion;
-    
+
     /**
      * @var array
      */
@@ -107,12 +101,11 @@ class Standard implements AsynchronousPaymentHandlerInterface
 
     public function __construct(
         OrderTransactionStateHandler $transactionStateHandler,
-        EntityRepositoryInterface $transactionRepository,
+        EntityRepository $transactionRepository,
         ConfigService $configService,
         LoggerInterface $logger,
         OrderService $orderService,
         LocaleCodeService $localeCodeService,
-        CsrfTokenManagerInterface $csrfTokenManager,
         TranslatorInterface $translator,
         RouterInterface $router,
         string $shopwareVersion
@@ -123,7 +116,6 @@ class Standard implements AsynchronousPaymentHandlerInterface
         $this->logger = $logger;
         $this->orderService = $orderService;
         $this->localeCodeService = $localeCodeService;
-        $this->csrfTokenManager = $csrfTokenManager;
         $this->translator = $translator;
         $this->router = $router;
         $this->shopwareVersion = $shopwareVersion;
@@ -232,9 +224,6 @@ class Standard implements AsynchronousPaymentHandlerInterface
 
         $this->logger->info("Buyer {$customer->getEmail()} sent to payment gateway for order #{$order->getOrderNumber()}.");
         $this->logger->debug('Form data: ' . print_r($request->getRequestFieldsArray(true), true));
-
-        $csrfToken = $this->csrfTokenManager->getToken('payment.finalize.transaction')->getValue();
-        $request->set('return_post_params', '_csrf_token=' . $csrfToken);
 
         $msg = $this->translator->trans('lyraRedirectWaitText');
 

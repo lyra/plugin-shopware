@@ -67,12 +67,9 @@
                                 {{ $tc('lyraDocumentationDescription') }}
                             </p>
 
-                            <sw-dashboard-external-link
-                                v-for="docFile in docFiles"
-                                :name="docFile.name"
-                                :title="docFile.title"
-                                :link="docFile.link">
-                            </sw-dashboard-external-link>
+                            <a v-for="docFile in docFiles" :href="docFile.link" target="_blank" style="margin-left: 10px; font-weight: bold; text-transform: uppercase;">
+                                {{ docFile.title }}
+                            </a>
                         </div>
                     </sw-container>
                 </sw-modal>

@@ -12,18 +12,18 @@ declare(strict_types=1);
 namespace Lyranetwork\Lyra\Service;
 
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\Language\LanguageCollection;
 
 class LocaleCodeService
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $languageRepository;
 
-    public function __construct(EntityRepositoryInterface $languageRepository)
+    public function __construct(EntityRepository $languageRepository)
     {
         $this->languageRepository = $languageRepository;
     }

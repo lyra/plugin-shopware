@@ -30,7 +30,6 @@
             <argument type="service" id="lyra.logger" />
             <argument type="service" id="Lyranetwork\Lyra\Service\OrderService" />
             <argument type="service" id="Lyranetwork\Lyra\Service\LocaleCodeService" />
-            <argument type="service" id="Symfony\Component\Security\Csrf\CsrfTokenManagerInterface" />
             <argument type="service" id="translator" />
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router" />
             <argument>%kernel.shopware_version%</argument>

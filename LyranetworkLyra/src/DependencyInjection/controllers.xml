@@ -22,6 +22,10 @@
             <argument type="service" id="Lyranetwork\Lyra\Service\ConfigService" />
             <argument type="string">%kernel.project_dir%</argument>
             <argument type="service" id="lyra.logger" />
+
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
         </service>
 
         <service id="Lyranetwork\Lyra\Controller\PaymentController" public="true">

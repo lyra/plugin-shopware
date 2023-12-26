@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Order\OrderDefinition;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\StateMachine\StateMachineRegistry;
@@ -27,7 +27,7 @@ use Shopware\Core\Checkout\Order\OrderStates;
 class OrderService
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $orderRepository;
 
@@ -42,7 +42,7 @@ class OrderService
     private $logger;
 
     public function __construct(
-        EntityRepositoryInterface $orderRepository,
+        EntityRepository $orderRepository,
         StateMachineRegistry $stateMachineRegistry,
         LoggerInterface $logger
     ) {

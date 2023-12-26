@@ -13,14 +13,14 @@ namespace Lyranetwork\Lyra\Service;
 
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class FlowService
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $flowRepository;
 
@@ -29,7 +29,7 @@ class FlowService
      */
     private $logger;
 
-    public function __construct(EntityRepositoryInterface $flowRepository, LoggerInterface $logger)
+    public function __construct(EntityRepository $flowRepository, LoggerInterface $logger)
     {
         $this->flowRepository = $flowRepository;
         $this->logger = $logger;

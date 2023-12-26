@@ -26,12 +26,13 @@ use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+#[Route(defaults: ['_routeScope' => ['storefront']])]
 class PaymentController extends StorefrontController
 {
     /**
@@ -50,7 +51,7 @@ class PaymentController extends StorefrontController
     private $standardPayment;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $transactionRepository;
 
@@ -63,7 +64,7 @@ class PaymentController extends StorefrontController
         AccountService $accountService,
         RouterInterface $router,
         Standard $standardPayment,
-        EntityRepositoryInterface $transactionRepository,
+        EntityRepository $transactionRepository,
         LoggerInterface $logger
     ) {
         $this->accountService = $accountService;
@@ -73,10 +74,7 @@ class PaymentController extends StorefrontController
         $this->logger = $logger;
     }
 
-    /**
-     * @RouteScope(scopes={"storefront"})
-     * @Route("/lyra/finalize", defaults={"csrf_protected"=false, "auth_required"=false}, name="lyra_finalize", methods={"GET", "POST"})
-     */
+    #[Route(path: '/lyra/finalize', defaults: ['csrf_protected' => false, 'auth_required' => false], name: 'lyra_finalize', methods: ['GET', 'POST'])]
     public function finalize(Request $request, SalesChannelContext $salesChannelContext): Response
     {
         $params = (($request->getMethod() === Request::METHOD_POST)) ? $request->request : $request->query;
@@ -146,7 +144,7 @@ class PaymentController extends StorefrontController
 
         return new Response();
     }
-    
+
     /**
      * @param RouterInterface $router
      */
@@ -155,6 +153,7 @@ class PaymentController extends StorefrontController
         if (array_key_exists('lyraIsCancelledPayment', $messages) && ($messages['lyraIsCancelledPayment'] == true)) {
             $this->addFlash('warning', $this->trans('lyraPaymentCancel'));
         }
+
         if (array_key_exists('lyraIsPaymentError', $messages) && ($messages['lyraIsPaymentError'] == true)) {
             $this->addFlash('warning', $this->trans('lyraPaymentError'));
         }

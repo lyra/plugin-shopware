@@ -12,7 +12,7 @@ import './component/lyranetwork-lyra-icon';
 
 import './page/lyranetwork-lyra-settings';
 
-import './extension/sw-order-detail-base';
+import './extension/sw-order';
 import './extension/sw-settings-index';
 import './extension/sw-extension-card-base';
 
@@ -26,7 +26,7 @@ let configuration = {
     name: 'Lyra Collect',
     title: 'lyraTitle',
     description: 'lyraGeneral.descriptionTextModule',
-    version: '3.0.3',
+    version: '4.0.0',
     icon: 'default-action-settings',
 
     snippets: {
