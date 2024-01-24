@@ -36,6 +36,20 @@
             <tag name="shopware.payment.method.async" />
         </service>
 
+        <service id="Lyranetwork\Lyra\PaymentMethods\Rest">
+            <argument type="service" id="Shopware\Core\Checkout\Customer\SalesChannel\AccountService" />
+            <argument type="service" id="Shopware\Storefront\Framework\Routing\Router" />
+            <argument type="service" id="lyra.logger" />
+            <argument type="service" id="Lyranetwork\Lyra\Service\ConfigService" />
+            <argument type="service" id="translator" />
+            <argument type="service" id="Lyranetwork\Lyra\Service\OrderService" />
+            <argument id="Lyranetwork\Lyra\Sdk\RestData" type="service" />
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler" />
+            <argument type="service" id="order_transaction.repository" />
+            <argument type="service" id="request_stack" />
+            <tag name="shopware.payment.method.sync" />
+        </service>
+
         <service id="lyra.logger" class="Monolog\Logger">
             <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating" />
             <argument type="string">lyra/lyra</argument>

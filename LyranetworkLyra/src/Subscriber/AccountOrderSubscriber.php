@@ -13,13 +13,13 @@ namespace Lyranetwork\Lyra\Subscriber;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
-use Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoadedEvent;
+use Shopware\Storefront\Page\Account\Order\AccountOrderPageLoadedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Lyranetwork\Lyra\PaymentMethods\Standard;
 use Lyranetwork\Lyra\PaymentMethods\Rest;
 
-class CheckoutFinishSubscriber implements EventSubscriberInterface
+class AccountOrderSubscriber implements EventSubscriberInterface
 {
     /**
      * @var TranslatorInterface
@@ -34,11 +34,11 @@ class CheckoutFinishSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            CheckoutFinishPageLoadedEvent::class => 'onCheckoutFinish'
+            AccountOrderPageLoadedEvent::class => 'onAccountOrder'
         ];
     }
 
-    public function onCheckoutFinish(CheckoutFinishPageLoadedEvent $event): void
+    public function onAccountOrder(AccountOrderPageLoadedEvent $event): void
     {
         $salesChannelContext = $event->getSalesChannelContext();
         $isLyraPayment = ($salesChannelContext->getPaymentMethod()->getHandlerIdentifier() === Standard::class || $salesChannelContext->getPaymentMethod()->getHandlerIdentifier() === Rest::class);
@@ -49,21 +49,18 @@ class CheckoutFinishSubscriber implements EventSubscriberInterface
 
         $session = $event->getRequest()->getSession();
 
-        if ($session->has('lyraGoingIntoProductionInfo') && $session->get('lyraGoingIntoProductionInfo')) {
-            $message = $this->translator->trans('lyraGoingIntoProductionInfo');
-            $session->getFlashBag()->add('warning', $message);
-        }
-
-        if ($session->has('lyraCheckUrlWarn') && $session->get('lyraCheckUrlWarn')) {
-            $message = $this->translator->trans('lyraCheckUrlWarn');
-            $session->getFlashBag()->add('warning', $message);
-
-            $message = $this->translator->trans('lyraCheckUrlWarnDetails');
-            $session->getFlashBag()->add('warning', $message);
-        }
-
         if ($session->has('lyraTechError') && $session->get('lyraTechError')) {
             $message = $this->translator->trans('lyraPaymentFatal');
+            $session->getFlashBag()->add('warning', $message);
+        }
+
+        if ($session->has('lyraPaymentError') && $session->get('lyraPaymentError')) {
+            $message = $this->translator->trans('lyraPaymentError');
+            $session->getFlashBag()->add('warning', $message);
+        }
+
+        if ($session->has('lyraPaymentCancel') && $session->get('lyraPaymentCancel')) {
+            $message = $this->translator->trans('lyraPaymentCancel');
             $session->getFlashBag()->add('warning', $message);
         }
     }

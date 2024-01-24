@@ -6,7 +6,9 @@
         "menuEntry": "Configuration"
     },
     "lyraPaymentInformation": "Payment information",
+    "lyraOrderId": "Lyra order ID",
     "lyraTransactionId": "Transaction ID",
+    "lyraTransactionStatus": "Transaction Status",
     "lyraTransactionUuid": "Transaction UUID",
     "lyraTransactionType": "Transaction type",
     "lyraMeansOfPayment": "Means of payment",
@@ -53,5 +55,15 @@
     "lyraPaymentStatusOnSuccess": "Order payment status",
     "lyraPaymentStatusOnSuccessHelptext": "Defines the payment status of orders paid with this payment mode.",
     "lyraOrderPlacedFlowEnabled": "Order placed flow",
-    "lyraOrderPlacedFlowEnabledHelptext": "If enabled, the « Order placed » flow will be set to active. Warning: Disabling this option will disable all actions defined in the « Order placed » flow. The flow will be disabled for all other plugins and applications."
+    "lyraOrderPlacedFlowEnabledHelptext": "If enabled, the « Order placed » flow will be set to active. Warning: Disabling this option will disable all actions defined in the « Order placed » flow. The flow will be disabled for all other plugins and applications.",
+    "lyraCardDataMode": "Payment data entry mode",
+    "lyraCardDataModeHelptext": "Select how the payment data will be entered. Attention, to use the Smartform, you must ensure that you have subscribed to this option with Lyra Collect.",
+    "lyraRestTheme": "Theme",
+    "lyraRestThemeHelptext": "Select a theme to use to display the Smartform.",
+    "lyraCardDataModes": {
+        "MODE_FORM": "Bank data acquisition on payment gateway",
+        "MODE_SMARTFORM": "Embedded Smartform on merchant site (REST API)",
+        "MODE_SMARTFORM_EXT_WITH_LOGOS": "Embedded Smartform extended on merchant site with logos (REST API)",
+        "MODE_SMARTFORM_EXT_WITHOUT_LOGOS": "Embedded Smartform extended on merchant site without logos (REST API)"
+    }
 }

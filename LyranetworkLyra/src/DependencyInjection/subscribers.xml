@@ -19,10 +19,19 @@
         <service id="Lyranetwork\Lyra\Subscriber\CheckoutConfirmSubscriber">
             <argument id="Lyranetwork\Lyra\Service\ConfigService" type="service" />
             <argument id="Lyranetwork\Lyra\Service\PaymentMethodService" type="service" />
+            <argument id="Lyranetwork\Lyra\Sdk\RestData" type="service" />
+            <argument type="service" id="lyra.logger" />
+            <argument type="service" id="Lyranetwork\Lyra\Service\LocaleCodeService" />
+            <argument type="service" id="Shopware\Storefront\Framework\Routing\Router" />
             <tag name="kernel.event_subscriber" />
         </service>
 
         <service id="Lyranetwork\Lyra\Subscriber\CheckoutFinishSubscriber">
+            <argument type="service" id="translator" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="Lyranetwork\Lyra\Subscriber\AccountOrderSubscriber">
             <argument type="service" id="translator" />
             <tag name="kernel.event_subscriber" />
         </service>

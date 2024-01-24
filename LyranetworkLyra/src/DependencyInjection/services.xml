@@ -39,5 +39,12 @@
             <argument type="service" id="payment_method.repository" />
             <argument type="service" id="sales_channel.repository" />
         </service>
+
+        <service id="Lyranetwork\Lyra\Sdk\RestData">
+            <argument id="Lyranetwork\Lyra\Service\ConfigService" type="service" />
+            <argument type="service" id="lyra.logger" />
+            <argument type="service" id="Lyranetwork\Lyra\Service\LocaleCodeService" />
+            <argument>%kernel.shopware_version%</argument>
+        </service>
     </services>
 </container>

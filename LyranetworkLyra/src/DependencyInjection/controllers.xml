@@ -34,6 +34,8 @@
             <argument key="$standardPayment" type="service" id="Lyranetwork\Lyra\PaymentMethods\Standard" />
             <argument key="$transactionRepository" type="service" id="order_transaction.repository" />
             <argument key="$logger" type="service" id="lyra.logger" />
+            <argument key="$restData" type="service" id="Lyranetwork\Lyra\Sdk\RestData" />
+            <argument key="$restPayment" type="service" id="Lyranetwork\Lyra\PaymentMethods\Rest" />
 
             <call method="setContainer">
                 <argument type="service" id="service_container" />

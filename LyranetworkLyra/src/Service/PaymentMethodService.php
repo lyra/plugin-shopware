@@ -41,19 +41,19 @@ class PaymentMethodService
         $this->salesChannelRepository = $salesChannelRepository;
     }
 
-    public function getPaymentMethodId(Context $context): ?string
+    public function getPaymentMethodId(Context $context, $paymentMethodClass): ?string
     {
         $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('handlerIdentifier', Standard::class));
+        $criteria->addFilter(new EqualsFilter('handlerIdentifier', $paymentMethodClass));
 
         return $this->paymentRepository->searchIds($criteria, $context)->firstId();
     }
 
-    public function isPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext): bool
+    public function isPaymentMethodInSalesChannel(SalesChannelContext $salesChannelContext, $paymentMethodClass): bool
     {
         $context = $salesChannelContext->getContext();
 
-        $paymentMethodId = $this->getPaymentMethodId($context);
+        $paymentMethodId = $this->getPaymentMethodId($context, $paymentMethodClass);
         if (! $paymentMethodId) {
             return false;
         }

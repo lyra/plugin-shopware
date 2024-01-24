@@ -79,7 +79,8 @@ class SettingsController extends AbstractController
         return new JsonResponse(
             [
                 'qualif' => Tools::$pluginFeatures['qualif'],
-                'shatwo' => Tools::$pluginFeatures['shatwo']
+                'shatwo' => Tools::$pluginFeatures['shatwo'],
+                'smartform' => Tools::$pluginFeatures['smartform']
             ]
         );
     }
@@ -96,6 +97,19 @@ class SettingsController extends AbstractController
     {
         $supportedLanguages = LyraApi::getSupportedLanguages();
         return new JsonResponse(['data' => $supportedLanguages, 'total' => count($supportedLanguages)]);
+    }
+
+    #[Route(path: '/api/_action/lyra/get-card-data-modes', name: 'api.action.lyra.get.card_data_modes', methods: ['GET'])]
+    public function getCardDataModes(Request $request, Context $context): JsonResponse
+    {
+        $supportedCardDataModes = ['MODE_FORM' => 'MODE_FORM'];
+        if (Tools::$pluginFeatures['smartform']) {
+            $supportedCardDataModes['MODE_SMARTFORM'] = 'MODE_SMARTFORM';
+            $supportedCardDataModes['MODE_SMARTFORM_EXT_WITH_LOGOS'] = 'MODE_SMARTFORM_EXT_WITH_LOGOS';
+            $supportedCardDataModes['MODE_SMARTFORM_EXT_WITHOUT_LOGOS'] = 'MODE_SMARTFORM_EXT_WITHOUT_LOGOS';
+        }
+
+        return new JsonResponse(['data' => $supportedCardDataModes, 'total' => count($supportedCardDataModes)]);
     }
 
     #[Route(path: '/api/_action/lyra/get-doc-files', name: 'api.action.lyra.get.doc_files', methods: ['GET'])]
@@ -132,7 +146,7 @@ class SettingsController extends AbstractController
         $entities = $this->stateMachineStateRepository->search($criteria, $context)->getEntities();
 
         $paymentStatuses = [];
-        if($entities instanceof StateMachineStateCollection) {
+        if ($entities instanceof StateMachineStateCollection) {
             $elements = $entities->getElements();
             foreach ($elements as $value) {
                 $paymentStatuses[] = [

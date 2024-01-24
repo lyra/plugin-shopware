@@ -6,7 +6,9 @@
         "menuEntry": "Konfiguration"
     },
     "lyraPaymentInformation": "Zahlungsinformationen",
+    "lyraOrderId": "Lyra bestellnummer",
     "lyraTransactionId": "Transaktionsnummer",
+    "lyraTransactionStatus": "Status der Transaktion",
     "lyraTransactionUuid": "Transaktions-UUID",
     "lyraTransactionType": "Art der Transaktion",
     "lyraMeansOfPayment": "Zahlungsmittel",
@@ -53,5 +55,15 @@
     "lyraPaymentStatusOnSuccess": "Zahlungsstatus der Bestellung",
     "lyraPaymentStatusOnSuccessHelptext": "Der Zahlungsstatus der bezahlten Bestellungen durch dieses Beszahlungsmittel definieren.",
     "lyraOrderPlacedFlowEnabled": "Order placed flow",
-    "lyraOrderPlacedFlowEnabledHelptext": "If enabled, the « Order placed » flow will be set to active. Warning: Disabling this option will disable all actions defined in the « Order placed » flow. The flow will be disabled for all other plugins and applications."
+    "lyraOrderPlacedFlowEnabledHelptext": "If enabled, the « Order placed » flow will be set to active. Warning: Disabling this option will disable all actions defined in the « Order placed » flow. The flow will be disabled for all other plugins and applications.",
+    "lyraCardDataMode": "Eingabemodus für Zahlungsdaten",
+    "lyraCardDataModeHelptext": "Wählen Sie aus, wie die Zahlungsdaten eingegeben werden. Achtung, um das Smartform zu verwenden, müssen Sie diese Option bei Lyra Collect unterschrieben haben.",
+    "lyraRestTheme": "Thema",
+    "lyraRestThemeHelptext": "Select a theme to use to display the Smartform.",
+    "lyraCardDataModes": {
+        "MODE_FORM": "Einspeisung der Karteninformationen in die Zahlungsschnittstelle",
+        "MODE_SMARTFORM": "Eingebettete Smartform Zahlungsfelder auf Händlerwebseite (REST-API)",
+        "MODE_SMARTFORM_EXT_WITH_LOGOS": "Eingebettete Smartform erweitert Zahlungsfelder auf Händlerwebseite mit Logos (REST-API)",
+        "MODE_SMARTFORM_EXT_WITHOUT_LOGOS": "Eingebettete Smartform erweitert Zahlungsfelder auf Händlerwebseite ohne Logos (REST-API)"
+    }
 }

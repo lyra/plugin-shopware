@@ -11,44 +11,76 @@
 declare(strict_types=1);
 namespace Lyranetwork\Lyra\PaymentMethods;
 
-use Lyranetwork\Lyra\Sdk\Form\Request as LyraRequest;
-use Lyranetwork\Lyra\Sdk\Form\Response as LyraResponse;
-use Lyranetwork\Lyra\Sdk\Form\Api as LyraApi;
+use Lyranetwork\Lyra\Installer\CustomFieldInstaller;
+use Lyranetwork\Lyra\Sdk\RestData;
 use Lyranetwork\Lyra\Sdk\Tools;
 use Lyranetwork\Lyra\Service\ConfigService;
+use Lyranetwork\Lyra\Sdk\Form\Response as LyraResponse;
+use Lyranetwork\Lyra\Sdk\Rest\Api as LyraRest;
+use Lyranetwork\Lyra\Sdk\Form\Api as LyraApi;
 use Lyranetwork\Lyra\Service\OrderService;
-use Lyranetwork\Lyra\Installer\CustomFieldInstaller;
-use Lyranetwork\Lyra\Service\LocaleCodeService;
-
-use Shopware\Core\Checkout\Cart\Exception\CustomerNotLoggedInException;
-use Psr\Log\LoggerInterface;
-
+use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionCollection;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
-use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
-use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
-
 use Shopware\Core\Checkout\Order\OrderStates;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStates;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
-use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
-use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
+use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
+use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
+use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
+use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
+use Shopware\Core\Framework\Context;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
-use Shopware\Core\Framework\Context;
 
-class Standard implements AsynchronousPaymentHandlerInterface
+use Psr\Log\LoggerInterface;
+
+class Rest implements SynchronousPaymentHandlerInterface
 {
+    /**
+     * @var AccountService
+     */
+    private $accountService;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var ConfigService
+     */
+    private $configService;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @var OrderService
+     */
+    private $orderService;
+
+    /**
+     * @var RestData
+     */
+    private $restData;
+
     /**
      * @var OrderTransactionStateHandler
      */
@@ -60,39 +92,9 @@ class Standard implements AsynchronousPaymentHandlerInterface
     private $transactionRepository;
 
     /**
-     * @var ConfigService
+     * @var RequestStack
      */
-    private $configService;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var OrderService
-     */
-    private $orderService;
-
-    /**
-     * @var LocaleCodeService
-     */
-    private $localeCodeService;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var string
-     */
-    private $shopwareVersion;
+    private $requestStack;
 
     /**
      * @var array
@@ -100,177 +102,49 @@ class Standard implements AsynchronousPaymentHandlerInterface
     private $paymentResult;
 
     public function __construct(
+        AccountService $accountService,
+        RouterInterface $router,
+        LoggerInterface $logger,
+        ConfigService $configService,
+        TranslatorInterface $translator,
+        OrderService $orderService,
+        RestData $restData,
         OrderTransactionStateHandler $transactionStateHandler,
         EntityRepository $transactionRepository,
-        ConfigService $configService,
-        LoggerInterface $logger,
-        OrderService $orderService,
-        LocaleCodeService $localeCodeService,
-        TranslatorInterface $translator,
-        RouterInterface $router,
-        string $shopwareVersion
+        RequestStack $requestStack
     ) {
+        $this->accountService = $accountService;
+        $this->router = $router;
+        $this->logger = $logger;
+        $this->configService = $configService;
+        $this->translator = $translator;
+        $this->orderService = $orderService;
+        $this->restData = $restData;
         $this->transactionStateHandler = $transactionStateHandler;
         $this->transactionRepository = $transactionRepository;
-        $this->configService = $configService;
-        $this->logger = $logger;
-        $this->orderService = $orderService;
-        $this->localeCodeService = $localeCodeService;
-        $this->translator = $translator;
-        $this->router = $router;
-        $this->shopwareVersion = $shopwareVersion;
+        $this->requestStack = $requestStack;
         $this->paymentResult = array(
             'lyraIsCancelledPayment' => false,
             'lyraIsPaymentError' => false
         );
     }
 
-    /**
-     * @throws AsyncPaymentProcessException
-     */
     public function pay(
-        AsyncPaymentTransactionStruct $transaction,
+        SyncPaymentTransactionStruct $transaction,
         RequestDataBag $dataBag,
         SalesChannelContext $salesChannelContext
-    ): RedirectResponse {
-        // Method that sends the return URL to the external gateway and gets a redirect URL back.
+    ): void {
+        $request = $this->requestStack->getMainRequest();
+        $fromServer = $dataBag->get('fromServer') !== null && $dataBag->get('fromServer');
         $order = $transaction->getOrder();
 
-        // Get current user info.
-        $customer = $salesChannelContext->getCustomer();
-        if ($customer === null) {
-            throw new AsyncPaymentProcessException(
-                $transaction->getOrderTransaction()->getId(),
-                (new CustomerNotLoggedInException())->getMessage()
-            );
-        }
-
-        $salesChannelId = $order->getSalesChannelId();
-        $request = new LyraRequest();
-
-        // Get current currency.
-        $currency = LyraApi::findCurrencyByAlphaCode($salesChannelContext->getCurrency()->getIsoCode());
-
-        // Get current language.
-        $lang = $this->localeCodeService->getLocaleCodeFromContext($salesChannelContext->getContext());
-        $lyraLang = LyraApi::isSupportedLanguage($lang) ? $lang : $this->getConfig('language', $salesChannelId);
-
-        // Disable 3DS?
-        $threedsMpi = null;
-        if ($this->getConfig('3ds_min_amount', $salesChannelId) && ($transaction->getOrderTransaction()->getAmount()->getTotalPrice() < $this->getConfig('3ds_min_amount', $salesChannelId))) {
-            $threedsMpi = '2';
-        }
-
-        $version = Tools::getDefault('CMS_IDENTIFIER') . '_v' . Tools::getDefault('PLUGIN_VERSION');
-
-        $params = [
-            'amount' => $currency->convertAmountToInteger($transaction->getOrderTransaction()->getAmount()->getTotalPrice()),
-            'currency' => $currency->getNum(),
-            'language' => $lyraLang,
-            'contrib' => $version . '/' . $this->shopwareVersion . '/' . LyraApi::shortPhpVersion(),
-            'order_id' => $order->getOrderNumber(),
-
-            'cust_id' => $customer->getCustomerNumber(),
-            'cust_email' => $customer->getEmail(),
-
-            'cust_title' => $customer->getSalutation()->getDisplayName(),
-            'cust_first_name' => $customer->getFirstName(),
-            'cust_last_name' => $customer->getLastName(),
-            'cust_address' => $customer->getDefaultBillingAddress()->getStreet(),
-            'cust_zip' => $customer->getDefaultBillingAddress()->getZipcode(),
-            'cust_city' => $customer->getDefaultBillingAddress()->getCity(),
-            'cust_country' => $customer->getDefaultBillingAddress()->getCountry()->getIso(),
-            'cust_phone' => $customer->getDefaultBillingAddress()->getPhoneNumber(),
-
-            'ship_to_first_name' => $customer->getDefaultShippingAddress()->getFirstName(),
-            'ship_to_last_name' => $customer->getDefaultShippingAddress()->getLastName(),
-            'ship_to_street' => $customer->getDefaultShippingAddress()->getStreet(),
-            'ship_to_zip' => $customer->getDefaultShippingAddress()->getZipcode(),
-            'ship_to_city' => $customer->getDefaultShippingAddress()->getCity(),
-            'ship_to_country' => $customer->getDefaultShippingAddress()->getCountry()->getIso(),
-            'ship_to_phone_num' => $customer->getDefaultShippingAddress()->getPhoneNumber(),
-
-            'threeds_mpi' => $threedsMpi,
-
-            'url_return' => $this->router->generate('lyra_finalize', [], $this->router::ABSOLUTE_URL)
-        ];
-
-        $request->setFromArray($params);
-        $request->addExtInfo('order_transaction_id', $transaction->getOrderTransaction()->getId());
-        $request->addExtInfo('sales_channel_id', $salesChannelId);
-
-        // Process billing and shipping states.
-        if (! empty($customer->getDefaultBillingAddress()->getCountryState())) {
-            $request->set('cust_state', $customer->getDefaultBillingAddress()->getCountryState()->getShortCode());
-        }
-
-        if (! empty($customer->getDefaultShippingAddress()->getCountryState())) {
-            $request->set('ship_to_state', $customer->getDefaultShippingAddress()->getCountryState()->getShortCode());
-        }
-
-        // Set module admin parameters.
-        $keys = [
-            'site_id', 'key_test', 'key_prod', 'ctx_mode', 'platform_url',
-            'available_languages', 'capture_delay', 'validation_mode', 'payment_cards',
-            'redirect_enabled', 'return_mode', 'redirect_success_timeout',
-            'redirect_success_message', 'redirect_error_timeout', 'redirect_error_message',
-            'sign_algo'
-        ];
-
-        foreach ($keys as $key) {
-            $value = $this->getConfig($key, $salesChannelId);
-            $request->set($key, $value);
-        }
-
-        $this->logger->info("Buyer {$customer->getEmail()} sent to payment gateway for order #{$order->getOrderNumber()}.");
-        $this->logger->debug('Form data: ' . print_r($request->getRequestFieldsArray(true), true));
-
-        $msg = $this->translator->trans('lyraRedirectWaitText');
-
-        $form = <<<EOT
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
-        <meta http-equiv="Cache-Control" content="post-check=0, pre-check=0" />
-        <meta http-equiv="Pragma" content="no-cache" />
-        <title>Redirection</title>
-    </head>
-    <body>
-        <div style="text-align: center;">{$msg}</div>
-        <form action="{$request->get('platform_url')}" method="POST" name="lyra_form">
-            {$request->getRequestHtmlFields()}
-        </form>
-
-        <script type="text/javascript">
-            window.onload = function() {
-                document.lyra_form.submit();
-            };
-        </script>
-    </body>
-</html>
-EOT;
-
-        $redirectResponse = new RedirectResponse($request->get('platform_url'));
-        $redirectResponse->setContent($form);
-        $redirectResponse->headers->remove('Location');
-
-        return $redirectResponse;
-    }
-
-    public function finalize(
-        AsyncPaymentTransactionStruct $transaction,
-        Request $request,
-        SalesChannelContext $salesChannelContext
-    ): void {
-        // Load gateway response.
-        $fromServer = $request->request->get('vads_hash') !== null;
-        $params = (($request->getMethod() === Request::METHOD_POST) || $fromServer) ? $request->request : $request->query;
+        $response = $fromServer ? $dataBag->all('lyraResponse') : json_decode($dataBag->get('lyraResponse'), true);
+        $params = $this->restData->convertRestResult($response['clientAnswer']);
 
         // Context information is passed through vads_ext_info_*.
-        $orderTransactionId = (string) $params->get('vads_ext_info_order_transaction_id');
-        $salesChannelId = (string) $params->get('vads_ext_info_sales_channel_id');
+        $orderTransactionId = $transaction->getOrderTransaction()->getId();
+        $salesChannelId = $order->getSalesChannelId();
+        $orderId = $order->getOrderNumber();
 
         // Init session.
         $session = ($request->hasSession()) ? $request->getSession() : new Session();
@@ -283,7 +157,7 @@ EOT;
         $session->set('lyraTechError', false);
 
         $lyraResponse = new LyraResponse(
-            $params->all(),
+            $params,
             $this->getConfig('ctx_mode', $salesChannelId),
             $this->getConfig('key_test', $salesChannelId),
             $this->getConfig('key_prod', $salesChannelId),
@@ -291,10 +165,9 @@ EOT;
         );
 
         // Check the authenticity of the request.
-        if (! $lyraResponse->isAuthentified()) {
-            $ip = $request->getClientIp();
-
-            $this->logger->error("{$ip} tries to access payment_lyra/process page without valid signature with parameters: " . print_r($params->all(), true));
+        $key = $fromServer ? $this->restData->getPrivateKey() : $this->restData->getReturnKey();
+        if (! $this->restData->checkResponseHash($response, $key)) {
+            $this->logger->error("Tried to access payment_lyra/process page without valid signature.");
             $this->logger->error('Signature algorithm selected in module settings must be the same as one selected in Lyra Expert Back Office.');
 
             if ($fromServer) {
@@ -305,14 +178,12 @@ EOT;
                 $session->set('lyraTechError', true);
 
                 $this->logger->info('RETURN URL PROCESS END.');
-                throw new AsyncPaymentFinalizeException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
+                throw new SyncPaymentProcessException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
             }
         }
 
         // Retrieve order info from DB.
-        $orderId = $lyraResponse->get('order_id');;
         $order = $this->orderService->filterOrderNumber($orderId, $salesChannelContext->getContext());
-
         if (empty($order)) {
             $this->logger->error("Error: order #$orderId not found in database.");
 
@@ -324,7 +195,7 @@ EOT;
                 $session->set('lyraTechError', true);
 
                 $this->logger->info('RETURN URL PROCESS END.');
-                throw new AsyncPaymentFinalizeException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
+                throw new SyncPaymentProcessException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
             }
         }
 
@@ -425,7 +296,6 @@ EOT;
 
             // Get status configured in module backend.
             $successStatus = $this->getConfig('payment_status_on_success', $salesChannelId);
-
             if ($currentPaymentStatus === $successStatus) {
                 if ($lyraResponse->isAcceptedPayment()) {
                     $this->logger->info("Payment successful confirmed for order #$orderId.");
@@ -442,9 +312,8 @@ EOT;
                         echo $lyraResponse->getOutputForGateway('payment_ko_on_order_ok');
                     } else {
                         $session->set('lyraTechError', true);
-
                         $this->logger->info('RETURN URL PROCESS END.');
-                        throw new AsyncPaymentFinalizeException($transaction->getOrderTransaction()->getId(), $this->translator->trans('lyraPaymentFatal'));
+                        throw new SyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $this->translator->trans('lyraPaymentFatal'));
                     }
                 }
             } else {
@@ -455,7 +324,6 @@ EOT;
                     echo $lyraResponse->getOutputForGateway('payment_ko_already_done');
                 } else {
                     $this->logger->info('RETURN URL PROCESS END.');
-
                     if ($lyraResponse->isCancelledPayment()) {
                         $this->paymentResult['lyraIsCancelledPayment'] = true;
                     } else {
@@ -465,19 +333,41 @@ EOT;
             }
         }
 
+        $customerEmail = $params['vads_cust_email'];
+        $this->accountService->login($customerEmail, $salesChannelContext, true);
+
+        if ($this->paymentResult['lyraIsPaymentError'] || $this->paymentResult['lyraIsCancelledPayment']) {
+            $finishUrl = $this->getAccountOrderPage($this->router);
+            $session->set('lyraPaymentCancel', $this->paymentResult['lyraIsCancelledPayment']);
+            $session->set('lyraIsPaymentError', $this->paymentResult['lyraIsPaymentError']);
+            header('Location: ' . $finishUrl);
+            exit();
+        }
+
         if (! $fromServer && ($this->getConfig('ctx_mode', $salesChannelId) === 'TEST')
             && Tools::$pluginFeatures['prodfaq'] && $lyraResponse->isAcceptedPayment()) {
             $session->set('lyraGoingIntoProductionInfo', true);
         }
     }
 
-    public function finalizePayment(
-        AsyncPaymentTransactionStruct $transaction,
-        Request $request,
-        SalesChannelContext $salesChannelContext
-        ): array {
-            $this->finalize($transaction, $request, $salesChannelContext);
-            return $this->paymentResult;
+    /**
+     * @param RouterInterface $router
+     * @return string
+     */
+    public function getAccountOrderPage(RouterInterface $router): string
+    {
+        return $router->generate('frontend.account.order.page', [], $router::ABSOLUTE_URL);
+    }
+
+    /**
+     * Return the payment module configuration value.
+     *
+     * @param string $setting
+     * @return mixed|null
+     */
+    public function getConfig(string $setting, ?string $salesChannelId = null)
+    {
+        return $this->configService->get($setting, $salesChannelId);
     }
 
     /**
@@ -508,29 +398,12 @@ EOT;
         return false;
     }
 
-    /**
-     * Return the payment module configuration value.
-     *
-     * @param string $setting
-     * @return mixed|null
-     */
-    public function getConfig(string $setting, ?string $salesChannelId = null)
-    {
-        return $this->configService->get($setting, $salesChannelId);
-    }
-
-    /**
-     * Save transaction data.
-     *
-     * @param LyraResponse $lyraResponse
-     * @return string
-     */
-    public function saveTransactionData(AsyncPaymentTransactionStruct $transaction, LyraResponse $lyraResponse, Context $context): void
+    public function saveTransactionData(SyncPaymentTransactionStruct $transaction, LyraResponse $lyraResponse, Context $context): void
     {
         // Save payment details.
         $expiry = '';
         if ($lyraResponse->get('expiry_month') && $lyraResponse->get('expiry_year')) {
-            $expiry = str_pad($lyraResponse->get('expiry_month'), 2, '0', STR_PAD_LEFT) . ' / ' . $lyraResponse->get('expiry_year');
+            $expiry = str_pad('' . $lyraResponse->get('expiry_month'), 2, '0', STR_PAD_LEFT) . ' / ' . $lyraResponse->get('expiry_year');
         }
 
         $cardBrand = $lyraResponse->get('card_brand');
@@ -546,6 +419,8 @@ EOT;
             $cardBrand .= ' (' . $brandChoice . ')';
         }
 
+        $orderId = $lyraResponse->get('order_id');
+
         $data = [
             CustomFieldInstaller::TRANSACTION_ID => $lyraResponse->get('trans_id'),
             CustomFieldInstaller::TRANSACTION_UUID => $lyraResponse->get('trans_uuid'),
@@ -554,7 +429,8 @@ EOT;
             CustomFieldInstaller::TRANSACTION_MESSAGE => $lyraResponse->getMessage(),
             CustomFieldInstaller::MEANS_OF_PAYMENT => $cardBrand,
             CustomFieldInstaller::CARD_NUMBER => $lyraResponse->get('card_number'),
-            CustomFieldInstaller::CARD_EXPIRATION_DATE => $expiry
+            CustomFieldInstaller::CARD_EXPIRATION_DATE => $expiry,
+            CustomFieldInstaller::ORDER_ID => $orderId
         ];
 
         $customFields = $transaction->getOrderTransaction()->getCustomFields() ?? [];
@@ -566,7 +442,25 @@ EOT;
         ];
 
         $transaction->getOrderTransaction()->setCustomFields($customFields);
-
         $this->transactionRepository->update([$update], $context);
+    }
+
+    public function finalizePayment(
+        SyncPaymentTransactionStruct $transaction,
+        Request $request,
+        SalesChannelContext $salesChannelContext,
+        bool $fromServer = true)
+    {
+        $params = ($request->getMethod() === Request::METHOD_POST) ? $request->request : $request->query;
+        $data = [
+            'clientAnswer' => json_decode($params->get('kr-answer'), true),
+            'hashAlgorithm' => $params->get('kr-hash-algorithm'),
+            'hash' => $params->get('kr-hash'),
+            'rawClientAnswer' => $params->get('kr-answer')
+        ];
+
+        $this->pay($transaction, new RequestDataBag(['lyraResponse' => $data, 'fromServer' => $fromServer]), $salesChannelContext);
+
+        return $this->paymentResult;
     }
 }

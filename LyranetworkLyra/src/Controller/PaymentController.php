@@ -11,8 +11,11 @@
 declare(strict_types=1);
 namespace Lyranetwork\Lyra\Controller;
 
+use Lyranetwork\Lyra\PaymentMethods\Rest;
 use Lyranetwork\Lyra\PaymentMethods\Standard;
 
+use Lyranetwork\Lyra\Sdk\RestData;
+use Lyranetwork\Lyra\Sdk\Tools;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Storefront\Controller\StorefrontController;
@@ -23,6 +26,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Shopware\Core\Checkout\Customer\SalesChannel\AccountService;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
+use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionEntity;
 use Shopware\Core\Checkout\Order\OrderEntity;
 use Shopware\Core\Framework\Context;
@@ -31,6 +35,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 
 #[Route(defaults: ['_routeScope' => ['storefront']])]
 class PaymentController extends StorefrontController
@@ -60,24 +65,38 @@ class PaymentController extends StorefrontController
      */
     private $logger;
 
+    /**
+     * @var RestData
+     */
+    private $restData;
+
+     /**
+     * @var Rest
+     */
+    private $restPayment;
+
     public function __construct(
         AccountService $accountService,
         RouterInterface $router,
         Standard $standardPayment,
         EntityRepository $transactionRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        RestData $restData,
+        Rest $restPayment
     ) {
         $this->accountService = $accountService;
         $this->router = $router;
         $this->standardPayment = $standardPayment;
         $this->transactionRepository = $transactionRepository;
         $this->logger = $logger;
+        $this->restData = $restData;
+        $this->restPayment = $restPayment;
     }
 
     #[Route(path: '/lyra/finalize', defaults: ['csrf_protected' => false, 'auth_required' => false], name: 'lyra_finalize', methods: ['GET', 'POST'])]
     public function finalize(Request $request, SalesChannelContext $salesChannelContext): Response
     {
-        $params = (($request->getMethod() === Request::METHOD_POST)) ? $request->request : $request->query;
+        $params = ($request->getMethod() === Request::METHOD_POST) ? $request->request : $request->query;
 
         // Context information is passed through vads_ext_info_* since v3.0.0.
         $orderTransactionId = (string) $params->get('vads_ext_info_order_transaction_id');
@@ -140,6 +159,70 @@ class PaymentController extends StorefrontController
                     return new RedirectResponse($finishUrl);
                 }
             }
+        }
+
+        return new Response();
+    }
+
+    #[Route(path: '/lyra/finalizeRest', name: 'lyra_finalize_rest', defaults: ['csrf_protected' => false, 'auth_required' => false], methods: ['GET', 'POST'])]
+    public function finalizeRest(Request $request, SalesChannelContext $salesChannelContext): Response
+    {
+        $params = ($request->getMethod() === Request::METHOD_POST) ? $request->request : $request->query;
+        if (Tools::checkRestIpnValidity($params)) {
+            $answer = json_decode($params->get('kr-answer'), true);
+
+            if (! is_array($answer)) {
+                $this->logger->error('Invalid REST IPN request received. Content of kr-answer: ' . json_encode($params->get('kr-answer')));
+                echo '<span style="display:none">KO-Invalid IPN request received.' . "\n" . '</span>';
+            } else {
+                $data = $this->restData->convertRestResult($answer, false);
+
+                // Context information is passed through vads_ext_info_* since v3.0.0.
+                $orderId = (string) $data['vads_order_id'];
+                $salesChannelId = (string) $data['vads_ext_info_sales_channel_id'];
+
+                if (empty($orderId) || empty($salesChannelId)) {
+                    // Search with vads_order_info for old versions.
+                    $contextInfo = explode('&', (string) $data['vads_order_info']);
+
+                    if (! empty($contextInfo) && (sizeof($contextInfo) === 2)) {
+                        $orderId = substr($contextInfo[0], strlen('order_id='));
+                        $salesChannelId = substr($contextInfo[1], strlen('sales_channel_id='));
+                    }
+                }
+
+                // Restore payment transaction data for an IPN call.
+                if (! empty($orderId) && ! empty($salesChannelId)) {
+                    // Read transaction.
+                    $criteria = new Criteria();
+                    $criteria->addFilter(new ContainsFilter('customFields.lyra_order_id', $orderId));
+                    $criteria->addAssociation('customFields');
+                    $criteria->addAssociation('order');
+                    $criteria->addAssociation('paymentMethod');
+
+                    /**
+                     * @var null|OrderTransactionEntity $orderTransaction
+                     */
+                    $orderTransaction = $this->transactionRepository->search($criteria, $salesChannelContext->getContext())->first();
+                    if ($orderTransaction) {
+                        /**
+                         * @var null|OrderEntity $order
+                         */
+                        $order = $orderTransaction->getOrder();
+                    }
+
+                    if (! isset($order) || ! $order) {
+                        $this->logger->error('Synchronous payment, IPN ignored.');
+                        echo '<span style="display:none">Synchronous payment, IPN ignored.' . "\n" . '</span>';
+                    } else {
+                        $transaction = new SyncPaymentTransactionStruct($orderTransaction, $order);
+                        $this->restPayment->finalizePayment($transaction, $request, $salesChannelContext);
+                    }
+                }
+            }
+        } else {
+            $this->logger->error('Invalid IPN request received. Content: ' . print_r($params, true));
+            echo '<span style="display:none">KO-Invalid IPN request received.' . "\n" . '</span>';
         }
 
         return new Response();

@@ -102,6 +102,16 @@
                             v-model="config[element.name]"/>
 
                             <sw-form-field-renderer
+                            v-else-if="element.name.startsWith('LyranetworkLyra.config.lyraCardDataMode')"
+                            :config="{
+                                componentName: 'sw-single-select',
+                                label: getElementLabel(element.name),
+                                helpText: getElementHelptext(element.name),
+                                options: cardDataModes
+                            }"
+                            v-model="config[element.name]"/>
+
+                            <sw-form-field-renderer
                             v-else-if="element.name.startsWith('LyranetworkLyra.config.lyraAvailableLanguages')"
                             :config="{
                                         componentName: 'sw-multi-select',
@@ -126,7 +136,7 @@
                                 v-bind="getBind(element)"
                                 v-model="config[element.name]"
                                 :disabled="isDisabled(element)"
-                                v-show="isShown(element)">
+                                v-show="isShown(element, config)">
 
                             </sw-form-field-renderer>
 

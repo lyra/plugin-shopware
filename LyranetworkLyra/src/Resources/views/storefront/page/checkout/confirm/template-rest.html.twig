@@ -1,0 +1,15 @@
+<div>
+    {% set lyraPaymentRestOptions = {
+        compactMode: page.extensions.lyra.restCompactMode,
+        groupThreshold: page.extensions.lyra.paymentMeansGroupingThreshold,
+        popinMode: page.extensions.lyra.restPopinMode,
+        language: page.extensions.lyra.language,
+        paymentMethodId: page.extensions.lyra.paymentMethodId
+    } %}
+
+    {% block page_checkout_lyra_card_content_rest %}
+        <div id="lyraPaymentMethodForm" data-lyra-rest data-lyra-rest-options='{{ lyraPaymentRestOptions | json_encode }}' >
+            <div class="kr-smart-form" {% if page.extensions.lyra.restPopinMode %} kr-popin {% else %} kr-single-payment-button {% endif %} {%if page.extensions.lyra.cardDataMode === 'MODE_SMARTFORM_EXT_WITH_LOGOS' || page.extensions.lyra.cardDataMode === 'MODE_SMARTFORM_EXT_WITHOUT_LOGOS'%} kr-card-form-expanded {%endif%} {%if page.extensions.lyra.cardDataMode === 'MODE_SMARTFORM_EXT_WITHOUT_LOGOS'%} kr-no-card-logo-header {%endif%} kr-form-token="{{page.extensions.lyra.restIdentifierToken}}" style="z-index: 3; width: 100%;"></div>
+        </div>
+    {% endblock %}
+</div>

@@ -60,6 +60,21 @@ class LyranetworkLyraSettingsService extends ApiService {
             });
     }
 
+    getCardDataModes() {
+        const headers = this.getBasicHeaders();
+
+        return this.httpClient
+            .get(
+                `_action/${this.getApiBasePath()}/get-card-data-modes`,
+                {
+                    headers: headers
+                }
+            )
+            .then((response) => {
+                return ApiService.handleResponse(response);
+            });
+    }
+
     getDocFiles() {
         const headers = this.getBasicHeaders();
 

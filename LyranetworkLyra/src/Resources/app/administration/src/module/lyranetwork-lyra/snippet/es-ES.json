@@ -6,7 +6,9 @@
         "menuEntry": "Configuración"
     },
     "lyraPaymentInformation": "Información del pago",
+    "lyraOrderId": "ID de pedido de Lyra",
     "lyraTransactionId": "ID de transacción",
+    "lyraTransactionStatus": "Estado de la transacción",
     "lyraTransactionUuid": "UUID de transacción",
     "lyraTransactionType": "Tipo de transacción",
     "lyraMeansOfPayment": "Medio de pago",
@@ -53,5 +55,15 @@
     "lyraPaymentStatusOnSuccess": "Estado de pago del pedido",
     "lyraPaymentStatusOnSuccessHelptext": "Define el estado de pago de los pedidos pagados con este modo de pago.",
     "lyraOrderPlacedFlowEnabled": "Flujo Order placed",
-    "lyraOrderPlacedFlowEnabledHelptext": "Si está habilitado, el flujo « Order placed » se activará. Advertencia: Al deshabilitar esta opción, se deshabilitarán todas las acciones definidas en el flujo « Order placed ». El flujo se desactivará para todos los demás complementos y aplicaciones."
+    "lyraOrderPlacedFlowEnabledHelptext": "Si está habilitado, el flujo « Order placed » se activará. Advertencia: Al deshabilitar esta opción, se deshabilitarán todas las acciones definidas en el flujo « Order placed ». El flujo se desactivará para todos los demás complementos y aplicaciones.",
+    "lyraCardDataMode": "Modo de ingreso de datos de pago",
+    "lyraCardDataModeHelptext": "Seleccione la forma en que se ingresarán los datos de pago. Atención: para usar el Smartform, debe asegurarse de estar suscrito a esta opción con Lyra Collect.",
+    "lyraRestTheme": "Tema",
+    "lyraRestThemeHelptext": "Seleccione un tema para usar para mostrar el Smartform.",
+    "lyraCardDataModes": {
+        "MODE_FORM": "Adquisición de datos bancarios en el portal de pago",
+        "MODE_SMARTFORM": "Smartform incorporado en el sitio web vendedor (API REST)",
+        "MODE_SMARTFORM_EXT_WITH_LOGOS": "Smartform extendido incorporado en el sitio web vendedor com logotipos (API REST)",
+        "MODE_SMARTFORM_EXT_WITHOUT_LOGOS": "Smartform extendido incorporado en el sitio web vendedor sem logotipos (API REST)"
+    }
 }

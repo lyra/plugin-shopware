@@ -11,5 +11,6 @@
     "lyraRedirectClickText": "Si no sucede nada en 10 segundos, haga clic en el botón a continuación.",
     "lyraRedirectButtonText": "Pagar",
     "lyraUserChoice": "marca de tarjeta elegida por el comprador",
-    "lyraDefaultChoice": "marca de tarjeta predeterminada en uso"
+    "lyraDefaultChoice": "marca de tarjeta predeterminada en uso",
+    "lyraTooMuchAttempts": "Demasiados intentos. Por favor, inténtelo de nuevo más tarde."
 }

@@ -6,7 +6,9 @@
         "menuEntry": "Configuration"
     },
     "lyraPaymentInformation": "Informations de paiement",
+    "lyraOrderId": "ID de commande Lyra",
     "lyraTransactionId": "ID de transaction",
+    "lyraTransactionStatus": "Statut de la transaction",
     "lyraTransactionUuid": "UUID de transaction",
     "lyraTransactionType": "Type de transaction",
     "lyraMeansOfPayment": "Moyen de paiement",
@@ -53,5 +55,15 @@
     "lyraPaymentStatusOnSuccess": "Statut de paiement de la commande",
     "lyraPaymentStatusOnSuccessHelptext": "Définir le statut de paiement des commandes payées par ce mode de paiement.",
     "lyraOrderPlacedFlowEnabled": "Flux Order placed",
-    "lyraOrderPlacedFlowEnabledHelptext": "Si activé, le flux « Order placed » sera activé. Attention: La désactivation de cette option va désactiver toutes les actions définies dans le flux « Order placed ». Le flux sera désactivé pour tous les autres plugins et applications."
+    "lyraOrderPlacedFlowEnabledHelptext": "Si activé, le flux « Order placed » sera activé. Attention: La désactivation de cette option va désactiver toutes les actions définies dans le flux « Order placed ». Le flux sera désactivé pour tous les autres plugins et applications.",
+    "lyraCardDataMode": "Mode de saisie des données de paiement",
+    "lyraCardDataModeHelptext": "Sélectionner la manière dont seront saisies les données de paiement. Attention, pour utiliser le Smartform vous devez vous assurer d\\'avoir souscrit à cette option auprès de Lyra Collect.",
+    "lyraRestTheme": "Thème",
+    "lyraRestThemeHelptext": "Sélectionnez le thème à utiliser pour afficher le Smartform.",
+    "lyraCardDataModes": {
+        "MODE_FORM": "Acquisition des données sur la plateforme de paiement",
+        "MODE_SMARTFORM": "Smartform embarqué sur le site marchand (API REST)",
+        "MODE_SMARTFORM_EXT_WITH_LOGOS": "Smartform étendu embarqué sur le site marchand avec les logos (API REST)",
+        "MODE_SMARTFORM_EXT_WITHOUT_LOGOS": "Smartform étendu embarqué sur le site marchand sans les logos (API REST)"
+    }
 }
