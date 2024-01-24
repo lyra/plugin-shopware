@@ -27,9 +27,11 @@ class CustomFieldInstaller
     public const TRANSACTION_UUID = 'lyra_transaction_uuid';
     public const TRANSACTION_TYPE = 'lyra_transaction_type';
     public const TRANSACTION_MESSAGE = 'lyra_transaction_message';
+    public const TRANSACTION_STATUS = 'lyra_transaction_status';
     public const MEANS_OF_PAYMENT = 'lyra_means_of_payment';
     public const CARD_NUMBER = 'lyra_card_number';
     public const CARD_EXPIRATION_DATE = 'lyra_card_expiration_date';
+    public const ORDER_ID = 'lyra_order_id';
 
     public const FIELDSET_ID_ORDER_TRANSACTION = '25193afbc92646a8b898b211518ccf6d';
 
@@ -97,6 +99,12 @@ class CustomFieldInstaller
                 'customFieldSetId' => self::FIELDSET_ID_ORDER_TRANSACTION
             ],
             [
+                'id' => '018d17f181637ae9be49a335d977c23c',
+                'name' => self::TRANSACTION_STATUS,
+                'type' => CustomFieldTypes::TEXT,
+                'customFieldSetId' => self::FIELDSET_ID_ORDER_TRANSACTION
+            ],
+            [
                 'id' => '86235308bf4c4bf5b4db7feb07d2a63d',
                 'name' => self::TRANSACTION_MESSAGE,
                 'type' => CustomFieldTypes::TEXT,
@@ -117,6 +125,12 @@ class CustomFieldInstaller
             [
                 'id' => 'bee7f0790bc14763b727d623dd646086',
                 'name' => self::CARD_EXPIRATION_DATE,
+                'type' => CustomFieldTypes::TEXT,
+                'customFieldSetId' => self::FIELDSET_ID_ORDER_TRANSACTION
+            ],
+            [
+                'id' => '018c68a027b17e85859751dd8da27161',
+                'name' => self::ORDER_ID,
                 'type' => CustomFieldTypes::TEXT,
                 'customFieldSetId' => self::FIELDSET_ID_ORDER_TRANSACTION
             ]

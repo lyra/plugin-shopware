@@ -32,7 +32,9 @@ Component.register('lyranetwork-lyra-settings', {
             isdocModalOpen: false,
             qualif: false,
             shatwo: true,
-            isFlow: false
+            isFlow: false,
+            smartform: true,
+            cardDataModes: []
         };
     },
 
@@ -48,6 +50,7 @@ Component.register('lyranetwork-lyra-settings', {
                 .then((result) => {
                     me.qualif = result.qualif;
                     me.shatwo = result.shatwo;
+                    me.smartform = result.smartform;
                 });
 
             this.LyranetworkLyraSettingsService.isFlow({'shopwareVersion': SHOPWARE_VERSION,})
@@ -90,6 +93,18 @@ Component.register('lyranetwork-lyra-settings', {
                     }
                 });
 
+            this.LyranetworkLyraSettingsService.getCardDataModes()
+                .then((result) => {
+                    for (let key in result.data) {
+                        if (result.data.hasOwnProperty(key)) {
+                            me.cardDataModes.push({
+                                'label': this.$tc('lyraCardDataModes.' + key),
+                                'value': key
+                            });
+                        }
+                    }
+                });
+
             this.LyranetworkLyraSettingsService.getPaymentStatuses()
                 .then((result) => {
                     result.data.forEach((element) => {
@@ -121,7 +136,7 @@ Component.register('lyranetwork-lyra-settings', {
             return this.$tc(name.replace('LyranetworkLyra.config.', ''));
         },
 
-        getElementHelptext(name){
+        getElementHelptext(name) {
             return this.$tc(name.replace('LyranetworkLyra.config.', '') + 'Helptext');
         },
 
@@ -129,7 +144,17 @@ Component.register('lyranetwork-lyra-settings', {
             return (element.name.startsWith('LyranetworkLyra.config.lyraCtxMode') && this.qualif) || (element.name.startsWith('LyranetworkLyra.config.lyraOrderPlacedFlowEnabled') && ! this.isFlow);
         },
 
-        isShown(element) {
+        isShown(element, config) {
+            let restFields = [
+                'LyranetworkLyra.config.lyraRestPopinMode',
+                'LyranetworkLyra.config.lyraRestTheme',
+                'LyranetworkLyra.config.lyraRestCompactMode',
+                'LyranetworkLyra.config.lyraRestThreshold'
+            ]
+            if (restFields.includes(element.name)) {
+                return config['LyranetworkLyra.config.lyraCardDataMode'] !== 'MODE_FORM';
+            }
+
             return (! element.name.startsWith('LyranetworkLyra.config.lyraKeyTest') || ! this.qualif) && (! element.name.startsWith('LyranetworkLyra.config.lyraOrderPlacedFlowEnabled') || this.isFlow);
         },
 

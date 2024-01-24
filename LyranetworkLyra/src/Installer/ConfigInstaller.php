@@ -78,9 +78,25 @@ class ConfigInstaller
             'lyraRedirectSuccessMessage' => $this->translations[$lang]['lyraRedirectSuccessMessageDefault'],
             'lyraRedirectErrorTimeout' => '5',
             'lyraRedirectErrorMessage' => $this->translations[$lang]['lyraRedirectErrorMessageDefault'],
-            'lyraReturnMode' => 'GET',
+            'lyraReturnMode' => 'POST',
             'lyraPaymentStatusOnSuccess' => 'paid',
-            'lyraOrderPlacedFlowEnabled' => $this->getShopwareOrderPlacedFlowActive($context)
+            'lyraOrderPlacedFlowEnabled' => $this->getShopwareOrderPlacedFlowActive($context),
+
+            'lyraPrivateTestKey' => '',
+            'lyraPrivateProdKey' => '',
+            'lyraRestServerUrl' => Tools::getDefault('REST_URL'),
+            'lyraPublicTestKey' => '',
+            'lyraPublicProdKey' => '',
+            'lyraHmacTestKey' => '',
+            'lyraHmacProdKey' => '',
+            'lyraRestCheckUrl' => $this->getBaseUrl($context) . '/lyra/finalizeRest',
+            'lyraJsClientUrl' => Tools::getDefault('STATIC_URL'),
+
+            'lyraCardDataMode' => 'MODE_FORM',
+            'lyraRestPopinMode' => false,
+            'lyraRestTheme' => 'neon',
+            'lyraRestCompactMode' => false,
+            'lyraRestThreshold' => ''
         ];
     }
 

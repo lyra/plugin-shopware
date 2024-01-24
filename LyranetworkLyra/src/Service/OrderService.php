@@ -123,7 +123,7 @@ class OrderService
                 $this->logger->info('Order #' . $order->getOrderNumber() . ' status updated from ' . $orderStatus . ' to ' . OrderStates::STATE_OPEN . '.');
             }
 
-            if($transitionName !== StateMachineTransitionActions::ACTION_REOPEN){
+            if ($transitionName !== 'pending' && $transitionName !== StateMachineTransitionActions::ACTION_REOPEN) {
                 $this->stateMachineRegistry->transition(new Transition(OrderDefinition::ENTITY_NAME, $orderId, $transitionName, 'stateId'), $context);
                 $this->logger->info('Order #' . $order->getOrderNumber() . ' status transition: ' . $transitionName . '.');
             }

@@ -145,10 +145,10 @@
             <label lang="de-DE">Benachrichtigung-URL</label>
             <label lang="fr-FR">URL de notification</label>
             <label lang="es-ES">URL de notificación de pago instantáneo</label>
-            <helpText><![CDATA[URL to copy into your Lyra Expert Back Office > Settings > Notification rules.]]></helpText>
-            <helpText lang="de-DE"><![CDATA[URL, die Sie in Ihre Lyra Expert Back Office kopieren sollen > Einstellung > Regeln der Benachrichtigungen.]]></helpText>
-            <helpText lang="fr-FR"><![CDATA[URL à copier dans le Back Office Lyra Expert > Paramétrage > Règles de notifications.]]></helpText>
-            <helpText lang="es-ES"><![CDATA[URL a copiar en el Back Office Lyra Expert > Configuración > Reglas de notificación.]]></helpText>
+            <helpText><![CDATA[URL to copy into your Lyra Expert Back Office > Settings > Notification rules. In multistore mode, notification URL is the same for all the stores.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[URL, die Sie in Ihre Lyra Expert Back Office kopieren sollen > Einstellung > Regeln der Benachrichtigungen. Unter Multistore Modus, die URL Bestätigung ist die gleiche für alle Geschäfte.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[URL à copier dans le Back Office Lyra Expert > Paramétrage > Règles de notifications. En mode multi-boutique, l'URL de notification est la même pour toutes les boutiques.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[URL a copiar en el Back Office Lyra Expert > Configuración > Reglas de notificación. En modo multitienda, la URL de notificación es la misma para todas las tiendas.]]></helpText>
             <disabled>true</disabled>
         </input-field>
         <input-field type="text">
@@ -161,6 +161,182 @@
             <helpText lang="de-DE">Link zur Bezahlungsplattform.</helpText>
             <helpText lang="fr-FR">Lien vers la page de paiement.</helpText>
             <helpText lang="es-ES">Enlace a la página de pago.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>REST API KEYS</title>
+        <title lang="de-DE">REST API SCHLÛSSEL</title>
+        <title lang="fr-FR">CLÉS D'API REST</title>
+        <title lang="es-ES">CLAVES DE API REST</title>
+        <input-field type="password">
+            <name>lyraPrivateTestKey</name>
+            <label>Test password</label>
+            <label lang="de-DE">Testpasswort</label>
+            <label lang="fr-FR">Mot de passe de test</label>
+            <label lang="es-ES">Contraseña de test</label>
+            <helpText><![CDATA[REST API keys are available in your Lyra Expert Back Office (menu: Settings > Shops > REST API keys).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[REST-API-Schlüssel sind in Ihrem Lyra Expert Backoffice verfügbar (Menü: Einstellung > Shop > REST-API-Schlüssel).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Les clés de l'API REST sont disponibles dans votre Back Office Lyra Expert (menu: Paramétrage > Boutiques > Clés d'API REST).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Las claves de API REST están disponibles en el Back Office Lyra Expert (menú: Configuración > Tiendas > Claves de API REST).]]></helpText>
+        </input-field>
+
+        <input-field type="password">
+            <name>lyraPrivateProdKey</name>
+            <label>Production password</label>
+            <label lang="de-DE">Passwort Produktion</label>
+            <label lang="fr-FR">Mot de passe de production</label>
+            <label lang="es-ES">Contraseña de producción</label>
+            <helpText><![CDATA[REST API keys are available in your Lyra Expert Back Office (menu: Settings > Shops > REST API keys).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[REST-API-Schlüssel sind in Ihrem Lyra Expert Backoffice verfügbar (Menü: Einstellung > Shop > REST-API-Schlüssel).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Les clés de l'API REST sont disponibles dans votre Back Office Lyra Expert (menu: Paramétrage > Boutiques > Clés d'API REST).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Las claves de API REST están disponibles en el Back Office Lyra Expert (menú: Configuración > Tiendas > Claves de API REST).]]></helpText>
+        </input-field>
+
+        <input-field type="text">
+            <name>lyraRestServerUrl</name>
+            <label>REST API server URL</label>
+            <label lang="de-DE">REST API server URL</label>
+            <label lang="fr-FR">URL du serveur de l'API REST</label>
+            <label lang="es-ES">URL del servidor API REST</label>
+        </input-field>
+
+        <input-field type="text">
+            <name>lyraPublicTestKey</name>
+            <label>Public test key</label>
+            <label lang="de-DE">Öffentlicher Schlüssel (Test)</label>
+            <label lang="fr-FR">Clé publique de test</label>
+            <label lang="es-ES">Clave pública de test</label>
+            <helpText><![CDATA[REST API keys are available in your Lyra Expert Back Office (menu: Settings > Shops > REST API keys).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[REST-API-Schlüssel sind in Ihrem Lyra Expert Backoffice verfügbar (Menü: Einstellung > Shop > REST-API-Schlüssel).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Les clés de l'API REST sont disponibles dans votre Back Office Lyra Expert (menu: Paramétrage > Boutiques > Clés d'API REST).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Las claves de API REST están disponibles en el Back Office Lyra Expert (menú: Configuración > Tiendas > Claves de API REST).]]></helpText>
+        </input-field>
+
+        <input-field type="text">
+            <name>lyraPublicProdKey</name>
+            <label>Public production key</label>
+            <label lang="de-DE">Öffentlicher Produktionsschlüssel</label>
+            <label lang="fr-FR">Clé publique de production</label>
+            <label lang="es-ES">Clave pública de production</label>
+            <helpText><![CDATA[REST API keys are available in your Lyra Expert Back Office (menu: Settings > Shops > REST API keys).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[REST-API-Schlüssel sind in Ihrem Lyra Expert Backoffice verfügbar (Menü: Einstellung > Shop > REST-API-Schlüssel).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Les clés de l'API REST sont disponibles dans votre Back Office Lyra Expert (menu: Paramétrage > Boutiques > Clés d'API REST).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Las claves de API REST están disponibles en el Back Office Lyra Expert (menú: Configuración > Tiendas > Claves de API REST).]]></helpText>
+        </input-field>
+
+        <input-field type="password">
+            <name>lyraHmacTestKey</name>
+            <label>HMAC-SHA-256 test key</label>
+            <label lang="de-DE">Schlüssel HMAC-SHA-256 für Test</label>
+            <label lang="fr-FR">Clé HMAC-SHA-256 de test</label>
+            <label lang="es-ES">Clave HMAC-SHA-256 de test</label>
+            <helpText><![CDATA[REST API keys are available in your Lyra Expert Back Office (menu: Settings > Shops > REST API keys).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[REST-API-Schlüssel sind in Ihrem Lyra Expert Backoffice verfügbar (Menü: Einstellung > Shop > REST-API-Schlüssel).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Les clés de l'API REST sont disponibles dans votre Back Office Lyra Expert (menu: Paramétrage > Boutiques > Clés d'API REST).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Las claves de API REST están disponibles en el Back Office Lyra Expert (menú: Configuración > Tiendas > Claves de API REST).]]></helpText>
+        </input-field>
+
+        <input-field type="password">
+            <name>lyraHmacProdKey</name>
+            <label>HMAC-SHA-256 production key</label>
+            <label lang="de-DE">Schlüssel HMAC-SHA-256 für Produktion</label>
+            <label lang="fr-FR">Clé HMAC-SHA-256 de production</label>
+            <label lang="es-ES">Clave HMAC-SHA-256 de producción</label>
+            <helpText><![CDATA[REST API keys are available in your Lyra Expert Back Office (menu: Settings > Shops > REST API keys).]]></helpText>
+            <helpText lang="de-DE"><![CDATA[REST-API-Schlüssel sind in Ihrem Lyra Expert Backoffice verfügbar (Menü: Einstellung > Shop > REST-API-Schlüssel).]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Les clés de l'API REST sont disponibles dans votre Back Office Lyra Expert (menu: Paramétrage > Boutiques > Clés d'API REST).]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Las claves de API REST están disponibles en el Back Office Lyra Expert (menú: Configuración > Tiendas > Claves de API REST).]]></helpText>
+        </input-field>
+
+        <input-field type="text">
+            <name>lyraRestCheckUrl</name>
+            <copyable>true</copyable>
+            <label>REST API Notification URL</label>
+            <label lang="de-DE">REST API Benachrichtigung-URL</label>
+            <label lang="fr-FR">URL de notification de l'API REST</label>
+            <label lang="es-ES">URL de notificación de API REST</label>
+            <helpText><![CDATA[URL to copy into your Lyra Expert Back Office > Settings > Notification rules. In multistore mode, notification URL is the same for all the stores.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[URL, die Sie in Ihre Lyra Expert Back Office kopieren sollen > Einstellung > Regeln der Benachrichtigungen. Unter Multistore Modus, die URL Bestätigung ist die gleiche für alle Geschäfte.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[URL à copier dans le Back Office Lyra Expert > Paramétrage > Règles de notifications. En mode multi-boutique, l'URL de notification est la même pour toutes les boutiques.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[URL a copiar en el Back Office Lyra Expert > Configuración > Reglas de notificación. En modo multitienda, la URL de notificación es la misma para todas las tiendas.]]></helpText>
+            <disabled>true</disabled>
+        </input-field>
+
+        <input-field type="text">
+            <name>lyraJsClientUrl</name>
+            <label>JavaScript client URL</label>
+            <label lang="de-DE">JavaScript client URL</label>
+            <label lang="fr-FR">URL du client JavaScript</label>
+            <label lang="es-ES">URL del cliente JavaScript</label>
+        </input-field>
+    </card>
+
+    <card>
+        <title>ADVANCED OPTIONS</title>
+        <title lang="de-DE">ERWEITERTE OPTIONEN</title>
+        <title lang="fr-FR">OPTIONS AVANCÉES</title>
+        <title lang="es-ES">OPCIONES AVANZADAS</title>
+        <input-field type="single-select">
+            <name>lyraCardDataMode</name>
+            <label>Payment data entry mode</label>
+            <label lang="de-DE">Eingabemodus für Zahlungsdaten</label>
+            <label lang="fr-FR">Mode de saisie des données de paiement</label>
+            <label lang="es-ES">Modo de ingreso de datos de pago</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>lyraRestPopinMode</name>
+            <label>Display in a pop-in</label>
+            <label lang="de-DE">Display in a pop-in</label>
+            <label lang="fr-FR">Afficher dans une pop-in</label>
+            <label lang="es-ES">Mostrar en una ventana pop-in</label>
+            <helpText><![CDATA[This option allows to display the Smartform in a pop-in.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[This option allows to display the Smartform in a pop-in.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Cette option permet d'afficher le Smartform dans une pop-in.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Esta opción permite mostrar el Smartform en una ventana pop-in.]]></helpText>
+        </input-field>
+
+        <input-field type="single-select">
+            <name>lyraRestTheme</name>
+            <label>Theme</label>
+            <label lang="de-DE">Thema</label>
+            <label lang="fr-FR">Thème</label>
+            <label lang="es-ES">Tema</label>
+            <options>
+                <option>
+                    <id>classic</id>
+                    <name>Classic</name>
+                </option>
+                <option>
+                    <id>neon</id>
+                    <name>Neon</name>
+                </option>
+            </options>
+        </input-field>
+
+        <input-field type="bool">
+            <name>lyraRestCompactMode</name>
+            <label>Compact mode</label>
+            <label lang="de-DE">Kompakter Modus</label>
+            <label lang="fr-FR">Mode compact</label>
+            <label lang="es-ES">Modo compacto</label>
+            <helpText><![CDATA[This option allows to display the Smartform in a compact mode.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Diese Option ermöglicht es, die Smartform in einem kompakten Modus anzuzeigen.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Cette option permet d'afficher le Smartform en mode compact.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Esta opción muestra el Smartform en modo compacto.]]></helpText>
+        </input-field>
+
+        <input-field type="int">
+            <name>lyraRestThreshold</name>
+            <label>Payment means grouping threshold</label>
+            <label lang="de-DE">Payment means grouping threshold</label>
+            <label lang="fr-FR">Seuil de regroupement des moyens de paiement</label>
+            <label lang="es-ES">Umbral de agrupación para medios de pago</label>
+            <helpText><![CDATA[Number of means of payment from which they will be grouped.]]></helpText>
+            <helpText lang="de-DE"><![CDATA[Number of means of payment from which they will be grouped.]]></helpText>
+            <helpText lang="fr-FR"><![CDATA[Nombre de moyens de paiement à partir duquel ils vont être regroupés.]]></helpText>
+            <helpText lang="es-ES"><![CDATA[Número de medios de pago de los que se agruparán.]]></helpText>
         </input-field>
     </card>
 

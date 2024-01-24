@@ -11,5 +11,6 @@
     "lyraRedirectClickText": "If nothing happens in 10 seconds, please click the button below.",
     "lyraRedirectButtonText": "Pay",
     "lyraUserChoice": "card brand chosen by buyer",
-    "lyraDefaultChoice": "default card brand used"
+    "lyraDefaultChoice": "default card brand used",
+    "lyraTooMuchAttempts": "Too many attempts. Please try again later."
 }

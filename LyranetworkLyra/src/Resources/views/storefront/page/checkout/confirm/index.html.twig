@@ -1,0 +1,22 @@
+{% sw_extends '@Storefront/storefront/page/checkout/confirm/index.html.twig' %}
+
+{% block base_header %}
+    {{ parent() }}
+    {% if page.extensions.lyra %}
+        <script src="{{ page.extensions.lyra.restJsClient }}js/krypton-client/V4.0/stable/kr-payment-form.min.js" kr-public-key="{{ page.extensions.lyra.pubKey }}" kr-language="{{ page.extensions.lyra.language }}"></script>
+        <link rel="stylesheet" href="{{ page.extensions.lyra.restJsClient }}js/krypton-client/V4.0/ext/{{ page.extensions.lyra.restTheme }}-reset.css">
+        <script src="{{ page.extensions.lyra.restJsClient }}js/krypton-client/V4.0/ext/{{ page.extensions.lyra.restTheme }}.js"></script>
+    {% endif %}
+{% endblock %}
+
+{% block page_checkout_confirm_form_submit %}
+    {% if page.extensions.lyra and page.extensions.lyra.template %}
+        {% sw_include page.extensions.lyra.template %}
+    {% endif %}
+
+    {{ parent() }}
+
+    {% if page.extensions.lyra %}
+        <input id="lyraResponse" type="hidden" name="lyraResponse" value="" form="confirmOrderForm"/>
+    {% endif %}
+{% endblock %}

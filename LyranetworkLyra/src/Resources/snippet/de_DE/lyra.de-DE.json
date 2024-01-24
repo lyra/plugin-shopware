@@ -11,5 +11,6 @@
     "lyraRedirectClickText": "Sollte die Wartezeit mehr als 10 Sekunden betragen, klicken Sie bitte auf den untenstehenden Button.",
     "lyraRedirectButtonText": "Bezahlen",
     "lyraUserChoice": "Kartenmarke von Käufer gewählt",
-    "lyraDefaultChoice": "Standard-Kartenmarke verwendet"
+    "lyraDefaultChoice": "Standard-Kartenmarke verwendet",
+    "lyraTooMuchAttempts": "Zu viele Versuche. Bitte Versuchen Sie es später erneut."
 }

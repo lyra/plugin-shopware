@@ -11,7 +11,9 @@
 declare(strict_types=1);
 namespace Lyranetwork\Lyra\Installer;
 
+use Lyranetwork\Lyra\PaymentMethods\Rest;
 use Lyranetwork\Lyra\PaymentMethods\Standard;
+use Lyranetwork\Lyra\Sdk\Tools;
 
 use Shopware\Core\Checkout\Payment\PaymentMethodEntity;
 use Shopware\Core\Framework\Context;
@@ -66,7 +68,7 @@ class PaymentMethodInstaller
     public function install(InstallContext $installContext): void
     {
         $context = $installContext->getContext();
-        $paymentMethodExists = $this->getPaymentMethodId($context);
+        $paymentMethodExists = $this->getPaymentMethodId($context, Standard::class);
 
         // Payment method exists already, no need to continue here.
         if ($paymentMethodExists) {
@@ -78,14 +80,30 @@ class PaymentMethodInstaller
         $data = [
              // Payment handler will be selected by the identifier.
             'handlerIdentifier' => Standard::class,
-            'name' => 'Lyra Collect',
-            'description' => 'Lyra Collect payment',
+            'name' => Tools::getDefault('GATEWAY_NAME'),
+            'description' => Tools::getDefault('GATEWAY_NAME') . ' payment.',
             'pluginId' => $pluginId
         ];
 
         $this->paymentMethodRepository->create([$data], $context);
+        $this->enablePaymentMethodForSaleChannels($this->getPaymentMethodId($context, Standard::class), $context);
 
-        $this->enablePaymentMethodForSaleChannels($this->getPaymentMethodId($context), $context);
+        $paymentMethodExists = $this->getPaymentMethodId($context, Rest::class);
+
+        // Payment method exists already, no need to continue here.
+        if ($paymentMethodExists) {
+            return;
+        }
+
+        $data = [
+            'handlerIdentifier' => Rest::class,
+            'name' => Tools::getDefault('GATEWAY_NAME') . ' Smartform',
+            'description' => Tools::getDefault('GATEWAY_NAME') . ' payment with Smartform.',
+            'pluginId' => $pluginId
+        ];
+
+        $this->paymentMethodRepository->create([$data], $context);
+        $this->enablePaymentMethodForSaleChannels($this->getPaymentMethodId($context, Rest::class), $context);
     }
 
     public function update(UpdateContext $context): void
@@ -94,23 +112,26 @@ class PaymentMethodInstaller
 
     public function uninstall(UninstallContext $context): void
     {
-        $this->setPaymentMethodStatus(false, $context->getContext());
+        $this->setPaymentMethodStatus(false, $context->getContext(), Standard::class);
+        $this->setPaymentMethodStatus(false, $context->getContext(), Rest::class);
     }
 
     public function activate(ActivateContext $context): void
     {
-        $this->setPaymentMethodStatus(true, $context->getContext());
+        $this->setPaymentMethodStatus(true, $context->getContext(), Standard::class);
+        $this->setPaymentMethodStatus(true, $context->getContext(), Rest::class);
     }
 
     public function deactivate(DeactivateContext $context): void
     {
-        $this->setPaymentMethodStatus(false, $context->getContext());
+        $this->setPaymentMethodStatus(false, $context->getContext(), Standard::class);
+        $this->setPaymentMethodStatus(false, $context->getContext(), Rest::class);
     }
 
-    private function getPaymentMethodId(Context $context): ?string
+    private function getPaymentMethodId(Context $context, $paymentMethodClass): ?string
     {
         // Fetch ID for update.
-        $paymentCriteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', Standard::class));
+        $paymentCriteria = (new Criteria())->addFilter(new EqualsFilter('handlerIdentifier', $paymentMethodClass));
         $paymentIds = $this->paymentMethodRepository->searchIds($paymentCriteria, $context);
 
         if ($paymentIds->getTotal() === 0) {
@@ -120,9 +141,9 @@ class PaymentMethodInstaller
         return $paymentIds->getIds()[0];
     }
 
-    private function setPaymentMethodStatus(bool $active, Context $context): void
+    private function setPaymentMethodStatus(bool $active, Context $context, $paymentMethodClass): void
     {
-        $paymentMethodId = $this->getPaymentMethodId($context);
+        $paymentMethodId = $this->getPaymentMethodId($context, $paymentMethodClass);
 
         // Payment does not even exist, so nothing to (de-)activate here.
         if (! $paymentMethodId) {
