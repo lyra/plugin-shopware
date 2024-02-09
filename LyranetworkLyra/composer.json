@@ -1,7 +1,7 @@
 {
 	"name" : "lyranetwork/lyra",
 	"description" : "This plugin enables you to setup the Lyra Collect payment gateway on your Shopware website.",
-	"version" : "4.1.0",
+	"version" : "4.1.1",
 	"type" : "shopware-platform-plugin",
 	"license" : "MIT",
 	"authors" : [{

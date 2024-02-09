@@ -29,7 +29,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineState\StateMachineStateEntity;
 use Shopware\Core\System\StateMachine\Aggregation\StateMachineTransition\StateMachineTransitionActions;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\SynchronousPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Exception\SyncPaymentProcessException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Checkout\Payment\Cart\SyncPaymentTransactionStruct;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
@@ -178,7 +178,7 @@ class Rest implements SynchronousPaymentHandlerInterface
                 $session->set('lyraTechError', true);
 
                 $this->logger->info('RETURN URL PROCESS END.');
-                throw new SyncPaymentProcessException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
+                throw PaymentException::syncProcessInterrupted($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
             }
         }
 
@@ -195,7 +195,7 @@ class Rest implements SynchronousPaymentHandlerInterface
                 $session->set('lyraTechError', true);
 
                 $this->logger->info('RETURN URL PROCESS END.');
-                throw new SyncPaymentProcessException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
+                throw PaymentException::syncProcessInterrupted($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
             }
         }
 
@@ -313,7 +313,7 @@ class Rest implements SynchronousPaymentHandlerInterface
                     } else {
                         $session->set('lyraTechError', true);
                         $this->logger->info('RETURN URL PROCESS END.');
-                        throw new SyncPaymentProcessException($transaction->getOrderTransaction()->getId(), $this->translator->trans('lyraPaymentFatal'));
+                        throw PaymentException::syncProcessInterrupted($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
                     }
                 }
             } else {
@@ -336,12 +336,12 @@ class Rest implements SynchronousPaymentHandlerInterface
         $customerEmail = $params['vads_cust_email'];
         $this->accountService->login($customerEmail, $salesChannelContext, true);
 
-        if ($this->paymentResult['lyraIsPaymentError'] || $this->paymentResult['lyraIsCancelledPayment']) {
-            $finishUrl = $this->getAccountOrderPage($this->router);
-            $session->set('lyraPaymentCancel', $this->paymentResult['lyraIsCancelledPayment']);
-            $session->set('lyraIsPaymentError', $this->paymentResult['lyraIsPaymentError']);
-            header('Location: ' . $finishUrl);
-            exit();
+        if ($this->paymentResult['lyraIsPaymentError']) {
+            throw PaymentException::syncProcessInterrupted($orderTransactionId, $this->translator->trans('lyraPaymentError'));
+        }
+
+        if ($this->paymentResult['lyraIsCancelledPayment']) {
+            throw PaymentException::customerCanceled($orderTransactionId, $this->translator->trans('lyraPaymentCancel'));
         }
 
         if (! $fromServer && ($this->getConfig('ctx_mode', $salesChannelId) === 'TEST')

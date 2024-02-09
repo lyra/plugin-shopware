@@ -292,7 +292,7 @@ class RestData
                 return $response['answer']['formToken'];
             }
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error(print_r($e->getErrors(), true), [$e]);
             return false;
         }
     }
