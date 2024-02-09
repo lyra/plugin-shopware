@@ -75,7 +75,7 @@ class OrderService
 
             $order = $this->orderRepository->search($criteria, $context)->first();
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), [$e]);
+            $this->logger->error(print_r($e->getErrors(), true), [$e]);
         }
 
         return $order;
@@ -106,7 +106,7 @@ class OrderService
 
             $order = $this->orderRepository->search($criteria, $context)->first();
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(), [$e]);
+            $this->logger->error(print_r($e->getErrors(), true), [$e]);
         }
 
         return $order;

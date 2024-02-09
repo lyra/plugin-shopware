@@ -34,8 +34,7 @@ use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStat
 use Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler;
 use Shopware\Core\Checkout\Payment\Cart\AsyncPaymentTransactionStruct;
 use Shopware\Core\Checkout\Payment\Cart\PaymentHandler\AsynchronousPaymentHandlerInterface;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentProcessException;
-use Shopware\Core\Checkout\Payment\Exception\AsyncPaymentFinalizeException;
+use Shopware\Core\Checkout\Payment\PaymentException;
 use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -126,7 +125,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
     }
 
     /**
-     * @throws AsyncPaymentProcessException
+     * @throws PaymentException
      */
     public function pay(
         AsyncPaymentTransactionStruct $transaction,
@@ -139,10 +138,7 @@ class Standard implements AsynchronousPaymentHandlerInterface
         // Get current user info.
         $customer = $salesChannelContext->getCustomer();
         if ($customer === null) {
-            throw new AsyncPaymentProcessException(
-                $transaction->getOrderTransaction()->getId(),
-                (new CustomerNotLoggedInException())->getMessage()
-            );
+            throw PaymentException::asyncProcessInterrupted($transaction->getOrderTransaction()->getId(), 'Customer is not logged in.');
         }
 
         $salesChannelId = $order->getSalesChannelId();
@@ -305,7 +301,7 @@ EOT;
                 $session->set('lyraTechError', true);
 
                 $this->logger->info('RETURN URL PROCESS END.');
-                throw new AsyncPaymentFinalizeException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
+                throw PaymentException::asyncFinalizeInterrupted($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
             }
         }
 
@@ -324,7 +320,7 @@ EOT;
                 $session->set('lyraTechError', true);
 
                 $this->logger->info('RETURN URL PROCESS END.');
-                throw new AsyncPaymentFinalizeException($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
+                throw PaymentException::asyncFinalizeInterrupted($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
             }
         }
 
@@ -444,7 +440,7 @@ EOT;
                         $session->set('lyraTechError', true);
 
                         $this->logger->info('RETURN URL PROCESS END.');
-                        throw new AsyncPaymentFinalizeException($transaction->getOrderTransaction()->getId(), $this->translator->trans('lyraPaymentFatal'));
+                        throw PaymentException::asyncFinalizeInterrupted($orderTransactionId, $this->translator->trans('lyraPaymentFatal'));
                     }
                 }
             } else {
